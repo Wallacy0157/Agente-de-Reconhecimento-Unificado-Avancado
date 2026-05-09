@@ -158,7 +158,6 @@ class EnvironmentDiagnosticsPage(QWidget):
                                                    "❌ 'pkexec' não encontrado. Use manualmente: sudo apt-get install -y"))
 
     def update_ui_language(self, L):
-        """Atualiza a linguagem da página."""
         self.L = L
         self.title_label.setText(lang_get(self.L, "diagnostics_page.title", "Diagnóstico do Ambiente"))
         self.description_label.setText(lang_get(self.L, "diagnostics_page.install_description",
@@ -847,7 +846,6 @@ class HydraPage(QWidget):
             self.targets_input.setPlainText("\n".join(targets))
 
     def update_ui_language(self, L):
-        """Atualiza a linguagem da página."""
         self.L = L
         self.title_label.setText(lang_get(L, "hydra_page.title", "🧰 Hydra - Teste de Credenciais"))
         self.warning_label.setText(lang_get(L, "hydra_page.warning", "⚠️ Use somente em ambientes autorizados."))
@@ -1159,6 +1157,77 @@ class PayloadPage(QWidget):
 
         except Exception as e:
             self.status_log.setText(f"<b>{lang_get(self.L, 'payload_page.error_prefix', '[ERRO]:')}</b> {str(e)}")
+
+# --- PAGINA DE CONTROLE ---
+class ListenerPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.L = getattr(parent_window, 'L', {})
+        self.server_socket = None
+        self.client_socket = None
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+
+        self.title_label = QLabel(lang_get(self.L, "listener_page.title", "📡 Painel de Controle Remoto"))
+        self.title_label.setFont(QFont("Arial", 18, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
+
+        self.status_conn = QLabel(lang_get(self.L, "listener_page.status_label", "Status: Aguardando ativação..."))
+        self.status_conn.setStyleSheet("color: orange; font-weight: bold;")
+        layout.addWidget(self.status_conn)
+
+        self.console_output = QLabel(lang_get(self.L, "listener_page.server_log", "Log do Servidor..."))
+        self.console_output.setStyleSheet("background-color: black; color: #00ff00; padding: 10px; font-family: 'Consolas';")
+        self.console_output.setWordWrap(True)
+        self.console_output.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.console_output)
+
+        self.cmd_input = QLineEdit()
+        self.cmd_input.setPlaceholderText(lang_get(self.L, "listener_page.command_placeholder", "Digite um comando (ex: stress_test, dir, whoami)..."))
+        self.cmd_input.setEnabled(False)
+        self.cmd_input.returnPressed.connect(self.send_command)
+        layout.addWidget(self.cmd_input)
+
+        self.btn_listen = QPushButton(lang_get(self.L, "listener_page.activate_listen", "Ativar Escuta (Porta 4444)"))
+        self.btn_listen.clicked.connect(self.start_listening_thread)
+        layout.addWidget(self.btn_listen)
+
+        layout.addStretch()
+
+    def start_listening_thread(self):
+        self.btn_listen.setEnabled(False)
+        self.status_conn.setText(lang_get(self.L, "listener_page.listening", "Status: Escutando na porta 4444..."))
+        thread = threading.Thread(target=self.start_server, daemon=True)
+        thread.start()
+
+    def start_server(self):
+        try:
+            self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.server_socket.bind(('0.0.0.0', 4444))
+            self.server_socket.listen(1)
+            
+            self.client_socket, addr = self.server_socket.accept()
+            self.status_conn.setText(lang_get(self.L, "listener_page.connected", "Status: CONECTADO ao alvo ({addr})").format(addr=addr[0]))
+            self.status_conn.setStyleSheet("color: #00ff00; font-weight: bold;")
+            self.cmd_input.setEnabled(True)
+        except Exception as e:
+            self.console_output.setText(f"{lang_get(self.L, 'listener_page.server_error', 'Erro no Servidor:')} {e}")
+
+    def send_command(self):
+        cmd = self.cmd_input.text()
+        if cmd and self.client_socket:
+            try:
+                self.client_socket.send(cmd.encode())
+                response = self.client_socket.recv(4096).decode()
+                self.console_output.setText(f"> {cmd}\n{response}")
+                self.cmd_input.clear()
+            except Exception as e:
+                self.status_conn.setText(lang_get(self.L, "listener_page.connection_lost", "Status: Conexão Perdida."))
+                self.cmd_input.setEnabled(False)
     
 # --- CLASSE PRINCIPAL (MainWindow) ---
 class MainWindow(QMainWindow):
@@ -1475,8 +1544,6 @@ class MainWindow(QMainWindow):
         save_user_settings(self.base_dir, self.user_settings)
 
         super().closeEvent(event)
-
-
 
 # --- EXECUÇÃO PRINCIPAL ---
 def iniciar_toolkit(username):

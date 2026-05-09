@@ -34,8 +34,8 @@ from core.components import (
     NeonCard, ConfigPage, 
     load_language_json, lang_get 
 ) 
-from core import network_scanner 
-from core.config import (
+from frontend.core import network_scanner 
+from frontend.core.config import (
     THEMES, NEON_DEFAULT, load_user_settings,
     save_user_settings, ThemeManager, SHERLOCK_STYLES, HYDRA_STYLES, JOHN_STYLES, FIREWALL_STYLES, KEYLOGGER_STYLES, STRESS_TEST_STYLES, MANUAL_STYLES, sherlock_investigate_button_style, sherlock_result_card_style, sherlock_result_button_style, john_start_button_style, firewall_description_style, keylogger_toggle_button_style, main_window_stylesheet,
 )

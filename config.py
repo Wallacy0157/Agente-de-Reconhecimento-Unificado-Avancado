@@ -104,3 +104,189 @@ MANUAL_STYLES = {
     "tab_label": "font-size: 15px; padding: 15px; color: #DDDDDD;",
     "tab_scroll": "border: none; background: transparent;",
 }
+
+def sherlock_investigate_button_style(neon_color):
+    return f"""
+        QPushButton {{
+            background-color: transparent; border: 2px solid {neon_color};
+            color: {neon_color}; padding: 10px 25px; border-radius: 5px; font-weight: bold;
+        }}
+        QPushButton:hover {{ background-color: {neon_color}; color: #000; }}
+        QPushButton:disabled {{ border-color: #555; color: #555; }}
+    """
+
+
+def sherlock_result_card_style(border_color):
+    return f"""
+        QFrame {{
+            background: #222;
+            border-left: 5px solid {border_color};
+            border-radius: 5px;
+            margin-bottom: 8px;
+            padding: 10px;
+        }}
+        QFrame:hover {{
+            background: #2a2a2a;
+        }}
+    """
+
+
+def sherlock_result_button_style(border_color):
+    return f"""
+        QPushButton {{
+            background: #333; color: white; border-radius: 3px; padding: 5px; font-size: 11px;
+        }}
+        QPushButton:hover {{ background: #444; color: {border_color}; }}
+    """
+
+
+def john_start_button_style(neon_color):
+    return f"background: {neon_color}; color: black; font-weight: bold;"
+
+
+def firewall_description_style(theme_key="dark"):
+    text_color = THEMES.get(theme_key, THEMES["dark"]).get("text_secondary", "#9aa7b8")
+    return f"color: {text_color};"
+
+
+def keylogger_toggle_button_style(neon_color, running=False):
+    if running:
+        return "background: #551111; color: white; font-weight: bold;"
+    return f"background: {neon_color}; color: black; font-weight: bold;"
+
+
+def main_window_stylesheet(theme_colors, neon_color):
+    return f"""
+    QMainWindow {{
+        background-color: {theme_colors['bg_main']};
+    }}
+    QFrame#Sidebar {{
+        background-color: {theme_colors['bg_sidebar']};
+    }}
+    QFrame#ContentFrame, QWidget#PageWidget {{
+        background-color: {theme_colors['bg_main']};
+    }}
+    QLabel {{
+        color: {theme_colors['text_main']};
+    }}
+    QLabel#AuraTitle {{
+        color: {neon_color};
+    }}
+    QPushButton#SidebarButton {{
+        background-color: {theme_colors['bg_button']};
+        color: {theme_colors['text_main']};
+        border: none;
+        border-radius: 8px;
+        padding-left: 15px;
+    }}
+    QPushButton#SidebarButton:hover {{
+        background-color: {theme_colors['bg_button_hover']};
+        color: {theme_colors['text_main']};
+    }}
+    QGroupBox {{
+        color: {theme_colors['text_main']};
+        border: 1px solid {theme_colors['border_card']};
+        border-radius: 10px;
+        padding-top: 20px;
+        margin-top: 10px;
+        background-color: {theme_colors['bg_main']};
+    }}
+    QLineEdit {{
+        background-color: {theme_colors['bg_input']};
+        color: {theme_colors['text_main']};
+        border: 1px solid {theme_colors['border_card']};
+        border-radius: 5px;
+        padding: 5px;
+    }}
+    QScrollArea {{
+        background-color: {theme_colors['bg_main']};
+        border: none;
+    }}
+    QScrollArea QWidget {{
+        background-color: {theme_colors['bg_main']};
+    }}
+    QComboBox {{
+        background-color: {theme_colors['bg_input']};
+        color: {theme_colors['text_main']};
+        border: 1px solid {theme_colors['border_card']};
+        border-radius: 5px;
+        padding: 3px;
+    }}
+    QRadioButton {{
+        color: {theme_colors['text_main']};
+        background-color: {theme_colors['bg_main']};
+    }}
+    QPushButton {{
+        background-color: {theme_colors['bg_button']};
+        color: {theme_colors['text_main']};
+        border: none;
+        border-radius: 5px;
+        padding: 8px 15px;
+    }}
+    QPushButton:hover {{
+        background-color: {theme_colors['bg_button_hover']};
+    }}
+    QTabWidget::pane {{
+        border: 1px solid #333333;
+        background: transparent;
+    }}
+    QTabBar::tab {{
+        background: #1A1A1A;
+        color: #888888;
+        padding: 10px 20px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        margin-right: 2px;
+    }}
+    QTabBar::tab:selected {{
+        background: #252525;
+        color: {neon_color};
+        border-bottom: 2px solid {neon_color};
+    }}
+    QTabBar::tab:hover {{
+        background: #333333;
+        color: white;
+    }}
+    """
+
+class ThemeManager:
+    def __init__(self, initial_settings):
+        self.current_theme = initial_settings.get("theme", "dark")
+        self.neon_color = initial_settings.get("neon_color", NEON_DEFAULT)
+
+    def set_base_theme(self, theme_key):
+        self.current_theme = theme_key
+
+    def set_neon_color(self, color):
+        self.neon_color = color
+        
+def load_user_settings(base_dir):
+    settings_path = os.path.join(base_dir, "config", "user_settings.json")
+    default_settings = {
+        "language": "pt", 
+        "theme": "dark",
+        "neon_color": NEON_DEFAULT,
+    }
+    
+    os.makedirs(os.path.dirname(settings_path), exist_ok=True)
+    
+    if os.path.exists(settings_path):
+        try:
+            with open(settings_path, "r", encoding="utf-8") as f:
+                settings = json.load(f)
+                settings.pop("special_theme_active", None)
+                settings.pop("special_theme_key", None)
+                return {**default_settings, **settings} 
+        except (json.JSONDecodeError, IOError):
+            print("[WARN] Erro ao carregar user_settings.json. Usando padrão.")
+            
+    return default_settings
+
+def save_user_settings(base_dir, settings):
+    settings_to_save = {k: v for k, v in settings.items() if k not in ["special_theme_active", "special_theme_key"]}
+    settings_path = os.path.join(base_dir, "config", "user_settings.json")
+    try:
+        with open(settings_path, "w", encoding="utf-8") as f:
+            json.dump(settings_to_save, f, indent=4, ensure_ascii=False)
+    except IOError as e:
+        print(f"[ERROR] Falha ao salvar user_settings.json: {e}")

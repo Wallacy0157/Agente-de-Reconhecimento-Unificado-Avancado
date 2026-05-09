@@ -1526,6 +1526,144 @@ class JohnPage(QWidget):
             self.activity_label.setText(lang_get(L, "keylogger_page.recent_activity", "Atividade Recente:"))
             self.btn_toggle.setText(lang_get(L, "keylogger_page.start_audit", "INICIAR AUDITORIA"))
             self.btn_open_folder.setText(lang_get(L, "keylogger_page.open_logs", "📁 ABRIR LOGS"))
+
+# --- DDOS ---
+class StressTestPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.executor = None
+        self.L = getattr(parent_window, 'L', {})
+        
+        self.TEXT_START = "⚡ INICIAR AUDITORIA DE TRÁFEGO"
+        self.TEXT_STOP = "🛑 INTERROMPER TESTE"
+        
+        self.ui_timer = QTimer()
+        self.ui_timer.timeout.connect(self.update_live_metrics)
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        self.title = QLabel("🛡️ " + lang_get(self.L, "stress_test_page.title", "Avaliação de Resiliência de Firewall"))
+        self.title.setFont(QFont("Arial", 18, QFont.Weight.Bold))
+        layout.addWidget(self.title)
+
+        self.target_group = QGroupBox(lang_get(self.L, "stress_test_page.target_parameters", "Parâmetros do Alvo"))
+        t_layout = QHBoxLayout()
+        self.target_input = QLineEdit()
+        self.target_input.setPlaceholderText(lang_get(self.L, "stress_test_page.target_placeholder", "IP ou Host"))
+        self.port_input = QSpinBox()
+        self.port_input.setRange(1, 65535)
+        self.port_input.setValue(80)
+        
+        self.target_label = QLabel(lang_get(self.L, "stress_test_page.target_label", "Alvo:"))
+        self.port_label = QLabel(lang_get(self.L, "stress_test_page.port_label", "Porta:"))
+        
+        t_layout.addWidget(self.target_label)
+        t_layout.addWidget(self.target_input, 3)
+        t_layout.addWidget(self.port_label)
+        t_layout.addWidget(self.port_input, 1)
+        self.target_group.setLayout(t_layout)
+        layout.addWidget(self.target_group)
+
+        self.ctrl_group = QGroupBox(lang_get(self.L, "stress_test_page.traffic_control", "Controle de Tráfego"))
+        c_layout = QVBoxLayout()
+        
+        self.rps_input = QSpinBox()
+        self.rps_input.setRange(1, 2000)
+        self.rps_input.setValue(50)
+        
+        self.rps_label = QLabel(lang_get(self.L, "stress_test_page.rate_limit_label", "Taxa Limite (Req/Segunda - RPS):"))
+        c_layout.addWidget(self.rps_label)
+        c_layout.addWidget(self.rps_input)
+
+        self.duration_input = QSpinBox()
+        self.duration_input.setRange(5, 600)
+        self.duration_input.setValue(30)
+        
+        self.duration_label = QLabel(lang_get(self.L, "stress_test_page.duration_label", "Duração do Teste (Segundos):"))
+        c_layout.addWidget(self.duration_label)
+        c_layout.addWidget(self.duration_input)
+
+        self.gradual_check = QCheckBox(lang_get(self.L, "stress_test_page.gradual_escalation", "Escalonamento Gradual (Ramp-up)"))
+        c_layout.addWidget(self.gradual_check)
+        
+        self.ctrl_group.setLayout(c_layout)
+        layout.addWidget(self.ctrl_group)
+
+        self.metrics_box = QTextEdit()
+        self.metrics_box.setReadOnly(True)
+        self.metrics_box.setStyleSheet(STRESS_TEST_STYLES["metrics_box"])
+        self.metrics_box.setText(lang_get(self.L, "stress_test_page.awaiting_start", "Aguardando início do teste..."))
+        layout.addWidget(self.metrics_box)
+
+        self.btn_action = QPushButton(lang_get(self.L, "stress_test_page.start_button", self.TEXT_START))
+        self.btn_action.setFixedHeight(50)
+        self.btn_action.clicked.connect(self.toggle_test)
+        layout.addWidget(self.btn_action)
+
+    def set_inputs_enabled(self, enabled: bool):
+        """Bloqueia ou libera os campos de entrada."""
+        self.target_group.setEnabled(enabled)
+        self.ctrl_group.setEnabled(enabled)
+
+    def toggle_test(self):
+        if self.executor and self.executor.is_running:
+            self.executor.stop()
+            self._finalize_ui_state()
+            return
+
+        self.executor = StressTestExecutor(
+            target=self.target_input.text(),
+            port=self.port_input.value(),
+            rps_limit=self.rps_input.value(),
+            duration=self.duration_input.value(),
+            gradual=self.gradual_check.isChecked()
+        )
+        
+        self.set_inputs_enabled(False)
+        self.executor.start()
+        self.ui_timer.start(500)
+        self.btn_action.setText(lang_get(self.L, "stress_test_page.stop_button", self.TEXT_STOP))
+
+    def _finalize_ui_state(self):
+        """Volta a UI para o estado inicial de espera."""
+        self.ui_timer.stop()
+        self.set_inputs_enabled(True)
+        self.btn_action.setText(lang_get(self.L, "stress_test_page.start_button", self.TEXT_START))
+
+    def update_live_metrics(self):
+        if not self.executor:
+            return
+
+        self.metrics_box.setText(self.executor.get_report())
+        
+        if not self.executor.is_running:
+            self._finalize_ui_state()
+
+    def update_ui_language(self, L):
+        """Atualiza a linguagem da página."""
+        self.L = L
+        self.title.setText("🛡️ " + lang_get(L, "stress_test_page.title", "Avaliação de Resiliência de Firewall"))
+        self.target_group.setTitle(lang_get(L, "stress_test_page.target_parameters", "Parâmetros do Alvo"))
+        self.target_label.setText(lang_get(L, "stress_test_page.target_label", "Alvo:"))
+        self.target_input.setPlaceholderText(lang_get(L, "stress_test_page.target_placeholder", "IP ou Host"))
+        self.port_label.setText(lang_get(L, "stress_test_page.port_label", "Porta:"))
+        self.ctrl_group.setTitle(lang_get(L, "stress_test_page.traffic_control", "Controle de Tráfego"))
+        self.rps_label.setText(lang_get(L, "stress_test_page.rate_limit_label", "Taxa Limite (Req/Segunda - RPS):"))
+        self.duration_label.setText(lang_get(L, "stress_test_page.duration_label", "Duração do Teste (Segundos):"))
+        self.gradual_check.setText(lang_get(L, "stress_test_page.gradual_escalation", "Escalonamento Gradual (Ramp-up)"))
+        self.metrics_box.setText(lang_get(L, "stress_test_page.awaiting_start", "Aguardando início do teste..."))
+        self.TEXT_START = lang_get(L, "stress_test_page.start_button", "⚡ INICIAR AUDITORIA DE TRÁFEGO")
+        self.TEXT_STOP = lang_get(L, "stress_test_page.stop_button", "🛑 INTERROMPER TESTE")
+        
+        if not self.executor or not self.executor.is_running:
+            self.btn_action.setText(self.TEXT_START)
+        else:
+            self.btn_action.setText(self.TEXT_STOP)
     
 # --- CLASSE PRINCIPAL (MainWindow) ---
 class MainWindow(QMainWindow):

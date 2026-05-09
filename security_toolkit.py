@@ -1,3 +1,100 @@
+import os
+import sys
+from auth_ui import AuthWindow
+from PyQt6.QtCore import (
+    Qt, QTimer
+)
+from PyQt6.QtGui import (
+    QFont
+)
+from PyQt6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QLabel, QStackedWidget,
+    QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QSpacerItem,
+    QSizePolicy, QScrollArea, 
+    QGridLayout, QSpacerItem, 
+    QSizePolicy, QTabWidget
+)
+from random import randint
+from core.components import (
+    NeonCard, ConfigPage, 
+    load_language_json, lang_get 
+) 
+from core.config import (
+    THEMES, load_user_settings,
+    save_user_settings, ThemeManager, MANUAL_STYLES, main_window_stylesheet,
+)
+
+# --- CLASSE DA PAGINA DE MANUAL ---
+class ManualScannerPage(QWidget):
+    def __init__(self, main_window):
+        print("[DEBUG] refresh_manual_content chamado")
+        super().__init__()
+        self.main_window = main_window
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        self.tabs = QTabWidget()
+        self.tabs.setObjectName("ManualTabs")
+        self.refresh_manual_content()
+        print("[DEBUG] ManualScannerPage criada")
+
+        layout.addWidget(self.tabs)
+    
+    def refresh_manual_content(self):
+        self.tabs.clear()
+
+        L = self.main_window.L
+
+        fallback_L = load_language_json("pt", self.main_window.base_dir)
+
+        sections = [
+            "manifesto",
+            "scanner",
+            "ddos",
+            "auditoria",
+            "sherlock",
+            "john",
+            "keylogger",
+            "hydra",
+        ]
+
+        print("[DEBUG] Idioma atual:", self.main_window.current_lang_code)
+        print("[DEBUG] Manual keys:", list(self.main_window.L.get("manual", {}).keys()))
+
+        for key in sections:
+            # tenta idioma atual
+            section = L.get("manual", {}).get(key)
+
+            # fallback se não existir
+            if not section:
+                section = fallback_L.get("manual", {}).get(key, {})
+
+            title = section.get("title", key.upper())
+            content = section.get("content", "Conteúdo não disponível.")
+
+            self.tabs.addTab(
+                self._create_scrollable_tab(content),
+                title
+            )
+
+
+    def _create_scrollable_tab(self, markdown_text):
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+        label = QLabel(markdown_text)
+        label.setWordWrap(True)
+        label.setTextFormat(Qt.TextFormat.MarkdownText)
+        label.setStyleSheet(MANUAL_STYLES["tab_label"])
+        label.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(label)
+        scroll.setStyleSheet(MANUAL_STYLES["tab_scroll"])
+        
+        layout.addWidget(scroll)
+        return widget
+    
 # --- CLASSE PRINCIPAL (MainWindow) ---
 class MainWindow(QMainWindow):
     PAGE_HOME = 0

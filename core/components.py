@@ -14,7 +14,6 @@ from core.config import THEMES, NEON_DEFAULT
 
 
 def load_language_json(lang_code, base_dir=None):
-    """Carrega o arquivo JSON para o código de idioma fornecido."""
 
     if base_dir is None:
         if getattr(sys, 'frozen', False):
@@ -37,7 +36,6 @@ def load_language_json(lang_code, base_dir=None):
 
 
 def lang_get(L: dict, key: str, fallback: str):
-    """Obtém um valor traduzido usando uma chave pontilhada (ex: 'sidebar.home')."""
     parts = key.split('.')
     value = L
     for part in parts:
@@ -48,7 +46,6 @@ def lang_get(L: dict, key: str, fallback: str):
 
 
 class NeonCard(QFrame):
-    """Um QFrame estilizado com sombra e cor neon personalizável."""
 
     def __init__(self, icon, title, subtitle, neon_color, theme_manager, parent=None):
         super().__init__(parent)
@@ -90,7 +87,6 @@ class NeonCard(QFrame):
         self.on_card_activated = lambda: None
 
     def mousePressEvent(self, event):
-        """Trata o clique de forma segura para o PyQt6."""
         if event.button() == Qt.MouseButton.LeftButton:
             if self.on_card_activated:
                 self.on_card_activated()
@@ -216,7 +212,6 @@ class ConfigPage(QWidget):
         self.setLayout(layout)
 
     def _initialize_values(self):
-        """Define os valores iniciais dos widgets com base nas configurações salvas."""
         
         current_lang = self.parent_window.current_lang_code
         lang_name = self.LANGUAGE_MAP_REVERSE.get(current_lang, "Português")
@@ -237,7 +232,6 @@ class ConfigPage(QWidget):
 
 
     def update_ui_language(self, L):
-        """Atualiza todos os textos da página de configurações quando o idioma muda."""
         self.L = L 
         
         self.findChild(QGroupBox, "lang_group").setTitle(lang_get(L, "settings_page.lang_group", "Idioma"))

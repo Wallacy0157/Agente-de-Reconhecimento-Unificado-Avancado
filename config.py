@@ -63,3 +63,44 @@ SHERLOCK_STYLES = {
         }
     """,
 }
+
+HYDRA_STYLES = {
+    "warning": "color: #ffaa00; font-weight: bold;",
+    "console": "background:#000;color:#0f0;font-family:Courier New;",
+}
+
+JOHN_STYLES = {
+    "common_group": "QGroupBox { color: #888; border: 1px solid #333; margin-top: 10px; padding: 10px; }",
+    "console": "background: #000; color: #0f0; font-family: 'Courier New';",
+}
+
+FIREWALL_STYLES = {
+    "log_output": """
+        background-color: #050505;
+        border: 1px solid #2a2a2a;
+        padding: 10px;
+        font-family: 'Consolas', 'Monospace';
+        color: #00ff00;
+    """,
+}
+
+KEYLOGGER_STYLES = {
+    "status_box": "background: #111; border: 1px solid #333; border-radius: 8px;",
+    "dot_idle": "color: #444; font-size: 20px;",
+    "status_idle": "color: #888; font-weight: bold;",
+    "live_console": "background: #000; color: #0f0; font-family: 'Courier New'; border: 1px solid #222;",
+    "open_folder_button": "padding: 15px;",
+    "status_running": "color: #ff3333;",
+    "status_finished": "color: #00ff00;",
+    "dot_running": "color: #ff3333;",
+    "dot_finished": "color: #00ff00;",
+}
+
+STRESS_TEST_STYLES = {
+    "metrics_box": "background: black; color: #00ff00; font-family: Consolas; font-size: 14px;",
+}
+
+MANUAL_STYLES = {
+    "tab_label": "font-size: 15px; padding: 15px; color: #DDDDDD;",
+    "tab_scroll": "border: none; background: transparent;",
+}

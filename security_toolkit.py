@@ -582,6 +582,294 @@ class SherlockPage(QWidget):
         self.user_input.setPlaceholderText(lang_get(L, "sherlock_page.placeholder", "Digite o alvo aqui..."))
         self.btn_investigate.setText(lang_get(L, "sherlock_page.investigate", "INVESTIGAR"))
 
+# --- Hydra ---
+class HydraPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.user_list_path = ""
+        self.pass_list_path = ""
+        self.executor = None
+        self.hydra_timer = QTimer()
+        self.hydra_timer.timeout.connect(self._poll_hydra_state)
+
+        scroll = QScrollArea(self)
+        scroll.setWidgetResizable(True)
+
+        container = QWidget()
+        self.main_layout = QVBoxLayout(container)
+
+        scroll.setWidget(container)
+
+        outer_layout = QVBoxLayout(self)
+        outer_layout.addWidget(scroll)
+
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = self.main_layout
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        self.L = getattr(self.parent_window, 'L', {})
+
+        self.title_label = QLabel(lang_get(self.L, "hydra_page.title", "🧰 Hydra - Teste de Credenciais"))
+        self.title_label.setFont(QFont("Arial", 22, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
+
+        self.warning_label = QLabel(lang_get(self.L, "hydra_page.warning", "⚠️ Use somente em ambientes autorizados."))
+        self.warning_label.setStyleSheet(HYDRA_STYLES["warning"])
+        layout.addWidget(self.warning_label)
+
+        self.targets_group = QGroupBox(lang_get(self.L, "hydra_page.targets_group", "Alvos"))
+        targets_layout = QVBoxLayout()
+        self.targets_input = QTextEdit()
+        self.targets_input.setPlaceholderText(lang_get(self.L, "hydra_page.targets_placeholder", "Ex: 192.168.0.10\n192.168.0.20"))
+        self.targets_input.setFixedHeight(80)
+        targets_layout.addWidget(self.targets_input)
+        self.targets_group.setLayout(targets_layout)
+        layout.addWidget(self.targets_group)
+
+        self.service_group = QGroupBox(lang_get(self.L, "hydra_page.service_and_port", "Serviço e Porta"))
+        service_layout = QHBoxLayout()
+
+        self.service_combo = QComboBox()
+        self.service_combo.setEditable(True)
+        self.service_combo.addItems([
+            "ssh", "ftp", "telnet", "smb", "rdp",
+            "http-get", "http-post-form",
+            "mysql", "postgres", "vnc"
+        ])
+        self.service_combo.currentTextChanged.connect(self._on_service_changed)
+
+        self.port_input = QSpinBox()
+        self.port_input.setRange(0, 65535)
+        self.port_input.setValue(0)
+
+        self.service_label = QLabel(lang_get(self.L, "hydra_page.service_label", "Serviço:"))
+        self.port_label = QLabel(lang_get(self.L, "hydra_page.port_label", "Porta:"))
+        service_layout.addWidget(self.service_label)
+        service_layout.addWidget(self.service_combo, 2)
+        service_layout.addWidget(self.port_label)
+        service_layout.addWidget(self.port_input, 1)
+
+        self.service_group.setLayout(service_layout)
+        layout.addWidget(self.service_group)
+
+        self.http_group = QGroupBox(lang_get(self.L, "hydra_page.http_config", "Configuração HTTP POST"))
+        self.http_group.setVisible(False)
+
+        http_layout = QVBoxLayout()
+
+        self.http_path = QLineEdit()
+        self.http_path.setPlaceholderText(lang_get(self.L, "hydra_page.form_path_placeholder", "/login.php"))
+
+        self.http_params = QLineEdit()
+        self.http_params.setPlaceholderText(lang_get(self.L, "hydra_page.post_params_placeholder", "username=^USER^&password=^PASS^"))
+
+        self.http_fail = QLineEdit()
+        self.http_fail.setPlaceholderText(lang_get(self.L, "hydra_page.fail_string_placeholder", "Texto de falha (ex: Invalid login)"))
+
+        self.http_form_path_label = QLabel(lang_get(self.L, "hydra_page.form_path", "Caminho do formulário"))
+        self.http_post_params_label = QLabel(lang_get(self.L, "hydra_page.post_params", "Parâmetros POST"))
+        self.http_fail_string_label = QLabel(lang_get(self.L, "hydra_page.fail_string", "String de falha"))
+        http_layout.addWidget(self.http_form_path_label)
+        http_layout.addWidget(self.http_path)
+        http_layout.addWidget(self.http_post_params_label)
+        http_layout.addWidget(self.http_params)
+        http_layout.addWidget(self.http_fail_string_label)
+        http_layout.addWidget(self.http_fail)
+
+        self.http_group.setLayout(http_layout)
+        layout.addWidget(self.http_group)
+
+        self.creds_group = QGroupBox(lang_get(self.L, "hydra_page.credentials_group", "Credenciais"))
+        creds_layout = QVBoxLayout()
+
+        user_row = QHBoxLayout()
+        self.user_input = QLineEdit()
+        self.user_input.setPlaceholderText(lang_get(self.L, "hydra_page.single_username", "Usuário único"))
+        self.user_list_button = QPushButton(lang_get(self.L, "hydra_page.username_list", "Lista de Usuários"))
+        self.user_list_button.clicked.connect(self.select_user_list)
+        user_row.addWidget(self.user_input, 2)
+        user_row.addWidget(self.user_list_button, 1)
+
+        pass_row = QHBoxLayout()
+        self.pass_input = QLineEdit()
+        self.pass_input.setPlaceholderText(lang_get(self.L, "hydra_page.single_password", "Senha única"))
+        self.pass_list_button = QPushButton(lang_get(self.L, "hydra_page.password_list", "Lista de Senhas"))
+        self.pass_list_button.clicked.connect(self.select_pass_list)
+        pass_row.addWidget(self.pass_input, 2)
+        pass_row.addWidget(self.pass_list_button, 1)
+
+        creds_layout.addLayout(user_row)
+        creds_layout.addLayout(pass_row)
+        self.creds_group.setLayout(creds_layout)
+        layout.addWidget(self.creds_group)
+
+        self.options_group = QGroupBox(lang_get(self.L, "hydra_page.options_group", "Opções"))
+        options_layout = QHBoxLayout()
+
+        self.tasks_input = QSpinBox()
+        self.tasks_input.setRange(1, 64)
+        self.tasks_input.setValue(4)
+
+        self.stop_on_success = QCheckBox(lang_get(self.L, "hydra_page.stop_on_success", "Parar ao encontrar credencial"))
+        self.verbose_check = QCheckBox(lang_get(self.L, "hydra_page.verbose", "Verbose"))
+
+        self.threads_label = QLabel(lang_get(self.L, "hydra_page.threads_label", "Threads (-t):"))
+        options_layout.addWidget(self.threads_label)
+        options_layout.addWidget(self.tasks_input)
+        options_layout.addWidget(self.stop_on_success)
+        options_layout.addWidget(self.verbose_check)
+
+        self.options_group.setLayout(options_layout)
+        layout.addWidget(self.options_group)
+
+        button_row = QHBoxLayout()
+
+        self.start_button = QPushButton(lang_get(self.L, "hydra_page.start_button", "INICIAR"))
+        self.start_button.clicked.connect(self.start_hydra)
+
+        self.stop_button = QPushButton(lang_get(self.L, "hydra_page.stop_button", "PARAR"))
+        self.stop_button.setEnabled(False)
+        self.stop_button.clicked.connect(self.stop_hydra)
+
+        button_row.addWidget(self.start_button)
+        button_row.addWidget(self.stop_button)
+        layout.addLayout(button_row)
+
+        self.console = QTextEdit()
+        self.console.setReadOnly(True)
+        self.console.setStyleSheet(HYDRA_STYLES["console"])
+        layout.addWidget(self.console)
+
+    def _on_service_changed(self, service):
+        self.http_group.setVisible(service.strip() == "http-post-form")
+
+    def select_user_list(self):
+        file, _ = QFileDialog.getOpenFileName(self, lang_get(self.L, "hydra_page.user_list_title", "Lista de Usuários"), "", "*.txt")
+        if file:
+            self.user_list_path = file
+            self.user_list_button.setText(os.path.basename(file))
+
+    def select_pass_list(self):
+        file, _ = QFileDialog.getOpenFileName(self, lang_get(self.L, "hydra_page.password_list_title", "Lista de Senhas"), "", "*.txt")
+        if file:
+            self.pass_list_path = file
+            self.pass_list_button.setText(os.path.basename(file))
+
+    def start_hydra(self):
+        if self.executor and self.executor.is_running:
+            QMessageBox.information(self, lang_get(self.L, "hydra_page.already_running", "Hydra"), lang_get(self.L, "hydra_page.already_running_msg", "Já existe uma execução em andamento."))
+            return
+
+        targets = HydraExecutor.parse_targets(self.targets_input.toPlainText())
+        if not targets:
+            QMessageBox.warning(self, lang_get(self.L, "hydra_page.no_targets", "Hydra"), lang_get(self.L, "hydra_page.no_targets_msg", "Informe ao menos um alvo."))
+            return
+
+        service = self.service_combo.currentText().strip()
+        if not service:
+            QMessageBox.warning(self, lang_get(self.L, "hydra_page.no_service", "Hydra"), lang_get(self.L, "hydra_page.no_service_msg", "Informe o serviço."))
+            return
+
+        if service == "http-post-form":
+            if not all([
+                self.http_path.text().strip(),
+                self.http_params.text().strip(),
+                self.http_fail.text().strip()
+            ]):
+                QMessageBox.warning(self, lang_get(self.L, "hydra_page.http_required", "Hydra"), lang_get(self.L, "hydra_page.http_required_msg", "Preencha todos os campos do HTTP POST."))
+                return
+            if "^USER^" not in self.http_params.text() and "^PASS^" not in self.http_params.text():
+                QMessageBox.warning(self, lang_get(self.L, "hydra_page.params_error", "Hydra"), lang_get(self.L, "hydra_page.params_error_msg", "Use ^USER^ e ^PASS^ nos parâmetros."))
+                return
+
+        self.console.clear()
+        self.start_button.setEnabled(False)
+        self.stop_button.setEnabled(True)
+
+        self.executor = HydraExecutor(
+            targets=targets,
+            service=service,
+            username=self.user_input.text().strip(),
+            password=self.pass_input.text().strip(),
+            user_list=self.user_list_path,
+            pass_list=self.pass_list_path,
+            port=self.port_input.value(),
+            tasks=self.tasks_input.value(),
+            stop_on_success=self.stop_on_success.isChecked(),
+            verbose=self.verbose_check.isChecked(),
+            http_path=self.http_path.text().strip(),
+            http_params=self.http_params.text().strip(),
+            http_fail=self.http_fail.text().strip(),
+        )
+        self.executor.start()
+        self.hydra_timer.start(250)
+
+    def stop_hydra(self):
+        if self.executor and self.executor.is_running:
+            self.executor.stop()
+            self.console.append(lang_get(self.L, "hydra_page.interruption_requested", "[INFO] Interrupção solicitada."))
+        self.stop_button.setEnabled(False)
+
+    def _poll_hydra_state(self):
+        if not self.executor:
+            return
+
+        for line in self.executor.pop_new_output():
+            self.console.append(line)
+
+        if self.executor.is_running:
+            return
+
+        self.hydra_timer.stop()
+        if self.executor.error:
+            self.console.append(f"[ERROR] {self.executor.error}")
+        self.finish_hydra(self.executor.return_code if self.executor.return_code is not None else 1)
+
+    def finish_hydra(self, code):
+        success = (code == 0)
+
+        self.console.append(f"{lang_get(self.L, 'hydra_page.completed', '[INFO] Hydra finalizado com código')} {code}.")
+
+        self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(False)
+        if self.executor:
+            filepath = self.executor.save_log(self.parent_window.base_dir)
+            self.console.append(f"{lang_get(self.L, 'hydra_page.log_saved', '[INFO] Log salvo em')} {filepath}")
+        self.executor = None
+
+    def set_targets(self, targets):
+        """Define os alvos a partir de uma lista."""
+        if targets:
+            self.targets_input.setPlainText("\n".join(targets))
+
+    def update_ui_language(self, L):
+        """Atualiza a linguagem da página."""
+        self.L = L
+        self.title_label.setText(lang_get(L, "hydra_page.title", "🧰 Hydra - Teste de Credenciais"))
+        self.warning_label.setText(lang_get(L, "hydra_page.warning", "⚠️ Use somente em ambientes autorizados."))
+        self.targets_group.setTitle(lang_get(L, "hydra_page.targets_group", "Alvos"))
+        self.service_group.setTitle(lang_get(L, "hydra_page.service_and_port", "Serviço e Porta"))
+        self.service_label.setText(lang_get(L, "hydra_page.service_label", "Serviço:"))
+        self.port_label.setText(lang_get(L, "hydra_page.port_label", "Porta:"))
+        self.http_group.setTitle(lang_get(L, "hydra_page.http_config", "Configuração HTTP POST"))
+        self.http_form_path_label.setText(lang_get(L, "hydra_page.form_path", "Caminho do formulário"))
+        self.http_post_params_label.setText(lang_get(L, "hydra_page.post_params", "Parâmetros POST"))
+        self.http_fail_string_label.setText(lang_get(L, "hydra_page.fail_string", "String de falha"))
+        self.creds_group.setTitle(lang_get(L, "hydra_page.credentials_group", "Credenciais"))
+        self.user_input.setPlaceholderText(lang_get(L, "hydra_page.single_username", "Usuário único"))
+        self.user_list_button.setText(lang_get(L, "hydra_page.username_list", "Lista de Usuários"))
+        self.pass_input.setPlaceholderText(lang_get(L, "hydra_page.single_password", "Senha única"))
+        self.pass_list_button.setText(lang_get(L, "hydra_page.password_list", "Lista de Senhas"))
+        self.options_group.setTitle(lang_get(L, "hydra_page.options_group", "Opções"))
+        self.threads_label.setText(lang_get(L, "hydra_page.threads_label", "Threads (-t):"))
+        self.stop_on_success.setText(lang_get(L, "hydra_page.stop_on_success", "Parar ao encontrar credencial"))
+        self.start_button.setText(lang_get(L, "hydra_page.start_button", "INICIAR"))
+        self.stop_button.setText(lang_get(L, "hydra_page.stop_button", "PARAR"))
+        
 # --- CLASSE DA PAGINA DE MANUAL ---
 class ManualScannerPage(QWidget):
     def __init__(self, main_window):

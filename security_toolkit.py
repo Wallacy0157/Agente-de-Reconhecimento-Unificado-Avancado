@@ -937,6 +937,120 @@ class ManualScannerPage(QWidget):
         
         layout.addWidget(scroll)
         return widget
+
+# --- AUDITORIA DE SEGURANÇA ---
+class FirewallPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.L = getattr(parent_window, 'L', {})
+        self.executor = None
+        self.audit_timer = QTimer()
+        self.audit_timer.timeout.connect(self._poll_audit_state)
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout()
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(20)
+
+        self.title_label = QLabel(lang_get(self.L, "firewall_page.audit_title", "🛡️ Auditoria de Segurança"))
+        self.title_label.setFont(QFont("Arial", 18, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
+
+        self.description_label = QLabel(lang_get(self.L, "firewall_page.description", "Este teste realiza uma auditoria profunda no host local, verificando permissões críticas, processos suspeitos, integridade de arquivos e conformidade do firewall."))
+        self.description_label.setWordWrap(True)
+        self.description_label.setStyleSheet(firewall_description_style("dark"))
+        layout.addWidget(self.description_label)
+
+        self.action_group = QGroupBox(lang_get(self.L, "firewall_page.execution_test", "Execução do Teste"))
+        action_layout = QVBoxLayout()
+
+        self.btn_local = QPushButton(lang_get(self.L, "firewall_page.start_audit", "Iniciar Auditoria Local"))
+        self.btn_local.setFixedHeight(45)
+        self.btn_local.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_local.clicked.connect(self.run_local_test)
+
+        action_layout.addWidget(self.btn_local)
+        self.action_group.setLayout(action_layout)
+        layout.addWidget(self.action_group)
+
+        self.log_output = QLabel(lang_get(self.L, "firewall_page.waiting", "Aguardando comando..."))
+        self.log_output.setStyleSheet(FIREWALL_STYLES["log_output"])
+        self.log_output.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.log_output.setWordWrap(True)
+        layout.addWidget(self.log_output)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def run_local_test(self):
+        if self.executor and self.executor.is_running:
+            QMessageBox.information(self, lang_get(self.L, "firewall_page.audit_label", "Auditoria"), lang_get(self.L, "firewall_page.audit_running", "A auditoria já está em andamento."))
+            return
+
+        self.btn_local.setEnabled(False)
+        self.btn_local.setText(lang_get(self.L, "firewall_page.audit_in_progress", "Auditoria em Andamento..."))
+        self.log_output.setText(f"<b>{lang_get(self.L, 'firewall_page.metadata_collection', '[INFO] Iniciando coleta de metadados e análise de processos...')}</b>")
+        self.parent_window.status_label.setText(lang_get(self.L, "firewall_page.running_audit", "Executando Auditoria de Segurança..."))
+
+        self.executor = InteractionTestExecutor(self.parent_window.base_dir)
+        self.executor.start()
+        self.audit_timer.start(250)
+
+    def _poll_audit_state(self):
+        if not self.executor:
+            return
+
+        if self.executor.is_running:
+            return
+
+        self.audit_timer.stop()
+        if self.executor.error:
+            self._update_ui_error(self.executor.error)
+            self.executor = None
+            return
+
+        self._update_ui(self.executor.results or [], self.executor.meta or {}, self.executor.log_path)
+        self.executor = None
+
+    def _update_ui_error(self, msg):
+        self.btn_local.setEnabled(True)
+        self.btn_local.setText(lang_get(self.L, "firewall_page.start_audit", "Iniciar Auditoria Local"))
+        self.log_output.setText(f"<span style='color:red;'><b>{lang_get(self.L, 'firewall_page.error_label', 'ERRO')}</b>: {msg}</span>")
+
+    def _update_ui(self, results, meta, log_path):
+        self.btn_local.setEnabled(True)
+        self.btn_local.setText(lang_get(self.L, "firewall_page.start_audit", "Iniciar Auditoria Local"))
+        self.update_log_view(log_path)
+
+        res_str = "\n".join(results)
+        QMessageBox.information(
+            self,
+            lang_get(self.L, "firewall_page.report_generated", "Relatório Gerado"),
+            f"{lang_get(self.L, 'firewall_page.audit_completed', 'Auditoria concluída na estação: {hostname}').format(hostname=meta.get('hostname', lang_get(self.L, 'firewall_page.unknown', 'Desconhecido')))}\n"
+            f"{lang_get(self.L, 'firewall_page.audit_user', 'Usuário: {user}').format(user=meta.get('user', lang_get(self.L, 'firewall_page.unknown', 'Desconhecido')))}\n\n"
+            f"{lang_get(self.L, 'firewall_page.summary', 'Resumo dos achados:')}\n{res_str}"
+        )
+
+    def update_log_view(self, path):
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    self.log_output.setText(f"<pre style='color:#00ff00;'>{content[-1200:]}</pre>")
+            else:
+                self.log_output.setText(f"<b>{lang_get(self.L, 'firewall_page.report_saved', '[INFO] Relatório assinado e salvo com sucesso.')}</b>")
+        except Exception as e:
+            self.log_output.setText(f"<b>{lang_get(self.L, 'firewall_page.error_reading', '[ERRO] ao ler log:')}</b> {e}")
+
+    def update_ui_language(self, L):
+        self.L = L
+        self.title_label.setText(lang_get(L, "firewall_page.audit_title", "🛡️ Auditoria de Segurança"))
+        self.description_label.setText(lang_get(L, "firewall_page.description", "Este teste realiza uma auditoria profunda no host local, verificando permissões críticas, processos suspeitos, integridade de arquivos e conformidade do firewall."))
+        self.action_group.setTitle(lang_get(L, "firewall_page.execution_test", "Execução do Teste"))
+        self.btn_local.setText(lang_get(L, "firewall_page.start_audit", "Iniciar Auditoria Local"))
+        self.log_output.setText(lang_get(L, "firewall_page.waiting", "Aguardando comando..."))
     
 # --- CLASSE PRINCIPAL (MainWindow) ---
 class MainWindow(QMainWindow):
@@ -1253,6 +1367,8 @@ class MainWindow(QMainWindow):
         save_user_settings(self.base_dir, self.user_settings)
 
         super().closeEvent(event)
+
+
 
 # --- EXECUÇÃO PRINCIPAL ---
 def iniciar_toolkit(username):

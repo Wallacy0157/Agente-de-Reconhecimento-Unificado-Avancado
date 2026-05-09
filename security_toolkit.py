@@ -24,6 +24,154 @@ from core.config import (
     save_user_settings, ThemeManager, MANUAL_STYLES, main_window_stylesheet,
 )
 
+
+# --- DIAGNOSTICO ---
+class EnvironmentDiagnosticsPage(QWidget):
+    TOOL_CHECKS = [
+        ("Nmap", "nmap"),
+        ("Nikto", "nikto"),
+        ("SQLMap", "sqlmap"),
+    ]
+
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.last_results = {}
+        self.L = getattr(parent_window, 'L', {})
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        self.title_label = QLabel(lang_get(self.L, "diagnostics_page.title", "Diagnóstico do Ambiente"))
+        self.title_label.setFont(QFont("Arial", 16, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
+
+        self.description_label = QLabel(
+            lang_get(self.L, "diagnostics_page.install_description",
+                     "Verifica se as ferramentas principais já estão instaladas no sistema.")
+        )
+        self.description_label.setWordWrap(True)
+        layout.addWidget(self.description_label)
+
+        self.run_button = QPushButton(lang_get(self.L, "diagnostics_page.run_diagnostic", "Executar diagnóstico"))
+        self.run_button.clicked.connect(self.run_diagnostics)
+        layout.addWidget(self.run_button)
+
+        self.result_box = QTextEdit()
+        self.result_box.setReadOnly(True)
+        self.result_box.setMinimumHeight(220)
+        self.result_box.setObjectName("ResultBox")
+        self.result_box.setText(lang_get(self.L, "diagnostics_page.description",
+                                         "Clique em 'Executar diagnóstico' para verificar o ambiente."))
+        layout.addWidget(self.result_box)
+
+        self.install_button = QPushButton(
+            lang_get(self.L, "diagnostics_page.install_missing", "Instalar dependências faltantes (Linux/apt)"))
+        self.install_button.setEnabled(False)
+        self.install_button.clicked.connect(self.install_missing_tools)
+        layout.addWidget(self.install_button)
+
+        layout.addStretch()
+
+    def update_ui_language(self, L):
+        self.L = L
+        self.title_label.setText(lang_get(self.L, "diagnostics_page.title", "Diagnóstico do Ambiente"))
+        self.description_label.setText(
+            lang_get(
+                self.L,
+                "diagnostics_page.install_description",
+                "Verifica se as ferramentas principais já estão instaladas no sistema.",
+            )
+        )
+        self.run_button.setText(lang_get(self.L, "diagnostics_page.run_diagnostic", "Executar diagnóstico"))
+        self.install_button.setText(
+            lang_get(
+                self.L,
+                "diagnostics_page.install_missing",
+                "Instalar dependências faltantes (Linux/apt)",
+            )
+        )
+
+    def run_diagnostics(self):
+        lines = [lang_get(self.L, "diagnostics_page.tools_diagnostic", "--- Diagnóstico de Ferramentas ---")]
+        missing_tools = []
+        self.last_results = {}
+
+        for tool_name, cmd in self.TOOL_CHECKS:
+            detected = shutil.which(cmd) is not None
+            self.last_results[tool_name] = detected
+
+            if detected:
+                lines.append(lang_get(self.L, "diagnostics_page.detected", "✔ {tool_name} detectado").format(
+                    tool_name=tool_name))
+            else:
+                lines.append(lang_get(self.L, "diagnostics_page.not_found", "❌ {tool_name} não encontrado").format(
+                    tool_name=tool_name))
+                missing_tools.append(cmd)
+
+        if missing_tools:
+            lines.append("\n" + lang_get(self.L, "diagnostics_page.install_auto",
+                                         "Você pode instalar itens faltantes automaticamente no Linux (apt)."))
+        else:
+            lines.append(
+                "\n" + lang_get(self.L, "diagnostics_page.environment_ready", "Ambiente pronto: tudo detectado."))
+
+        self.result_box.setText("\n".join(lines))
+        self.install_button.setEnabled(bool(missing_tools))
+
+    def install_missing_tools(self):
+        missing = [cmd for name, cmd in self.TOOL_CHECKS if not self.last_results.get(name, False)]
+        if not missing:
+            QMessageBox.information(self, lang_get(self.L, "diagnostics_page.diagnostic_label", "Diagnóstico"),
+                                    lang_get(self.L, "diagnostics_page.no_missing_tools",
+                                             "Nenhuma ferramenta faltando para instalação."))
+            return
+
+        if platform.system().lower() != "linux":
+            QMessageBox.warning(
+                self,
+                lang_get(self.L, "diagnostics_page.installation_unavailable", "Instalação indisponível"),
+                lang_get(self.L, "diagnostics_page.installation_linux_only",
+                         "Instalação automática disponível apenas para Linux com apt."),
+            )
+            return
+
+        cmd = ["pkexec", "apt-get", "install", "-y", *missing]
+        self.result_box.append("\n" + lang_get(self.L, "diagnostics_page.running", "Executando:") + " " + " ".join(cmd))
+        try:
+            proc = subprocess.run(cmd, capture_output=True, text=True)
+            if proc.stdout.strip():
+                self.result_box.append("\n" + lang_get(self.L, "diagnostics_page.output_label",
+                                                       "--- Saída ---") + "\n" + proc.stdout.strip())
+
+            if proc.returncode == 0:
+                self.result_box.append("\n" + lang_get(self.L, "diagnostics_page.installation_completed",
+                                                       "✔ Instalação concluída. Execute o diagnóstico novamente."))
+            else:
+                err = proc.stderr.strip() or lang_get(self.L, "diagnostics_page.unknown_failure", "Falha desconhecida")
+                self.result_box.append("\n" + lang_get(self.L, "diagnostics_page.installation_failure",
+                                                       "❌ Falha na instalação:") + " " + err)
+        except FileNotFoundError:
+            self.result_box.append("\n" + lang_get(self.L, "diagnostics_page.pkexec_not_found",
+                                                   "❌ 'pkexec' não encontrado. Use manualmente: sudo apt-get install -y"))
+
+    def update_ui_language(self, L):
+        """Atualiza a linguagem da página."""
+        self.L = L
+        self.title_label.setText(lang_get(self.L, "diagnostics_page.title", "Diagnóstico do Ambiente"))
+        self.description_label.setText(lang_get(self.L, "diagnostics_page.install_description",
+                                                "Verifica se as ferramentas principais já estão instaladas no sistema."))
+        self.run_button.setText(lang_get(self.L, "diagnostics_page.run_diagnostic", "Executar diagnóstico"))
+        self.install_button.setText(
+            lang_get(self.L, "diagnostics_page.install_missing", "Instalar dependências faltantes (Linux/apt)"))
+
+
+        if not self.last_results:
+            self.result_box.setText(lang_get(self.L, "diagnostics_page.description",
+                                             "Clique em 'Executar diagnóstico' para verificar o ambiente."))
+
 # --- CLASSE DA PAGINA DE MANUAL ---
 class ManualScannerPage(QWidget):
     def __init__(self, main_window):

@@ -1,5 +1,6 @@
 import os
 import sys
+import webbrowser
 from auth_ui import AuthWindow
 from PyQt6.QtCore import (
     Qt, QTimer
@@ -23,7 +24,6 @@ from core.config import (
     THEMES, load_user_settings,
     save_user_settings, ThemeManager, MANUAL_STYLES, main_window_stylesheet,
 )
-
 
 # --- DIAGNOSTICO ---
 class EnvironmentDiagnosticsPage(QWidget):
@@ -172,7 +172,7 @@ class EnvironmentDiagnosticsPage(QWidget):
             self.result_box.setText(lang_get(self.L, "diagnostics_page.description",
                                              "Clique em 'Executar diagnóstico' para verificar o ambiente."))
             
-# --- 2. CLASSE DA PÁGINA DE SCANNER ---
+# --- SCANNER ---
 class ScannerPage(QWidget):
     def __init__(self, parent_window):
         super().__init__()
@@ -401,6 +401,187 @@ class ScannerPage(QWidget):
             return
         self.parent_window.open_hydra_with_targets(targets)
 
+# --- SHERLOCK ---
+class SherlockPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.executor = None
+        self.L = getattr(parent_window, 'L', {})
+        self.sherlock_timer = QTimer()
+        self.sherlock_timer.timeout.connect(self._poll_sherlock_state)
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+
+        self.title_label = QLabel(lang_get(self.L, "sherlock_page.title", "🔍 Sherlock OSINT Pro"))
+        self.title_label.setFont(QFont("Arial", 22, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
+
+        self.subtitle_label = QLabel(lang_get(self.L, "sherlock_page.subtitle", "Busca avançada por Nickname, Nome Completo e Vazamentos."))
+        self.subtitle_label.setStyleSheet(SHERLOCK_STYLES["subtitle"])
+        layout.addWidget(self.subtitle_label)
+
+        mode_container = QHBoxLayout()
+        self.mode_label = QLabel(lang_get(self.L, "sherlock_page.mode_label", "Tipo de Alvo:"))
+        self.mode_label.setStyleSheet(SHERLOCK_STYLES["mode_label"])
+        
+        self.mode_selector = QComboBox()
+        self.mode_selector.addItems([
+            lang_get(self.L, "sherlock_page.mode_nickname", "Nickname"),
+            lang_get(self.L, "sherlock_page.mode_fullname", "Nome Completo")
+        ])
+        self.mode_selector.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.mode_selector.setStyleSheet(SHERLOCK_STYLES["mode_selector"])
+        mode_container.addWidget(self.mode_label)
+        mode_container.addWidget(self.mode_selector)
+        mode_container.addStretch()
+        layout.addLayout(mode_container)
+
+        search_box = QFrame()
+        search_box.setStyleSheet(SHERLOCK_STYLES["search_box"])
+        search_layout = QHBoxLayout(search_box)
+
+        self.user_input = QLineEdit()
+        self.user_input.setPlaceholderText(lang_get(self.L, "sherlock_page.placeholder", "Digite o alvo aqui..."))
+        self.user_input.setStyleSheet(SHERLOCK_STYLES["user_input"])
+        
+        self.btn_investigate = QPushButton(lang_get(self.L, "sherlock_page.investigate", "INVESTIGAR"))
+        self.btn_investigate.setCursor(Qt.CursorShape.PointingHandCursor)
+        neon = self.parent_window.theme_manager.neon_color
+        self.btn_investigate.setStyleSheet(sherlock_investigate_button_style(neon))
+        self.btn_investigate.clicked.connect(self.run_sherlock)
+
+        search_layout.addWidget(self.user_input)
+        search_layout.addWidget(self.btn_investigate)
+        layout.addWidget(search_box)
+
+        self.scroll = QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setStyleSheet(SHERLOCK_STYLES["scroll"])
+        self.results_container = QWidget()
+        self.results_layout = QVBoxLayout(self.results_container)
+        self.results_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.scroll.setWidget(self.results_container)
+        layout.addWidget(self.scroll)
+
+    def run_sherlock(self):
+        target = self.user_input.text().strip()
+        if not target: return
+
+        mode = "nickname" if self.mode_selector.currentIndex() == 0 else "full_name"
+
+        for i in reversed(range(self.results_layout.count())): 
+            widget = self.results_layout.itemAt(i).widget()
+            if widget:
+                widget.setParent(None)
+
+        self.btn_investigate.setEnabled(False)
+        self.btn_investigate.setText(lang_get(self.L, "sherlock_page.searching", "BUSCANDO..."))
+        
+        self.executor = SherlockExecutor(target, mode)
+        self.executor.start()
+        self.sherlock_timer.start(250)
+
+    def _poll_sherlock_state(self):
+        if not self.executor:
+            return
+
+        for item in self.executor.pop_new_results():
+            self.add_result_card(item["site"], item["url"])
+
+        if self.executor.is_running:
+            return
+
+        self.sherlock_timer.stop()
+        error = self.executor.get_error()
+        if error:
+            self.btn_investigate.setEnabled(True)
+            self.btn_investigate.setText(lang_get(self.L, "sherlock_page.investigate", "INVESTIGAR"))
+            self.parent_window.status_label.setText(lang_get(self.L, "sherlock_page.error_title", "Falha durante investigação Sherlock ❌"))
+            QMessageBox.warning(self, lang_get(self.L, "sherlock_page.error_label", "Erro"), lang_get(self.L, "sherlock_page.search_failed", "Falha durante busca:") + f"\n{error}")
+            return
+
+        self.finalize_search(self.executor.target, self.executor.get_results())
+
+    def finalize_search(self, username, results):
+        self.btn_investigate.setEnabled(True)
+        self.btn_investigate.setText(lang_get(self.L, "sherlock_page.investigate", "INVESTIGAR"))
+        
+        if results:
+            path = self.executor.save_results(self.parent_window.base_dir) if self.executor else SherlockEngine().save_to_json(username, results, self.parent_window.base_dir)
+            
+            filename = os.path.basename(path) if path else "report.json"
+            self.parent_window.status_label.setText(lang_get(self.L, "sherlock_page.report_saved", "Relatório salvo: {filename}").format(filename=filename))
+            
+            msg = QMessageBox(self)
+            msg.setWindowTitle(lang_get(self.L, "sherlock_page.search_completed", "Busca Concluída"))
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setText(lang_get(self.L, "sherlock_page.investigation_complete", "A investigação de '{username}' foi concluída!").format(username=username))
+            msg.setInformativeText(lang_get(self.L, "sherlock_page.file_generated", "O arquivo foi gerado com sucesso em:") + f"\n\n{path}")
+            
+            msg.setStyleSheet(SHERLOCK_STYLES["finished_msg_box"])
+            msg.exec()
+            
+        else:
+            self.parent_window.status_label.setText(lang_get(self.L, "sherlock_page.no_results", "Nenhum resultado encontrado."))
+            QMessageBox.warning(self, lang_get(self.L, "sherlock_page.warning_title", "Aviso"), lang_get(self.L, "sherlock_page.no_networks", "Nenhuma rede social encontrada para este username."))
+
+    def add_result_card(self, site, url):
+        card = QFrame()
+        
+        color_map = {
+            "DuckDuckGo": "#ff8c00",
+            "OSINT-Search": "#ff8c00",
+            "Webmii": "#00ced1",
+            "PeekYou": "#00ced1",
+            "TruePeople": "#00ced1",
+            "📄 Documento": "#ff4444",
+            "Potential Leak/Doc": "#ff4444",
+            "Gravatar": "#da70d6"
+        }
+        
+        neon = self.parent_window.theme_manager.neon_color
+        border_color = color_map.get(site, neon)
+        
+        card.setStyleSheet(sherlock_result_card_style(border_color))
+        
+        l = QHBoxLayout(card)
+        
+        display_url = (url[:65] + '...') if len(url) > 65 else url
+        label_text = f"""
+            <div style='color: white;'>
+                <b style='font-size: 14px;'>{site}</b><br>
+                <span style='color: #888; font-size: 12px;'>{display_url}</span>
+            </div>
+        """
+        
+        info_label = QLabel(label_text)
+        l.addWidget(info_label)
+        
+        l.addStretch()
+        
+        btn = QPushButton(lang_get(self.L, "sherlock_page.view_button", "VISUALIZAR"))
+        btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn.setFixedWidth(100)
+        btn.setStyleSheet(sherlock_result_button_style(border_color))
+        btn.clicked.connect(lambda: webbrowser.open(url))
+        l.addWidget(btn)
+        
+        self.results_layout.insertWidget(0, card)
+
+    def update_ui_language(self, L):
+        self.L = L
+        self.title_label.setText(lang_get(L, "sherlock_page.title", "🔍 Sherlock OSINT Pro"))
+        self.subtitle_label.setText(lang_get(L, "sherlock_page.subtitle", "Busca avançada por Nickname, Nome Completo e Vazamentos."))
+        self.mode_label.setText(lang_get(L, "sherlock_page.mode_label", "Tipo de Alvo:"))
+        self.mode_selector.setItemText(0, lang_get(L, "sherlock_page.mode_nickname", "Nickname"))
+        self.mode_selector.setItemText(1, lang_get(L, "sherlock_page.mode_fullname", "Nome Completo"))
+        self.user_input.setPlaceholderText(lang_get(L, "sherlock_page.placeholder", "Digite o alvo aqui..."))
+        self.btn_investigate.setText(lang_get(L, "sherlock_page.investigate", "INVESTIGAR"))
+
 # --- CLASSE DA PAGINA DE MANUAL ---
 class ManualScannerPage(QWidget):
     def __init__(self, main_window):
@@ -451,7 +632,6 @@ class ManualScannerPage(QWidget):
                 self._create_scrollable_tab(content),
                 title
             )
-
 
     def _create_scrollable_tab(self, markdown_text):
         widget = QWidget()

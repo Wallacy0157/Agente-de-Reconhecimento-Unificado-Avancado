@@ -1,29 +1,48 @@
 import os
 import sys
+import json
+import re
+import shutil
+import subprocess
+import platform
+import socket
+import threading
 import webbrowser
+import requests
+import tempfile
+import uuid
 from auth_ui import AuthWindow
+from datetime import datetime
+from docs.i18n_docs import get_manual_docs
+from core.sherlock import SherlockEngine, SherlockExecutor
 from PyQt6.QtCore import (
-    Qt, QTimer
+    Qt, QTimer, QTime, QSize, QLocale, QPropertyAnimation, QPoint, QEasingCurve
 )
 from PyQt6.QtGui import (
-    QFont
+    QFont, QTextCursor
 )
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QLabel, QStackedWidget,
     QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QSpacerItem,
-    QSizePolicy, QScrollArea, 
-    QGridLayout, QSpacerItem, 
-    QSizePolicy, QTabWidget
+    QSizePolicy, QLineEdit, QGroupBox, QScrollArea, QGraphicsDropShadowEffect,
+    QMessageBox, QCheckBox, QSpinBox, QTextEdit, QGridLayout, QSpacerItem, 
+    QSizePolicy, QFileDialog, QComboBox, QTabWidget
 )
 from random import randint
+from core.stress_test import StressTestExecutor
 from core.components import (
     NeonCard, ConfigPage, 
     load_language_json, lang_get 
 ) 
+from core import network_scanner 
 from core.config import (
-    THEMES, load_user_settings,
-    save_user_settings, ThemeManager, MANUAL_STYLES, main_window_stylesheet,
+    THEMES, NEON_DEFAULT, load_user_settings,
+    save_user_settings, ThemeManager, SHERLOCK_STYLES, HYDRA_STYLES, JOHN_STYLES, FIREWALL_STYLES, KEYLOGGER_STYLES, STRESS_TEST_STYLES, MANUAL_STYLES, sherlock_investigate_button_style, sherlock_result_card_style, sherlock_result_button_style, john_start_button_style, firewall_description_style, keylogger_toggle_button_style, main_window_stylesheet,
 )
+from core.john_engine import JohnEngine, JohnExecutor
+from core.hydra_engine import HydraExecutor
+from core.logger_engine import KeyloggerEngine
+from core.interaction_test import InteractionTestExecutor
 
 # --- DIAGNOSTICO ---
 class EnvironmentDiagnosticsPage(QWidget):

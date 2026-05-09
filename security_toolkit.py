@@ -1439,112 +1439,112 @@ class JohnPage(QWidget):
         self.salt_input.setPlaceholderText(lang_get(L, "john_page.salt_placeholder", "Salt (Opcional)"))
         self.btn_start.setText(lang_get(L, "john_page.start_attack", "INICIAR ATAQUE"))
 
-    # --- KEYLOGGER ---
-    class KeyloggerPage(QWidget):
-        def __init__(self, parent_window):
-            super().__init__()
-            self.parent_window = parent_window
-            self.engine = None
-            self.log_file_path = None
+# --- KEYLOGGER ---
+class KeyloggerPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.engine = None
+        self.log_file_path = None
 
-            self.update_timer = QTimer()
-            self.update_timer.timeout.connect(self.refresh_live_view)
+        self.update_timer = QTimer()
+        self.update_timer.timeout.connect(self.refresh_live_view)
 
-            self._setup_ui()
+        self._setup_ui()
 
-        def _setup_ui(self):
-            layout = QVBoxLayout(self)
-            layout.setContentsMargins(30, 30, 30, 30)
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
 
-            self.L = getattr(self.parent_window, 'L', {})
+        self.L = getattr(self.parent_window, 'L', {})
 
-            self.title_label = QLabel(lang_get(self.L, "keylogger_page.title", "⌨️ Key Auditor - Monitoramento"))
-            self.title_label.setFont(QFont("Arial", 22, QFont.Weight.Bold))
-            layout.addWidget(self.title_label)
+        self.title_label = QLabel(lang_get(self.L, "keylogger_page.title", "⌨️ Key Auditor - Monitoramento"))
+        self.title_label.setFont(QFont("Arial", 22, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
 
-            self.status_box = QFrame()
-            self.status_box.setStyleSheet(KEYLOGGER_STYLES["status_box"])
-            status_layout = QHBoxLayout(self.status_box)
+        self.status_box = QFrame()
+        self.status_box.setStyleSheet(KEYLOGGER_STYLES["status_box"])
+        status_layout = QHBoxLayout(self.status_box)
 
-            self.dot = QLabel(lang_get(self.L, "keylogger_page.dot", "●"))
-            self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_idle"])
+        self.dot = QLabel(lang_get(self.L, "keylogger_page.dot", "●"))
+        self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_idle"])
 
-            self.status_text = QLabel(lang_get(self.L, "keylogger_page.status_ready", "STATUS: PRONTO PARA CAPTURA"))
-            self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_idle"])
+        self.status_text = QLabel(lang_get(self.L, "keylogger_page.status_ready", "STATUS: PRONTO PARA CAPTURA"))
+        self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_idle"])
 
-            status_layout.addWidget(self.dot)
-            status_layout.addWidget(self.status_text)
-            status_layout.addStretch()
-            layout.addWidget(self.status_box)
+        status_layout.addWidget(self.dot)
+        status_layout.addWidget(self.status_text)
+        status_layout.addStretch()
+        layout.addWidget(self.status_box)
 
-            self.activity_label = QLabel(lang_get(self.L, "keylogger_page.recent_activity", "Atividade Recente:"))
-            layout.addWidget(self.activity_label)
-            self.live_console = QTextEdit()
-            self.live_console.setReadOnly(True)
-            self.live_console.setStyleSheet(KEYLOGGER_STYLES["live_console"])
-            layout.addWidget(self.live_console)
+        self.activity_label = QLabel(lang_get(self.L, "keylogger_page.recent_activity", "Atividade Recente:"))
+        layout.addWidget(self.activity_label)
+        self.live_console = QTextEdit()
+        self.live_console.setReadOnly(True)
+        self.live_console.setStyleSheet(KEYLOGGER_STYLES["live_console"])
+        layout.addWidget(self.live_console)
 
-            btns = QHBoxLayout()
+        btns = QHBoxLayout()
 
-            self.btn_toggle = QPushButton(lang_get(self.L, "keylogger_page.start_audit", "INICIAR AUDITORIA"))
-            self.btn_toggle.setFixedHeight(50)
-            self.btn_toggle.setStyleSheet(keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color))
-            self.btn_toggle.clicked.connect(self.handle_toggle)
+        self.btn_toggle = QPushButton(lang_get(self.L, "keylogger_page.start_audit", "INICIAR AUDITORIA"))
+        self.btn_toggle.setFixedHeight(50)
+        self.btn_toggle.setStyleSheet(keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color))
+        self.btn_toggle.clicked.connect(self.handle_toggle)
 
-            self.btn_open_folder = QPushButton(lang_get(self.L, "keylogger_page.open_logs", "📁 ABRIR LOGS"))
-            self.btn_open_folder.clicked.connect(self.open_log_folder)
-            self.btn_open_folder.setStyleSheet(KEYLOGGER_STYLES["open_folder_button"])
+        self.btn_open_folder = QPushButton(lang_get(self.L, "keylogger_page.open_logs", "📁 ABRIR LOGS"))
+        self.btn_open_folder.clicked.connect(self.open_log_folder)
+        self.btn_open_folder.setStyleSheet(KEYLOGGER_STYLES["open_folder_button"])
 
-            btns.addWidget(self.btn_toggle, 3)
-            btns.addWidget(self.btn_open_folder, 1)
-            layout.addLayout(btns)
+        btns.addWidget(self.btn_toggle, 3)
+        btns.addWidget(self.btn_open_folder, 1)
+        layout.addLayout(btns)
 
-        def handle_toggle(self):
-            if not self.engine or not self.engine.is_running:
-                log_dir = os.path.join(self.parent_window.base_dir, "logs/keylogs")
-                self.engine = KeyloggerEngine(log_dir)
-                self.log_file_path = self.engine.start()
-
-                self.status_text.setText(lang_get(self.L, "keylogger_page.status_monitoring", "MONITORANDO TECLADO..."))
-                self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_running"])
-                self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_running"])
-                self.btn_toggle.setText(lang_get(self.L, "keylogger_page.stop_monitoring", "PARAR MONITORAMENTO"))
-                self.btn_toggle.setStyleSheet(
-                    keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color, running=True))
-
-                self.update_timer.start(1000)
-
-            else:
-                self.engine.stop()
-                self.update_timer.stop()
-                self.status_text.setText(lang_get(self.L, "keylogger_page.status_finished", "AUDITORIA FINALIZADA"))
-                self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_finished"])
-                self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_finished"])
-                self.btn_toggle.setText(lang_get(self.L, "keylogger_page.restart_capture", "REINICIAR CAPTURA"))
-                self.btn_toggle.setStyleSheet(
-                    keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color))
-
-        def refresh_live_view(self):
-            if not self.engine:
-                return
-
-            content = self.engine.get_recent_activity(max_chars=1000)
-            if content:
-                self.live_console.setText(content)
-                self.live_console.moveCursor(QTextCursor.MoveOperation.End)
-
-        def open_log_folder(self):
+    def handle_toggle(self):
+        if not self.engine or not self.engine.is_running:
             log_dir = os.path.join(self.parent_window.base_dir, "logs/keylogs")
-            os.makedirs(log_dir, exist_ok=True)
-            os.system(f"xdg-open {log_dir}")
+            self.engine = KeyloggerEngine(log_dir)
+            self.log_file_path = self.engine.start()
 
-        def update_ui_language(self, L):
-            self.L = L
-            self.title_label.setText(lang_get(L, "keylogger_page.title", "⌨️ Key Auditor - Monitoramento"))
-            self.status_text.setText(lang_get(L, "keylogger_page.status_ready", "STATUS: PRONTO PARA CAPTURA"))
-            self.activity_label.setText(lang_get(L, "keylogger_page.recent_activity", "Atividade Recente:"))
-            self.btn_toggle.setText(lang_get(L, "keylogger_page.start_audit", "INICIAR AUDITORIA"))
-            self.btn_open_folder.setText(lang_get(L, "keylogger_page.open_logs", "📁 ABRIR LOGS"))
+            self.status_text.setText(lang_get(self.L, "keylogger_page.status_monitoring", "MONITORANDO TECLADO..."))
+            self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_running"])
+            self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_running"])
+            self.btn_toggle.setText(lang_get(self.L, "keylogger_page.stop_monitoring", "PARAR MONITORAMENTO"))
+            self.btn_toggle.setStyleSheet(
+                keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color, running=True))
+
+            self.update_timer.start(1000)
+
+        else:
+            self.engine.stop()
+            self.update_timer.stop()
+            self.status_text.setText(lang_get(self.L, "keylogger_page.status_finished", "AUDITORIA FINALIZADA"))
+            self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_finished"])
+            self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_finished"])
+            self.btn_toggle.setText(lang_get(self.L, "keylogger_page.restart_capture", "REINICIAR CAPTURA"))
+            self.btn_toggle.setStyleSheet(
+                keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color))
+
+    def refresh_live_view(self):
+        if not self.engine:
+            return
+
+        content = self.engine.get_recent_activity(max_chars=1000)
+        if content:
+            self.live_console.setText(content)
+            self.live_console.moveCursor(QTextCursor.MoveOperation.End)
+
+    def open_log_folder(self):
+        log_dir = os.path.join(self.parent_window.base_dir, "logs/keylogs")
+        os.makedirs(log_dir, exist_ok=True)
+        os.system(f"xdg-open {log_dir}")
+
+    def update_ui_language(self, L):
+        self.L = L
+        self.title_label.setText(lang_get(L, "keylogger_page.title", "⌨️ Key Auditor - Monitoramento"))
+        self.status_text.setText(lang_get(L, "keylogger_page.status_ready", "STATUS: PRONTO PARA CAPTURA"))
+        self.activity_label.setText(lang_get(L, "keylogger_page.recent_activity", "Atividade Recente:"))
+        self.btn_toggle.setText(lang_get(L, "keylogger_page.start_audit", "INICIAR AUDITORIA"))
+        self.btn_open_folder.setText(lang_get(L, "keylogger_page.open_logs", "📁 ABRIR LOGS"))
 
 # --- DDOS ---
 class StressTestPage(QWidget):

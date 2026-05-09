@@ -1228,6 +1228,197 @@ class ListenerPage(QWidget):
             except Exception as e:
                 self.status_conn.setText(lang_get(self.L, "listener_page.connection_lost", "Status: Conexão Perdida."))
                 self.cmd_input.setEnabled(False)
+
+# --- JOHN THE RIPPER ---
+class JohnPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.wordlist_path = ""
+        self.executor = None
+        self.john_timer = QTimer()
+        self.john_timer.timeout.connect(self._poll_john_state)
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+
+        self.L = getattr(self.parent_window, 'L', {})
+
+        self.title_label = QLabel(lang_get(self.L, "john_page.title", "💀 John The Ripper - Hash Cracker"))
+        self.title_label.setFont(QFont("Arial", 22, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
+
+        self.common_group = QGroupBox(lang_get(self.L, "john_page.basic_settings", "Configurações Básicas"))
+        self.common_group.setStyleSheet(JOHN_STYLES["common_group"])
+        common_layout = QVBoxLayout()
+
+        self.hash_label = QLabel(lang_get(self.L, "john_page.target_hash", "Hash Alvo:"))
+        common_layout.addWidget(self.hash_label)
+        self.hash_input = QLineEdit()
+        self.hash_input.setPlaceholderText(lang_get(self.L, "john_page.hash_placeholder", "Insira o hash aqui..."))
+        common_layout.addWidget(self.hash_input)
+
+        row2 = QHBoxLayout()
+        self.mode_combo = QComboBox()
+        self.mode_combo.addItems([lang_get(self.L, "john_page.wordlist", "Wordlist"), lang_get(self.L, "john_page.mask", "Máscara")])
+        self.mode_combo.currentTextChanged.connect(self.toggle_mode)
+        self.attack_mode_label = QLabel(lang_get(self.L, "john_page.attack_mode", "Modo de Ataque:"))
+        row2.addWidget(self.attack_mode_label)
+        row2.addWidget(self.mode_combo)
+
+        self.algo_combo = QComboBox()
+        self.algo_combo.addItems([lang_get(self.L, "john_page.auto_detect", "Auto-Detectar"), "MD5", "SHA1", "SHA256", "SHA512"])
+        self.algorithm_label = QLabel(lang_get(self.L, "john_page.algorithm", "Algoritmo:"))
+        row2.addWidget(self.algorithm_label)
+        row2.addWidget(self.algo_combo)
+        
+        common_layout.addLayout(row2)
+        self.common_group.setLayout(common_layout)
+        layout.addWidget(self.common_group)
+
+        self.wordlist_container = QWidget()
+        wordlist_l = QVBoxLayout(self.wordlist_container)
+        
+        row_wl = QHBoxLayout()
+        self.btn_wordlist = QPushButton(lang_get(self.L, "john_page.select_wordlist", "Selecionar Arquivo Wordlist"))
+        self.btn_wordlist.clicked.connect(self.select_file)
+        row_wl.addWidget(self.btn_wordlist)
+        
+        self.check_rules = QCheckBox(lang_get(self.L, "john_page.apply_rules", "Aplicar Regras (John Style)"))
+        row_wl.addWidget(self.check_rules)
+        wordlist_l.addLayout(row_wl)
+        
+        layout.addWidget(self.wordlist_container)
+
+        self.mask_container = QWidget()
+        mask_l = QVBoxLayout(self.mask_container)
+        
+        self.mask_input = QLineEdit()
+        self.mask_input.setPlaceholderText(lang_get(self.L, "john_page.mask_placeholder", "Ex: ?l?l?l?d?d (L=letra, D=dígito)"))
+        self.mask_def_label = QLabel(lang_get(self.L, "john_page.mask_definition", "Definição da Máscara:"))
+        mask_l.addWidget(self.mask_def_label)
+        mask_l.addWidget(self.mask_input)
+        
+        layout.addWidget(self.mask_container)
+        self.mask_container.hide()
+
+        self.salt_input = QLineEdit()
+        self.salt_input.setPlaceholderText(lang_get(self.L, "john_page.salt_placeholder", "Salt (Opcional)"))
+        self.salt_label = QLabel(lang_get(self.L, "john_page.salt_label", "Salt/Sal:"))
+        layout.addWidget(self.salt_label)
+        layout.addWidget(self.salt_input)
+
+        self.btn_start = QPushButton(lang_get(self.L, "john_page.start_attack", "INICIAR ATAQUE"))
+        self.btn_start.setFixedHeight(50)
+        self.btn_start.setStyleSheet(john_start_button_style(self.parent_window.theme_manager.neon_color))
+        self.btn_start.clicked.connect(self.start_cracking)
+        layout.addWidget(self.btn_start)
+
+        self.console = QTextEdit()
+        self.console.setReadOnly(True)
+        self.console.setStyleSheet(JOHN_STYLES["console"])
+        layout.addWidget(self.console)
+
+    def toggle_mode(self, mode):
+        wordlist_text = lang_get(self.L, "john_page.wordlist", "Wordlist")
+        if mode == wordlist_text or mode == "Wordlist":
+            self.wordlist_container.show()
+            self.mask_container.hide()
+        else:
+            self.wordlist_container.hide()
+            self.mask_container.show()
+
+    def select_file(self):
+        file, _ = QFileDialog.getOpenFileName(self, lang_get(self.L, "john_page.select_wordlist_title", "Selecionar Wordlist"), "", lang_get(self.L, "john_page.text_files", "Arquivos de Texto (*.txt)"))
+        if file:
+            self.wordlist_path = file
+            self.btn_wordlist.setText(os.path.basename(file))
+
+    def start_cracking(self):
+        target = self.hash_input.text().strip()
+        salt = self.salt_input.text().strip() or None
+        algo = self.algo_combo.currentText()
+        if algo == lang_get(self.L, "john_page.auto_detect", "Auto-Detectar") or algo == "Auto-Detect" or algo == "Auto-Detectar": algo = None
+        
+        modo = self.mode_combo.currentText()
+
+        if not target:
+            QMessageBox.warning(self, lang_get(self.L, "john_page.error_title", "Erro"), lang_get(self.L, "john_page.enter_hash", "Insira o Hash!"))
+            return
+
+        self.console.clear()
+        self.btn_start.setEnabled(False)
+        self.btn_start.setText(lang_get(self.L, "john_page.running", "EXECUTANDO..."))
+
+        wordlist_text = lang_get(self.L, "john_page.wordlist", "Wordlist")
+        if modo == wordlist_text or modo == "Wordlist":
+            if not self.wordlist_path:
+                QMessageBox.warning(self, lang_get(self.L, "john_page.error_title", "Erro"), lang_get(self.L, "john_page.select_wordlist_error", "Selecione a wordlist!"))
+                self.btn_start.setEnabled(True)
+                self.btn_start.setText(lang_get(self.L, "john_page.start_attack", "INICIAR ATAQUE"))
+                return
+            self.executor = JohnExecutor(target, self.wordlist_path, algo, salt, mode="wordlist", rules=self.check_rules.isChecked())
+        else:
+            mask = self.mask_input.text().strip()
+            if not mask:
+                QMessageBox.warning(self, lang_get(self.L, "john_page.error_title", "Erro"), lang_get(self.L, "john_page.enter_mask", "Insira a máscara!"))
+                self.btn_start.setEnabled(True)
+                return
+            self.executor = JohnExecutor(target, mask, algo, salt, mode="mask")
+
+        self.executor.start()
+        self.john_timer.start(250)
+
+    def _poll_john_state(self):
+        if not self.executor:
+            return
+
+        for tested, speed in self.executor.pop_progress():
+            self.update_status(tested, speed)
+
+        if self.executor.is_running:
+            return
+
+        self.john_timer.stop()
+        self.on_finished(self.executor.result or {"success": False, "error": self.executor.error or lang_get(self.L, "john_page.unknown_failure", "Falha desconhecida")})
+
+    def update_status(self, tested, speed):
+        msg = lang_get(self.L, "john_page.john_progress", "John: {tested} hashes testados | Velocidade: {speed} H/s").format(tested=tested, speed=speed)
+        self.parent_window.status_label.setText(msg)
+        
+        if tested % 5000 == 0:
+            self.console.append(lang_get(self.L, "john_page.processing", "[*] Processando... {tested} candidatos testados.").format(tested=tested))
+
+    def on_finished(self, result):
+        self.btn_start.setEnabled(True)
+        self.btn_start.setText(lang_get(self.L, "john_page.start_attack", "INICIAR ATAQUE"))
+        if result["success"]:
+            path = self.executor.engine.save_result(result, self.parent_window.base_dir) if self.executor else JohnEngine().save_result(result, self.parent_window.base_dir)
+            msg = f"{lang_get(self.L, 'john_page.password_found', '✅ SENHA ENCONTRADA: {password}').format(password=result['password'])}\n{lang_get(self.L, 'john_page.report_label', 'Relatório: {filename}').format(filename=os.path.basename(path))}"
+            self.console.append("\n" + "="*30 + "\n" + msg + "\n" + "="*30)
+            QMessageBox.information(self, lang_get(self.L, "john_page.success_title", "Sucesso"), msg)
+        else:
+            self.console.append(f"\n{lang_get(self.L, 'john_page.failure', '❌ FALHA: {error}').format(error=result['error'])}")
+        self.executor = None
+
+    def update_ui_language(self, L):
+        """Atualiza a linguagem da página."""
+        self.L = L
+        self.title_label.setText(lang_get(L, "john_page.title", "💀 John The Ripper - Hash Cracker"))
+        self.common_group.setTitle(lang_get(L, "john_page.basic_settings", "Configurações Básicas"))
+        self.hash_label.setText(lang_get(L, "john_page.target_hash", "Hash Alvo:"))
+        self.hash_input.setPlaceholderText(lang_get(L, "john_page.hash_placeholder", "Insira o hash aqui..."))
+        self.attack_mode_label.setText(lang_get(L, "john_page.attack_mode", "Modo de Ataque:"))
+        self.algorithm_label.setText(lang_get(L, "john_page.algorithm", "Algoritmo:"))
+        self.btn_wordlist.setText(lang_get(L, "john_page.select_wordlist", "Selecionar Arquivo Wordlist"))
+        self.check_rules.setText(lang_get(L, "john_page.apply_rules", "Aplicar Regras (John Style)"))
+        self.mask_def_label.setText(lang_get(L, "john_page.mask_definition", "Definição da Máscara:"))
+        self.mask_input.setPlaceholderText(lang_get(L, "john_page.mask_placeholder", "Ex: ?l?l?l?d?d (L=letra, D=dígito)"))
+        self.salt_label.setText(lang_get(L, "john_page.salt_label", "Salt/Sal:"))
+        self.salt_input.setPlaceholderText(lang_get(L, "john_page.salt_placeholder", "Salt (Opcional)"))
+        self.btn_start.setText(lang_get(L, "john_page.start_attack", "INICIAR ATAQUE"))
     
 # --- CLASSE PRINCIPAL (MainWindow) ---
 class MainWindow(QMainWindow):

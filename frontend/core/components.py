@@ -133,3 +133,147 @@ class NeonCard(QFrame):
     def set_texts(self, title, subtitle):
         self.title_label.setText(title)
         self.subtitle_label.setText(subtitle)
+
+class ConfigPage(QWidget):
+    LANGUAGE_MAP_REVERSE = {
+        "pt": "Português", "en": "Inglês", "es": "Espanhol", 
+        "fr": "Francês", "de": "Alemão", "it": "Italiano",
+        "ru": "Russo", "zh": "Chinês", "ko": "Coreano", 
+        "ja": "Japonês", "ar": "Árabe"
+    }
+
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        
+        self.L = parent_window.L 
+        
+        self._setup_ui()
+        self._initialize_values()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout()
+        layout.setContentsMargins(30, 30, 30, 30)
+
+        self.scroll_area = QScrollArea() 
+        self.scroll_area.setWidgetResizable(True)
+        content_widget = QWidget()
+        content_layout = QVBoxLayout(content_widget)
+        content_layout.setSpacing(20)
+        
+        self.lang_group = QGroupBox(lang_get(self.L, "settings_page.lang_group", "Idioma"))
+        self.lang_group.setObjectName("lang_group")
+        lang_layout = QHBoxLayout()
+        
+        self.lang_combo = QComboBox()
+        combo_items = list(self.LANGUAGE_MAP_REVERSE.values()) 
+        self.lang_combo.addItems(combo_items)
+
+        self.lang_combo.currentTextChanged.connect(self.change_language)
+        lang_layout.addWidget(self.lang_combo)
+        self.lang_group.setLayout(lang_layout)
+        content_layout.addWidget(self.lang_group)
+
+        self.theme_group = QGroupBox(lang_get(self.L, "settings_page.interface_theme", "Tema da Interface"))
+        self.theme_group.setObjectName("theme_group")
+        theme_layout = QHBoxLayout()
+        self.radio_dark = QRadioButton(lang_get(self.L, "settings_page.theme_dark", "Escuro"))
+        self.radio_light = QRadioButton(lang_get(self.L, "settings_page.theme_light", "Claro"))
+        
+        self.radio_dark.toggled.connect(lambda: self.change_theme('dark'))
+        self.radio_light.toggled.connect(lambda: self.change_theme('light'))
+
+        theme_layout.addWidget(self.radio_dark)
+        theme_layout.addWidget(self.radio_light)
+        theme_layout.addStretch()
+        self.theme_group.setLayout(theme_layout)
+        content_layout.addWidget(self.theme_group)
+
+        self.neon_group = QGroupBox(lang_get(self.L, "settings_page.neon_group", "Cor Neon (Cards)"))
+        self.neon_group.setObjectName("neon_group")
+        neon_layout = QHBoxLayout()
+        
+        self.color_display = QFrame()
+        self.color_display.setFixedSize(QSize(30, 30))
+        self.color_display.setStyleSheet(f"background-color: {self.parent_window.theme_manager.neon_color}; border: 1px solid white; border-radius: 15px;")
+        
+        self.color_button = QPushButton(lang_get(self.L, "settings_page.choose_color", "Escolher Cor"))
+        self.color_button.clicked.connect(self.pick_neon_color)
+        
+        self.reset_button = QPushButton(lang_get(self.L, "settings_page.reset_color", "Restaurar Padrão"))
+        self.reset_button.clicked.connect(self.reset_neon_color)
+        
+        neon_layout.addWidget(self.color_display)
+        neon_layout.addWidget(self.color_button)
+        neon_layout.addWidget(self.reset_button)
+        neon_layout.addStretch()
+        self.neon_group.setLayout(neon_layout)
+        content_layout.addWidget(self.neon_group)
+        
+        content_layout.addStretch()
+        self.scroll_area.setWidget(content_widget)
+        layout.addWidget(self.scroll_area)
+        self.setLayout(layout)
+
+    def _initialize_values(self):
+        """Define os valores iniciais dos widgets com base nas configurações salvas."""
+        
+        current_lang = self.parent_window.current_lang_code
+        lang_name = self.LANGUAGE_MAP_REVERSE.get(current_lang, "Português")
+        index = self.lang_combo.findText(lang_name)
+        if index != -1:
+            self.lang_combo.currentTextChanged.disconnect()
+            self.lang_combo.setCurrentIndex(index)
+            self.lang_combo.currentTextChanged.connect(self.change_language)
+            
+        current_theme = self.parent_window.theme_manager.current_theme
+        if current_theme == 'dark':
+            self.radio_dark.setChecked(True)
+        else:
+            self.radio_light.setChecked(True)
+            
+        current_neon = self.parent_window.theme_manager.neon_color
+        self.color_display.setStyleSheet(f"background-color: {current_neon}; border: 1px solid white; border-radius: 15px;")
+
+
+    def update_ui_language(self, L):
+        """Atualiza todos os textos da página de configurações quando o idioma muda."""
+        self.L = L 
+        
+        self.findChild(QGroupBox, "lang_group").setTitle(lang_get(L, "settings_page.lang_group", "Idioma"))
+        self.findChild(QGroupBox, "theme_group").setTitle(lang_get(L, "settings_page.interface_theme", "Tema da Interface"))
+        self.findChild(QGroupBox, "neon_group").setTitle(lang_get(L, "settings_page.neon_group", "Cor Neon (Cards)"))
+        
+        self.radio_dark.setText(lang_get(L, "settings_page.theme_dark", "Escuro"))
+        self.radio_light.setText(lang_get(L, "settings_page.theme_light", "Claro"))
+        self.color_button.setText(lang_get(L, "settings_page.choose_color", "Escolher Cor"))
+        self.reset_button.setText(lang_get(L, "settings_page.reset_color", "Restaurar Padrão"))
+        
+        current_lang_code = self.parent_window.current_lang_code
+        lang_name = self.LANGUAGE_MAP_REVERSE.get(current_lang_code, "Português")
+        index = self.lang_combo.findText(lang_name)
+        if index != -1:
+            self.lang_combo.setCurrentIndex(index)
+
+    
+    def change_language(self, lang_name):
+        self.parent_window.apply_language(lang_name)
+        
+    def change_theme(self, theme_key):
+        if theme_key == 'dark' and self.radio_dark.isChecked():
+            self.parent_window.apply_base_theme('dark')
+        elif theme_key == 'light' and self.radio_light.isChecked():
+            self.parent_window.apply_base_theme('light')
+
+    def pick_neon_color(self):
+        current_color = QColor(self.parent_window.theme_manager.neon_color)
+        color = QColorDialog.getColor(current_color, self, lang_get(self.L, "settings_page.dialog_title", "Escolher Cor Neon"))
+        
+        if color.isValid():
+            hex_color = color.name().lower()
+            self.color_display.setStyleSheet(f"background-color: {hex_color}; border: 1px solid white; border-radius: 15px;")
+            self.parent_window.set_global_neon_color(hex_color)
+            
+    def reset_neon_color(self):
+        self.color_display.setStyleSheet(f"background-color: {NEON_DEFAULT}; border: 1px solid white; border-radius: 15px;")
+        self.parent_window.set_global_neon_color(NEON_DEFAULT)

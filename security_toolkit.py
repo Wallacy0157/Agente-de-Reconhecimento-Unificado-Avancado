@@ -171,6 +171,235 @@ class EnvironmentDiagnosticsPage(QWidget):
         if not self.last_results:
             self.result_box.setText(lang_get(self.L, "diagnostics_page.description",
                                              "Clique em 'Executar diagnóstico' para verificar o ambiente."))
+            
+# --- 2. CLASSE DA PÁGINA DE SCANNER ---
+class ScannerPage(QWidget):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.last_results = None
+        self.vulnerable_targets = []
+        self.executor = None
+        self.scan_timer = QTimer()
+        self.scan_timer.timeout.connect(self._poll_scan_state)
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout()
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        self.L = getattr(self.parent_window, 'L', {})
+
+        self.ip_group = QGroupBox(lang_get(self.L, "scanner_page.targets_group", "Alvos de Varredura (IPs/Ranges)"))
+        self.ip_group.setObjectName("targets_group")
+
+        ip_layout = QVBoxLayout()
+
+        self.ip_input = QLineEdit()
+        self.ip_input.setPlaceholderText(lang_get(self.L, "scanner_page.ip_placeholder", "Ex: 192.168.1.1, 10.0.0.0/24, 172.16.1.1-10"))
+        ip_layout.addWidget(self.ip_input)
+
+        self.start_button = QPushButton(lang_get(self.L, "scanner_page.start_scan", "Iniciar Varredura"))
+        self.start_button.clicked.connect(self.start_scan)
+        ip_layout.addWidget(self.start_button)
+
+        self.ip_group.setLayout(ip_layout)
+        layout.addWidget(self.ip_group)
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
+        self.result_group = QGroupBox(lang_get(self.L, "scanner_page.results_group", "Resultados"))
+        self.result_group.setObjectName("results_group")
+        result_layout = QVBoxLayout()
+
+        self.results_text = QLabel(lang_get(self.L, "scanner_page.awaiting_scan", "Aguardando varredura..."))
+        self.results_text.setObjectName("ResultsLabel")
+        self.results_text.setWordWrap(True)
+        self.results_text.setAlignment(
+            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft
+        )
+        self.results_text.setSizePolicy(
+            QSizePolicy.Policy.Preferred,
+            QSizePolicy.Policy.MinimumExpanding
+        )
+
+        result_layout.addWidget(self.results_text)
+        self.result_group.setLayout(result_layout)
+        scroll_area.setWidget(self.result_group)
+        layout.addWidget(scroll_area)
+
+        self.save_button = QPushButton(lang_get(self.L, "scanner_page.save_results", "Salvar Resultados no Logs/Relatórios"))
+        self.save_button.setEnabled(False)
+        self.save_button.clicked.connect(self.save_results)
+        layout.addWidget(self.save_button)
+
+        self.send_hydra_button = QPushButton(lang_get(self.L, "scanner_page.send_hydra", "Enviar IPs Vulneráveis para Hydra"))
+        self.send_hydra_button.setEnabled(False)
+        self.send_hydra_button.clicked.connect(self.send_vulnerable_targets_to_hydra)
+        layout.addWidget(self.send_hydra_button)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def update_ui_language(self, L):
+        self.L = L
+        self.ip_group.setTitle(lang_get(L, "scanner_page.targets_group", "Alvos de Varredura (IPs/Ranges)"))
+        self.ip_input.setPlaceholderText(lang_get(L, "scanner_page.ip_placeholder", "Ex: 192.168.1.1, 10.0.0.0/24, 172.16.1.1-10"))
+        self.start_button.setText(lang_get(L, "scanner_page.start_scan", "Iniciar Varredura"))
+        self.result_group.setTitle(lang_get(L, "scanner_page.results_group", "Resultados"))
+        self.save_button.setText(lang_get(L, "scanner_page.save_results", "Salvar Resultados no Logs/Relatórios"))
+        self.send_hydra_button.setText(lang_get(L, "scanner_page.send_hydra", "Enviar IPs Vulneráveis para Hydra"))
+        
+        if not self.last_results:
+            self.results_text.setText(lang_get(L, "scanner_page.awaiting_scan", "Aguardando varredura..."))
+
+    def start_scan(self):
+        ip_list = network_scanner.parse_targets(self.ip_input.text())
+
+        if not ip_list:
+            self.results_text.setText(lang_get(self.L, "scanner_page.please_enter_target", "Por favor, insira pelo menos um IP ou range."))
+            return
+
+        self.start_button.setEnabled(False)
+        self.save_button.setEnabled(False)
+
+        self.results_text.setText(
+            f"{lang_get(self.L, 'scanner_page.scan_initiated', 'Iniciando varredura em {count} alvo(s)...').format(count=len(ip_list))}<br>"
+            f"<i>{lang_get(self.L, 'scanner_page.scan_message', 'Isso pode demorar alguns minutos.')}</i>"
+        )
+        self.parent_window.status_label.setText(lang_get(self.L, "scanner_page.scanning", "Varrendo rede..."))
+
+        self.executor = network_scanner.NetworkScanExecutor(ip_list)
+        self.executor.start()
+        self.scan_timer.start(250)
+
+    def update_progress(self, message):
+        self.parent_window.status_label.setText(message)
+
+    def _poll_scan_state(self):
+        if not self.executor:
+            return
+
+        progress_message = self.executor.get_progress_message()
+        if progress_message:
+            self.update_progress(progress_message)
+
+        if self.executor.is_running:
+            return
+
+        self.scan_timer.stop()
+        error = self.executor.get_error()
+        if error:
+            self.scan_error(error)
+            return
+
+        self.scan_finished(self.executor.get_results())
+
+    def scan_finished(self, results: list):
+        self.last_results = results
+        self.vulnerable_targets = []
+        self.start_button.setEnabled(True)
+        self.save_button.setEnabled(True)
+
+        self.parent_window.status_label.setText(lang_get(self.L, "scanner_page.scan_completed", "Varredura concluída ✔"))
+
+        display_text = f"<b>{lang_get(self.L, 'scanner_page.scan_finished', '✔ Varredura finalizada')}</b><br><br>"
+
+        for host in results:
+            if host.get("error"):
+                display_text += (
+                    f"<b>{lang_get(self.L, 'scanner_page.error_scan', '--- ERRO em {ip} ---').format(ip=host.get('ip', 'N/A'))}</b><br>"
+                    f"{host['error']}<br><br>"
+                )
+                continue
+
+            display_text += f"<b>{lang_get(self.L, 'scanner_page.host_info', '--- IP: {ip} ---').format(ip=host.get('ip', 'N/A'))}</b><br>"
+
+            os_name = host.get("os", lang_get(self.L, "scanner_page.unknown", "Desconhecido"))
+            if os_name == "Unknown" or os_name == lang_get(self.L, "scanner_page.unknown", "Desconhecido"):
+                display_text += f"<b>{lang_get(self.L, 'scanner_page.os_label', 'SO:')}</b> {lang_get(self.L, 'scanner_page.requires_root', 'Desconhecido (requer privilégios de root)')}<br>"
+            else:
+                display_text += f"<b>{lang_get(self.L, 'scanner_page.os_label', 'SO:')}</b> {os_name}<br>"
+
+            ports = host.get("open_ports", [])
+            if ports:
+                display_text += f"<i>{lang_get(self.L, 'scanner_page.open_ports', 'Portas Abertas:')}</i><br>"
+                for p in ports:
+                    display_text += (
+                        f"&nbsp; - <b>{p['port']}/{p['protocol']}</b>: "
+                        f"{p['service']}<br>"
+                    )
+            else:
+                display_text += f"{lang_get(self.L, 'scanner_page.no_open_ports', 'Nenhuma porta aberta encontrada.')}<br>"
+
+            vulns = host.get("vulnerabilities", [])
+            if vulns:
+                self.vulnerable_targets.append(host.get('ip', '').strip())
+                display_text += f"<i>{lang_get(self.L, 'scanner_page.potential_vuln', 'Vulnerabilidades Potenciais:')}</i><br>"
+                for i, v in enumerate(vulns):
+                    if isinstance(v, dict):
+                        details = str(v.get("details", ""))
+                        port = v.get("port", "?")
+                        script = v.get("script", lang_get(self.L, "scanner_page.port_unknown", "desconhecido"))
+                        v_short = details.replace("\n", " ").strip()
+                        display_text += (
+                            f"&nbsp; - <b>{lang_get(self.L, 'scanner_page.vuln_label', 'VULN {i}').format(i=i+1)}</b> "
+                            f"({lang_get(self.L, 'scanner_page.port_label', 'Porta')} {port}, {script}): "
+                            f"{v_short[:120]}...<br>"
+                        )
+                    else:
+                        v_short = str(v).replace("\n", " ").strip()
+                        display_text += (
+                            f"&nbsp; - <b>{lang_get(self.L, 'scanner_page.vuln_label', 'VULN {i}').format(i=i+1)}</b>: "
+                            f"{v_short[:120]}...<br>"
+                        )
+
+            display_text += "<br>"
+
+        self.results_text.setText(display_text)
+        self.send_hydra_button.setEnabled(bool(self.vulnerable_targets))
+
+    def scan_error(self, message):
+        self.start_button.setEnabled(True)
+        self.parent_window.status_label.setText(lang_get(self.L, "scanner_page.error_during_scan", "Erro durante varredura ❌"))
+        self.results_text.setText(
+            f"{lang_get(self.L, 'scanner_page.unexpected_error', 'Um erro inesperado ocorreu:')}<br><b>{message}</b><br>"
+            f"{lang_get(self.L, 'scanner_page.nmap_check', 'Verifique se o Nmap está instalado e se você tem permissões de sudo.')}"
+        )
+        self.last_results = None
+        self.send_hydra_button.setEnabled(False)
+
+    def save_results(self):
+        if not self.last_results:
+            return
+
+        log_dir = os.path.join(self.parent_window.base_dir, "logs")
+        os.makedirs(log_dir, exist_ok=True)
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = os.path.join(log_dir, f"scan_report_{timestamp}.json")
+
+        try:
+            network_scanner.save_json(self.last_results, filename)
+
+            self.parent_window.status_label.setText(
+                lang_get(self.L, "scanner_page.report_saved", "Relatório salvo em logs/{filename} ✔").format(filename=os.path.basename(filename))
+            )
+            self.save_button.setEnabled(False)
+
+        except Exception as e:
+            self.parent_window.status_label.setText(
+                f"{lang_get(self.L, 'scanner_page.failed_save', 'Falha ao salvar relatório:')} {type(e).__name__}"
+            )
+            print("ERRO AO SALVAR RELATÓRIO:", e)
+
+    def send_vulnerable_targets_to_hydra(self):
+        targets = [ip for ip in self.vulnerable_targets if ip]
+        if not targets:
+            QMessageBox.information(self, "Hydra", lang_get(self.L, "scanner_page.no_vulnerable_ips", "Nenhum IP vulnerável disponível para enviar."))
+            return
+        self.parent_window.open_hydra_with_targets(targets)
 
 # --- CLASSE DA PAGINA DE MANUAL ---
 class ManualScannerPage(QWidget):
@@ -210,10 +439,8 @@ class ManualScannerPage(QWidget):
         print("[DEBUG] Manual keys:", list(self.main_window.L.get("manual", {}).keys()))
 
         for key in sections:
-            # tenta idioma atual
             section = L.get("manual", {}).get(key)
 
-            # fallback se não existir
             if not section:
                 section = fallback_L.get("manual", {}).get(key, {})
 

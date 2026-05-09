@@ -31,3 +31,35 @@ THEMES = {
         "bg_input": "#ffffff",
     },
 }
+
+SHERLOCK_STYLES = {
+    "subtitle": "color: #888; margin-bottom: 10px;",
+    "mode_label": "color: white; font-weight: bold;",
+    "mode_selector": """
+        QComboBox {
+            background: #1a1a1a;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 5px 15px;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+        QComboBox QAbstractItemView {
+            background-color: #1a1a1a;
+            color: #0f0;
+            selection-background-color: #0f0;
+            selection-color: #000;
+        }
+    """,
+    "search_box": "background: #1a1a1a; border-radius: 10px; padding: 5px; border: 1px solid #333;",
+    "user_input": "border: none; background: transparent; padding: 10px; font-size: 16px; color: white;",
+    "scroll": "border: none; background: transparent; margin-top: 10px;",
+    "finished_msg_box": """
+        QMessageBox { background-color: #1a1a1a; }
+        QLabel { color: white; }
+        QPushButton {
+            background-color: #333; color: white;
+            padding: 5px 15px; border-radius: 3px;
+        }
+    """,
+}

@@ -31,7 +31,7 @@ public class Usuario {
     private String username;
 
     @Column(nullable = false)
-    private String senha_hash;
+    private String senhaHash;
 
     @Column(nullable = false)
     private boolean ativo;

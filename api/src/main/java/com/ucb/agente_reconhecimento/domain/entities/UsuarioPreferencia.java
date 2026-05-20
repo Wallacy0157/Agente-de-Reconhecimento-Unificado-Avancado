@@ -28,4 +28,12 @@ public class UsuarioPreferencia {
     @Column(nullable = false)
     private String corNeon;
 
+    public static UsuarioPreferencia getDefault() {
+        return UsuarioPreferencia.builder()
+                .idioma("pt-BR")
+                .tema("dark")
+                .corNeon("#00ff00")
+                .build();
+    }
+
 }

@@ -1,0 +1,25 @@
+# Use postgres/example user/password credentials
+
+services:
+
+  db:
+    image: postgres:17-alpine
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: reconhecimento
+      POSTGRES_USER: agentereconhecimento
+      POSTGRES_PASSWORD: agentereconhecimento
+    ports:
+      - "5432:5432"
+    volumes:
+      - reconhecimento:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+
+volumes:
+  reconhecimento:

@@ -42,9 +42,10 @@ public class Execucao {
     @Column(nullable = false)
     private String gravidade;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private Map<String, String> parametros;
+    //TODO: Descomentar quando for para produção, pois o h2 não suporta esse tipo de coluna
+//    @JdbcTypeCode(SqlTypes.JSON)
+//    @Column(columnDefinition = "jsonb")
+//    private Map<String, String> parametros;
 
     @Column(name = "resumo")
     private String resumo;

@@ -2,6 +2,7 @@ package com.ucb.agente_reconhecimento.web.controller;
 
 import com.ucb.agente_reconhecimento.service.UsuarioService;
 import com.ucb.agente_reconhecimento.web.dto.UsuarioCadastroDTO;
+import com.ucb.agente_reconhecimento.web.dto.UsuarioLoginDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,12 @@ public class UsuarioEndpoint {
     @PostMapping
     public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioCadastroDTO usuarioCadastroDTO) {
         usuarioService.salvarUsuario(usuarioCadastroDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> autenticarUsuario(@RequestBody UsuarioLoginDTO usuarioLoginDTO) {
+        usuarioService.autenticarUsuario(usuarioLoginDTO);
         return ResponseEntity.ok().build();
     }
 

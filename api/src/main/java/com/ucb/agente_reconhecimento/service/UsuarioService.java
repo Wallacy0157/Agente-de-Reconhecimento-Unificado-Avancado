@@ -4,6 +4,7 @@ import com.ucb.agente_reconhecimento.domain.entities.Usuario;
 import com.ucb.agente_reconhecimento.domain.entities.UsuarioPreferencia;
 import com.ucb.agente_reconhecimento.repository.UsuarioRepository;
 import com.ucb.agente_reconhecimento.web.dto.UsuarioCadastroDTO;
+import com.ucb.agente_reconhecimento.web.dto.UsuarioLoginDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -43,4 +44,15 @@ public class UsuarioService {
         }
     }
 
+    public void autenticarUsuario(UsuarioLoginDTO usuarioLoginDTO) {
+        //TODO: Comparar senha em texto puro com hash ao criar feature de hash de senha
+
+        Usuario usuario = usuarioRepository.findByEmail(usuarioLoginDTO.email()).orElseThrow();
+
+        if (!Objects.equals(usuario.getSenhaHash(), usuarioLoginDTO.senha())) {
+            throw new RuntimeException("Credenciais inválidas");
+        }
+
+        //TODO: Retornar Token JWT quando implementado a lógica do spring-security
+    }
 }

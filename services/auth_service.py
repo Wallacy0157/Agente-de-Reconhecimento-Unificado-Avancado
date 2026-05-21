@@ -1,7 +1,7 @@
 from services import api_client
 
 
-def registrar(email: str, nome: str, username: str, senha: str, confirma_senha: str) -> dict:
+def registrar(email: str, nome: str, username: str, senha: str, confirma_senha: str) -> None:
     payload = {
         "email": email,
         "nome": nome,
@@ -11,4 +11,8 @@ def registrar(email: str, nome: str, username: str, senha: str, confirma_senha: 
     }
     response = api_client.post("/usuarios", payload)
     response.raise_for_status()
-    return response.json() if response.content else {}
+
+
+def login(email: str, senha: str) -> None:
+    response = api_client.post("/usuarios/login", {"email": email, "senha": senha})
+    response.raise_for_status()

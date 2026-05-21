@@ -178,8 +178,14 @@ class AuthWindow(QWidget):
             QMessageBox.critical(self, "Erro", str(e))
 
     def handle_login(self):
-        self.login_successful.emit("Admin")
-        self.close()
+        email = self.email_login.input_field.text()
+        senha = self.pass_login.input_field.text()
+        try:
+            auth_service.login(email, senha)
+            self.login_successful.emit(email)
+            self.close()
+        except Exception:
+            QMessageBox.critical(self, "Erro", "Credenciais inválidas.")
 
 
 if __name__ == "__main__":

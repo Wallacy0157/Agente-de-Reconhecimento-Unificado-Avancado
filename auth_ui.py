@@ -1,8 +1,8 @@
 import sys
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                             QLineEdit, QPushButton, QCheckBox, QFrame, QStackedWidget)
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+                             QLineEdit, QPushButton, QCheckBox, QStackedWidget, QMessageBox)
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont
+from services import auth_service
 
 class AuthWindow(QWidget):
     login_successful = pyqtSignal(str)
@@ -94,6 +94,9 @@ class AuthWindow(QWidget):
         btn_go_log.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         layout.addWidget(btn_go_log)
 
+        self.reg_nome = self._create_input("Nome", "Insira seu nome", "👤")
+        layout.addLayout(self.reg_nome)
+
         self.reg_email = self._create_input("Email", "Insira seu e-mail", "✉")
         layout.addLayout(self.reg_email)
 
@@ -121,6 +124,7 @@ class AuthWindow(QWidget):
             }
             QPushButton:hover { background-color: #A00F75; }
         """)
+        btn_registrar.clicked.connect(self.handle_registrar)
         layout.addWidget(btn_registrar)
 
         self.stack.addWidget(self.register_page)
@@ -159,6 +163,19 @@ class AuthWindow(QWidget):
         v_layout.addLayout(h_layout)
         v_layout.input_field = edit
         return v_layout
+
+    def handle_registrar(self):
+        email = self.reg_email.input_field.text()
+        nome = self.reg_nome.input_field.text()
+        username = self.reg_user.input_field.text()
+        senha = self.reg_pass.input_field.text()
+        confirma = self.reg_confirm.input_field.text()
+        try:
+            auth_service.registrar(email, nome, username, senha, confirma)
+            QMessageBox.information(self, "Sucesso", "Conta criada com sucesso! Faça seu login.")
+            self.stack.setCurrentIndex(0)
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", str(e))
 
     def handle_login(self):
         self.login_successful.emit("Admin")

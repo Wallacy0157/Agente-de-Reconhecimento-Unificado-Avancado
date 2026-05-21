@@ -6,6 +6,8 @@ import com.ucb.agente_reconhecimento.repository.UsuarioRepository;
 import com.ucb.agente_reconhecimento.web.dto.UsuarioCadastroDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class UsuarioService {
 
@@ -16,13 +18,7 @@ public class UsuarioService {
     }
 
     public void salvarUsuario(UsuarioCadastroDTO usuarioCadastroDTO) {
-        if (usuarioRepository.existsByEmail(usuarioCadastroDTO.email())) {
-            throw new RuntimeException("Email já cadastrado");
-        }
-
-        if (usuarioRepository.existsByUsername(usuarioCadastroDTO.username())) {
-            throw new RuntimeException("Username já cadastrado");
-        }
+        validarUsuarioDto(usuarioCadastroDTO);
 
         //TODO: Hashar senha quando incluir dependência spring-security
 
@@ -31,6 +27,20 @@ public class UsuarioService {
         novoUsuario.setUsuarioPreferencia(UsuarioPreferencia.getDefault());
 
         usuarioRepository.save(novoUsuario);
+    }
+
+    private void validarUsuarioDto(UsuarioCadastroDTO usuarioCadastroDTO) {
+        if (!Objects.equals(usuarioCadastroDTO.senha(), usuarioCadastroDTO.confirmaSenha())) {
+            throw new RuntimeException("Senhas não coincidem");
+        }
+
+        if (usuarioRepository.existsByEmail(usuarioCadastroDTO.email())) {
+            throw new RuntimeException("Email já cadastrado");
+        }
+
+        if (usuarioRepository.existsByUsername(usuarioCadastroDTO.username())) {
+            throw new RuntimeException("Username já cadastrado");
+        }
     }
 
 }

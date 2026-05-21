@@ -8,7 +8,8 @@ public record UsuarioCadastroDTO (
         String nome,
         String email,
         String username,
-        String senha
+        String senha,
+        String confirmaSenha
 ) {
 
     public Usuario toEntity() {

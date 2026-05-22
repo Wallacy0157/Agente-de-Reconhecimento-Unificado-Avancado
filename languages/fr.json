@@ -1,0 +1,401 @@
+{
+  "app_title": "Security Toolkit — Dashboard Néon",
+  "app": {
+    "window_title": "AURA Security Toolkit",
+    "session_title": "AURA Security - Audit Actif ({username})"
+  },
+  "common": {
+    "content_not_available": "Contenu non disponible."
+  },
+  "sidebar": {
+    "home": "Accueil",
+    "tools": "Outils",
+    "diagnostic": "Diagnostic",
+    "scanner": "Informations",
+    "scripts": "Scripts",
+    "logs": "Logs",
+    "settings": "Paramètres",
+    "exit": "Quitter"
+  },
+  "header": {
+    "operations_panel": "Panneau d'Opérations",
+    "search_placeholder": "Rechercher des outils...",
+    "status_ready": "Statut : Prêt",
+    "status_page_loaded": "Statut : Page {index} chargée"
+  },
+  "home_page": {
+    "welcome": "Bienvenue sur AURA Security Toolkit !",
+    "cards": {
+      "scanner": { "title": "Scan", "subtitle": "Identifie les hôtes." },
+      "stress": { "title": "Test de Charge", "subtitle": "Simulation de DoS." },
+      "firewall": { "title": "Firewall", "subtitle": "Vérifie les règles." },
+      "sherlock": { "title": "Sherlock", "subtitle": "OSINT Social." },
+      "john": { "title": "John Ripper", "subtitle": "Casseur de hashes." },
+      "keylogger": { "title": "Auditeur de Clavier", "subtitle": "Enregistrement de frappe." },
+      "hydra": { "title": "Hydra", "subtitle": "Teste les identifiants." }
+    }
+  },
+  "placeholder_pages": {
+    "scripts": "Page de Scripts en cours de consolidation.",
+    "logs": "Page de Logs en cours de consolidation."
+  },
+  "cards": {
+    "scanner": {
+      "title": "Scan de Réseau",
+      "subtitle": "Scanne et détecte les hôtes"
+    },
+    "ports": {
+      "title": "Analyseur de Ports",
+      "subtitle": "Teste des ports spécifiques"
+    },
+    "reports": {
+      "title": "Rapports",
+      "subtitle": "Génération automatique de CSV/LOG"
+    },
+    "scripts_auto": {
+      "title": "Scripts Automatiques",
+      "subtitle": "Exécute des routines Python/.bat"
+    },
+    "targets": {
+      "title": "Cibles",
+      "subtitle": "Gérer les IPs et les plages"
+    },
+    "logs": {
+      "title": "Logs du Système",
+      "subtitle": "Historique des exécutions"
+    },
+    "advanced": {
+      "title": "Mode Avancé",
+      "subtitle": "Fonctions extra / DevTools"
+    },
+    "status": {
+      "title": "Statut",
+      "subtitle": "Vérification de l'environnement"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "subtitle": "Préférences du système"
+    }
+  },
+  "settings_page": {
+    "title": "Paramètres",
+    "themes": "Thèmes",
+    "lang_group": "Langue",
+    "reset_color": "Restaurer par défaut",
+    "choose_theme": "Choisir un Thème",
+    "interface_theme": "Thème de l'interface",
+    "theme_dark": "Thème Sombre",
+    "theme_light": "Thème Clair",
+    "neon_group": "Couleur Néon",
+    "choose_color": "Choisir une Couleur",
+    "color_purple": "Violet",
+    "color_red": "Rouge",
+    "color_green": "Vert",
+    "color_blue": "Bleu",
+    "color_pink": "Rose",
+    "color_yellow": "Jaune",
+    "color_none": "Sans effet de lumière",
+    "special_themes": "Thèmes Spéciaux",
+    "theme_christmas": "Thème Noël",
+    "theme_halloween": "Thème Halloween",
+    "theme_easter": "Thème Pâques",
+    "theme_brazil": "Thème Brésil",
+    "languages": "Langues",
+    "choose_language": "Choisir la Langue",
+    "lang_pt": "Portugais",
+    "lang_en": "Anglais",
+    "lang_es": "Espagnol",
+    "lang_fr": "Français",
+    "lang_it": "Italien",
+    "lang_de": "Allemand",
+    "lang_ru": "Russe",
+    "lang_ja": "Japonais",
+    "lang_ko": "Coréen",
+    "lang_zh": "Chinois",
+    "lang_ar": "Arabe"
+  },
+  "scanner_page": {
+    "targets_group": "Cibles du Scan (IPs/Plages)",
+    "ip_placeholder": "Ex : 192.168.1.1, 10.0.0.0/24, 172.16.1.1-10",
+    "start_scan": "Démarrer le Scan",
+    "results_group": "Résultats",
+    "awaiting_scan": "En attente du scan...",
+    "save_results": "Enregistrer les résultats dans Logs/Rapports",
+    "send_hydra": "Envoyer les IPs vulnérables vers Hydra",
+    "please_enter_target": "Veuillez saisir au moins une IP ou une plage.",
+    "scan_initiated": "Lancement du scan sur {count} cible(s)...",
+    "scan_message": "Cela peut prendre quelques minutes.",
+    "scanning": "Scan du réseau en cours...",
+    "scan_completed": "Scan terminé ✔",
+    "scan_finished": "✔ Scan finalisé",
+    "error_scan": "--- ERREUR sur {ip} ---",
+    "host_info": "--- IP : {ip} ---",
+    "unknown": "Inconnu",
+    "na": "N/D",
+    "os_label": "OS :",
+    "requires_root": "Inconnu (nécessite les privilèges root)",
+    "open_ports": "Ports Ouverts :",
+    "no_open_ports": "Aucun port ouvert trouvé.",
+    "potential_vuln": "Vulnérabilités Potentielles :",
+    "vuln_label": "VULN {i}",
+    "port_label": "Port",
+    "service_label": "Service",
+    "port_unknown": "inconnu",
+    "error_during_scan": "Erreur pendant le scan ❌",
+    "unexpected_error": "Une erreur inattendue est survenue :",
+    "nmap_check": "Vérifiez que Nmap est installé et que vous avez les permissions sudo.",
+    "report_saved": "Rapport enregistré dans logs/{filename} ✔",
+    "failed_save": "Échec de l'enregistrement du rapport :",
+    "no_vulnerable_ips": "Aucune IP vulnérable disponible pour l'envoi."
+  },
+  "diagnostics_page": {
+    "title": "Diagnostic de l'Environnement",
+    "run_diagnostic": "Exécuter le diagnostic",
+    "description": "Cliquez sur 'Exécuter le diagnostic' pour vérifier l'environnement.",
+    "install_missing": "Installer les dépendances manquantes (Linux/apt)",
+    "install_description": "Vérifie si les outils principaux sont déjà installés sur le système.",
+    "tools_diagnostic": "--- Diagnostic des Outils ---",
+    "detected": "✔ {tool_name} détecté",
+    "not_found": "❌ {tool_name} non trouvé",
+    "install_auto": "Vous pouvez installer les éléments manquants automatiquement sur Linux (apt).",
+    "environment_ready": "Environnement prêt : tout est détecté.",
+    "running": "Exécution :",
+    "output_label": "--- Sortie ---",
+    "installation_completed": "✔ Installation terminée. Exécutez à nouveau le diagnostic.",
+    "installation_failure": "❌ Échec de l'installation :",
+    "unknown_failure": "Échec inconnu",
+    "diagnostic_label": "Diagnostic",
+    "no_missing_tools": "Aucun outil manquant pour l'installation.",
+    "installation_unavailable": "Installation indisponible",
+    "installation_linux_only": "L'installation automatique est uniquement disponible pour Linux avec apt.",
+    "pkexec_not_found": "❌ 'pkexec' non trouvé. Utilisez manuellement : sudo apt-get install -y"
+  },
+  "sherlock_page": {
+    "title": "🔍 Sherlock OSINT Pro",
+    "subtitle": "Recherche avancée par Nickname, Nom Complet et Fuites.",
+    "mode_label": "Type de Cible :",
+    "mode_nickname": "Nickname",
+    "mode_fullname": "Nom Complet",
+    "placeholder": "Entrez la cible ici...",
+    "investigate": "INVESTIGUER",
+    "searching": "RECHERCHE EN COURS...",
+    "error_title": "Échec de l'investigation Sherlock ❌",
+    "error_label": "Erreur",
+    "search_failed": "La recherche a échoué :",
+    "search_completed": "Recherche Terminée",
+    "investigation_complete": "L'investigation de '{username}' est terminée !",
+    "file_generated": "Le fichier a été généré avec succès dans :",
+    "report_saved": "Rapport enregistré : {filename}",
+    "no_results": "Aucun résultat trouvé.",
+    "warning_title": "Avertissement",
+    "no_networks": "Aucun réseau social trouvé pour cet utilisateur.",
+    "view_button": "VOIR",
+    "duckduckgo": "DuckDuckGo",
+    "osint_search": "OSINT-Search",
+    "webmii": "Webmii",
+    "peekYou": "PeekYou",
+    "truePeople": "TruePeople",
+    "document": "📄 Document",
+    "potential_leak": "Fuite possible/Doc",
+    "gravatar": "Gravatar"
+  },
+  "firewall_page": {
+    "title": "🛡️ Audit de Sécurité",
+    "audit_title": "🛡️ Audit de Sécurité",
+    "execution_test": "Test d'Exécution",
+    "start_audit": "Démarrer l'Audit Local",
+    "description": "Ce test réalise un audit approfondi sur l'hôte local, vérifiant les permissions critiques, les processus suspects, l'intégrité des fichiers et la conformité du firewall.",
+    "waiting": "En attente de commande...",
+    "audit_label": "Audit",
+    "audit_running": "L'audit est déjà en cours.",
+    "audit_in_progress": "Audit en Cours...",
+    "metadata_collection": "[INFO] Début de la collecte des métadonnées et analyse des processus...",
+    "running_audit": "Exécution de l'Audit de Sécurité...",
+    "error_label": "ERREUR",
+    "report_generated": "Rapport Généré",
+    "audit_completed": "Audit terminé sur la station : {hostname}",
+    "audit_user": "Utilisateur : {user}",
+    "summary": "Résumé des découvertes :",
+    "unknown": "Inconnu",
+    "report_saved": "[INFO] Rapport signé et enregistré avec succès.",
+    "error_reading": "[ERREUR] lors de la lecture du log :"
+  },
+  "payload_page": {
+    "title": "📦 Générateur d'Agent Distant (Payload)",
+    "description": "Sélectionnez le système d'exploitation de l'ordinateur cible pour générer l'agent de connexion.",
+    "generate_windows": "🪟 Générer Agent pour Windows (.exe)",
+    "generate_linux": "🐧 Générer Agent pour Linux (.py)",
+    "go_listener": "Aller au Panneau de Contrôle 📡",
+    "awaiting": "En attente de sélection...",
+    "back": "⬅ Retour",
+    "generating": "[INFO] Génération de l'agent pour {os_type} (IP : {my_ip})...",
+    "agent_not_found": "[ERREUR] Fichier 'core/aura_agent.py' non trouvé !",
+    "linux_success": "[SUCCÈS] Agent Linux prêt dans :",
+    "compiling": "[INFO] Compilation de l'EXE... Veuillez patienter.",
+    "agent_success": "[SUCCÈS] Agent généré !",
+    "agent_file": "Fichier : temp_win_agent.exe",
+    "compilation_error": "[ERREUR] La compilation a échoué. Vérifiez le terminal.",
+    "error_prefix": "[ERREUR] :"
+  },
+  "listener_page": {
+    "title": "📡 Panneau de Contrôle à Distance",
+    "status_label": "Statut : En attente d'activation...",
+    "server_log": "Log du Serveur...",
+    "command_placeholder": "Entrez une commande (ex : stress_test, dir, whoami)...",
+    "activate_listen": "Activer l'Écoute (Port 4444)",
+    "listening": "Statut : Écoute sur le port 4444...",
+    "connected": "Statut : CONNECTÉ à la cible ({addr})",
+    "connection_lost": "Statut : Connexion perdue.",
+    "command_echo": "> {cmd}",
+    "server_error": "Erreur du Serveur :"
+  },
+  "john_page": {
+    "title": "💀 John The Ripper - Casseur de Hash",
+    "basic_settings": "Paramètres de Base",
+    "target_hash": "Hash Cible :",
+    "hash_placeholder": "Insérez le hash ici...",
+    "attack_mode": "Mode d'Attaque :",
+    "wordlist": "Wordlist",
+    "mask": "Masque",
+    "algorithm": "Algorithme :",
+    "auto_detect": "Détection Auto",
+    "md5": "MD5",
+    "sha1": "SHA1",
+    "sha256": "SHA256",
+    "sha512": "SHA512",
+    "select_wordlist": "Sélectionner un fichier Wordlist",
+    "apply_rules": "Appliquer les Règles (Style John)",
+    "mask_definition": "Définition du Masque :",
+    "mask_placeholder": "Ex : ?l?l?l?d?d (L=lettre, D=chiffre)",
+    "salt_label": "Salt :",
+    "salt_placeholder": "Salt (Optionnel)",
+    "start_attack": "DÉMARRER L'ATTAQUE",
+    "select_wordlist_title": "Sélectionner Wordlist",
+    "text_files": "Fichiers Texte (*.txt)",
+    "error_title": "Erreur",
+    "enter_hash": "Veuillez insérer le Hash !",
+    "running": "EXÉCUTION...",
+    "select_wordlist_error": "Sélectionnez la wordlist !",
+    "enter_mask": "Insérez le masque !",
+    "john_progress": "John : {tested} hashes testés | Vitesse : {speed} H/s",
+    "processing": "[*] Traitement en cours... {tested} candidats testés.",
+    "unknown_failure": "Échec inconnu",
+    "password_found": "✅ MOT DE PASSE TROUVÉ : {password}",
+    "report_label": "Rapport : {filename}",
+    "success_title": "Succès",
+    "failure": "❌ ÉCHEC : {error}"
+  },
+  "keylogger_page": {
+    "title": "⌨️ Auditeur de Clavier - Surveillance",
+    "dot": "●",
+    "status_ready": "STATUT : PRÊT POUR LA CAPTURE",
+    "status_monitoring": "SURVEILLANCE DU CLAVIER...",
+    "status_finished": "AUDIT TERMINÉ",
+    "recent_activity": "Activité Récente :",
+    "start_audit": "DÉMARRER L'AUDIT",
+    "stop_monitoring": "ARRÊTER LA SURVEILLANCE",
+    "restart_capture": "REDÉMARRER LA CAPTURE",
+    "open_logs": "📁 OUVRIR LES LOGS"
+  },
+  "stress_test_page": {
+    "title": "🛡️ Évaluation de Résilience du Firewall",
+    "target_parameters": "Paramètres de la Cible",
+    "target_label": "Cible :",
+    "target_placeholder": "IP ou Hôte",
+    "port_label": "Port :",
+    "traffic_control": "Contrôle du Trafic",
+    "rate_limit_label": "Limite de Taux (Req/Seconde - RPS) :",
+    "duration_label": "Durée du Test (Secondes) :",
+    "gradual_escalation": "Escalade Graduelle (Ramp-up)",
+    "awaiting_start": "En attente du début du test...",
+    "start_button": "⚡ DÉMARRER L'AUDIT DE TRAFIC",
+    "stop_button": "🛑 INTERROMPRE LE TEST",
+    "input_description": "Bloque ou débloque les champs de saisie."
+  },
+  "hydra_page": {
+    "title": "🧰 Hydra - Test d'Identifiants",
+    "warning": "⚠️ À utiliser uniquement dans des environnements autorisés.",
+    "targets_group": "Cibles",
+    "targets_placeholder": "Ex : 192.168.0.10\n192.168.0.20",
+    "service_and_port": "Service et Port",
+    "service_label": "Service :",
+    "port_label": "Port :",
+    "http_config": "Configuration HTTP POST",
+    "form_path": "Chemin du Formulaire",
+    "form_path_placeholder": "/login.php",
+    "post_params": "Paramètres POST",
+    "post_params_placeholder": "username=^USER^&password=^PASS^",
+    "fail_string": "Chaîne d'Échec",
+    "fail_string_placeholder": "Texte d'échec (ex : Login invalide)",
+    "credentials_group": "Identifiants",
+    "single_username": "Utilisateur Unique",
+    "username_list": "Liste d'Utilisateurs",
+    "single_password": "Mot de Passe Unique",
+    "password_list": "Liste de Mots de Passe",
+    "user_list_title": "Liste d'Utilisateurs",
+    "password_list_title": "Liste de Mots de Passe",
+    "options_group": "Options",
+    "threads_label": "Threads (-t) :",
+    "stop_on_success": "Arrêter au succès",
+    "verbose": "Verbeux",
+    "start_button": "DÉMARRER",
+    "stop_button": "ARRÊTER",
+    "already_running": "Hydra",
+    "already_running_msg": "Une exécution est déjà en cours.",
+    "no_targets": "Hydra",
+    "no_targets_msg": "Fournissez au moins une cible.",
+    "no_service": "Hydra",
+    "no_service_msg": "Fournissez le service.",
+    "http_required": "Hydra",
+    "http_required_msg": "Remplissez tous les champs HTTP POST.",
+    "params_error": "Hydra",
+    "params_error_msg": "Utilisez ^USER^ et ^PASS^ dans les paramètres.",
+    "interruption_requested": "[INFO] Interruption demandée.",
+    "completed": "[INFO] Hydra terminé avec le code",
+    "log_saved": "[INFO] Log enregistré dans"
+  },
+  "manual": {
+    "tabs": {
+      "manifesto": "MANIFESTE",
+      "scanner": "SCANNER",
+      "ddos": "DDOS",
+      "auditoria": "AUDIT",
+      "sherlock": "SHERLOCK",
+      "john": "JOHN",
+      "keylogger": "KEYLOGGER",
+      "hydra": "HYDRA"
+    },
+    "manifesto": {
+      "title": "🏠 À propos d'AURA",
+      "content": "# 🌌 Projet AURA\n\n**Advanced Unified Reconnaissance Agent**\n\n---\n\n## 👋 Bienvenue sur AURA\n\nSi vous débutez dans le domaine de la Cybersécurité, AURA a été conçu pour vous.\n\nC'est un outil qui regroupe plusieurs fonctions de sécurité importantes en un seul endroit, facilitant l'apprentissage et la pratique sans avoir à utiliser de nombreux programmes différents.\n\n---\n\n## 🧠 Que fait AURA ?\n\nAURA vous aide à **analyser, tester et comprendre les systèmes**.\n\nAvec lui, vous pouvez :\n\n* 🔍 Découvrir des informations sur les réseaux et les systèmes\n* 🧪 Tester la sécurité des logins et des mots de passe\n* 🛰️ Voir quels ports sont ouverts sur un serveur\n* 🔎 Rechercher des informations publiques (OSINT)\n* ⌨️ Comprendre comment fonctionne la capture d'entrées (de manière contrôlée)\n* 🔥 Faire des tests de charge pour voir comment un système réagit\n* 🛡️ Évaluer le comportement des firewalls\n\n👉 En résumé :\nAURA vous aide à **penser comme un analyste en sécurité**.\n\n---\n\n## 🎯 Pourquoi utiliser AURA ?\n\nQuand on débute, il est courant d'être perdu face à tant d'outils différents.\n\nAURA résout cela en :\n\n* regroupant tout au même endroit\n* offrant une interface simple\n* permettant de tester des concepts en pratique\n\n---\n\n## ⚖️ Usage responsable\n\nAURA a été créé pour **l'apprentissage et l'usage autorisé**.\n\nCela signifie :\n\n✔️ Utilisez-le sur :\n\n* vos propres systèmes\n* des laboratoires\n* des environnements avec permission\n\n❌ Ne l'utilisez jamais pour :\n\n* envahir des systèmes\n* tester des réseaux sans autorisation\n* causer tout type de dommage\n\n---\n\n## 📚 Philosophie\n\nLa sécurité de l'information ne consiste pas à attaquer — il s'agit de **protéger et comprendre**.\n\nL'objectif d'AURA est de vous aider à :\n\n* apprendre par la pratique\n* développer un esprit critique\n* évoluer dans le domaine de la cybersécurité\n\n---\n\n## 🚀 Conseil important\n\nAvant d'utiliser n'importe quel module, essayez de comprendre ce qu'il fait.\nL'apprentissage vient davantage de la compréhension que de l'exécution.\n\n---\n\n**Utilisez-le avec responsabilité. Apprenez avec détermination.**"
+    },
+    "scanner": {
+      "title": "🛰️ SCAN DE RÉSEAU",
+      "content": "# 🛰️ Scanner de Réseau\n\n---\n\n## 👋 Que fait cette fonction ?\n\nCette partie d'AURA vous permet d'**analyser un ordinateur ou un serveur** pour comprendre comment il est exposé sur le réseau.\n\nDe façon simple, elle répond à des questions comme :\n\n* Ce système est-il en ligne ?\n* Quels ports sont ouverts ?\n* Quels services sont en cours d'exécution ?\n* Existe-t-il un risque de sécurité potentiel ?\n\n---\n\n## 🔍 Que se passe-t-il quand vous l'utilisez ?\n\nQuand vous lancez le scan, AURA :\n\n* tente de se connecter à la cible indiquée\n* vérifie quels ports sont ouverts\n* identifie les services actifs (comme web, base de données, accès distant)\n* analyse les vulnérabilités connues potentielles\n* organise le tout dans un rapport facile à comprendre\n\n---\n\n## 🧠 Pourquoi est-ce important ?\n\nAvant de protéger un système, vous devez savoir :\n\n👉 **ce qui est exposé**\n\nCe type d'analyse est la première étape de toute évaluation de sécurité.\n\n---\n\n## 🚀 Que pouvez-vous faire avec les résultats ?\n\nAprès le scan, AURA peut suggérer des étapes suivantes, comme :\n\n* tester des applications web\n* analyser des bases de données\n* vérifier des systèmes de connexion\n\n👉 En d'autres termes : il ne montre pas seulement le problème, il vous aide à poursuivre l'analyse.\n\n---\n\n## ⚠️ Usage responsable\n\nCet outil doit être utilisé uniquement sur :\n\n✔️ vos propres systèmes\n✔️ des environnements de test\n✔️ des réseaux avec autorisation\n\n❌ Ne scannez jamais de systèmes sans permission.\n\n---\n\n## 💡 Conseil pour débutants\n\nCommencez par tester sur :\n\n* votre propre machine\n* des machines virtuelles\n* des laboratoires contrôlés\n\nCela vous aidera à mieux comprendre comment les réseaux fonctionnent en pratique.\n\n---\n\n**Comprendre la surface d'attaque est la première étape pour devenir un professionnel de la sécurité.**"
+    },
+    "ddos": {
+      "title": "🔥 DDOS",
+      "content": "# 🔥 Test de Charge (Stress Test)\n\n---\n\n## 👋 Que fait cette fonction ?\n\nCette partie d'AURA vous permet de tester comment un système réagit lorsqu'il reçoit de nombreuses connexions en même temps.\n\nDe façon simple :\n\n👉 vous simulez **plusieurs accès simultanés** pour voir si le système tient le coup.\n\n---\n\n## 🧠 À quoi ça sert ?\n\nEn cybersécurité et en développement, il est très important de savoir :\n\n* le système supporte-t-il beaucoup d'utilisateurs en même temps ?\n* devient-il lent ?\n* s'arrête-t-il de répondre ?\n* le firewall bloque-t-il l'excès de connexions ?\n\n👉 Ce test aide à répondre à ces questions.\n\n---\n\n## ⚙️ Que se passe-t-il pendant le test ?\n\nQuand vous commencez :\n\n* AURA envoie plusieurs requêtes à la cible\n* mesure le temps de réponse (latence)\n* vérifie si la connexion a été acceptée, bloquée ou a échoué\n* suit le tout en temps réel\n\n---\n\n## 📊 Que verrez-vous ?\n\nPendant le test, vous aurez des informations comme :\n\n* total des connexions envoyées\n* combien ont fonctionné normalement\n* combien ont été bloquées ou ont échoué\n* temps de réponse moyen\n\n---\n\n## 🚀 Quand utiliser cela ?\n\nVous pouvez utiliser ce test pour :\n\n* évaluer la stabilité d'un serveur\n* tester des règles de firewall\n* valider des limites de connexion\n* étudier le comportement des systèmes sous forte charge\n\n---\n\n## ⚠️ Usage responsable\n\nCe type de test peut surcharger les systèmes. Utilisez-le uniquement sur :\n\n✔️ vos propres serveurs\n\n✔️ des environnements de test\n\n✔️ des systèmes avec autorisation\n\n❌ Ne l'utilisez jamais contre des systèmes tiers sans permission.\n\n---\n\n## 💡 Conseil pour débutants\n\nCommencez avec des **valeurs basses** (peu de requêtes) et augmentez progressivement. Cela vous aidera à comprendre comment le système réagit sans causer de problèmes.\n\n---\n\n**Comprendre les limites du système est la première étape pour construire des infrastructures résilientes et sécurisées.**"
+    },
+    "auditoria": {
+      "title": "🛡️ AUDIT DE SYSTÈME",
+      "content": "# 🛡️ Vérification de Sécurité du Système\n\n---\n\n## 👋 Que fait cette fonction ?\n\nCe module effectue un **check-up de sécurité sur votre ordinateur**.\n\nIl analyse certaines configurations importantes et tente d'identifier d'éventuels points faibles qui pourraient être exploités.\n\n---\n\n## 🔍 Que vérifie AURA ?\n\nPendant l'audit, AURA analyse :\n\n* 🔑 **Permissions du système**\n  Vérifie si le programme s'exécute avec des privilèges élevés (Admin/Root)\n\n* 📂 **Dossiers du système**\n  Vérifie s'il existe des endroits où n'importe qui peut écrire des fichiers (ce qui peut être dangereux)\n\n* 🌐 **Ports ouverts**\n  Détecte les services s'exécutant sur votre ordinateur qui pourraient être exposés\n\n* ⚙️ **Processus actifs**\n  Recherche des programmes suspects s'exécutant en arrière-plan\n\n* 🔥 **Firewall**\n  Vérifie si la protection du système est active\n\n* 📄 **Fichier réseau (hosts)**\n  Analyse d'éventuelles modifications pouvant indiquer des redirections malveillantes\n\n---\n\n## 🧠 Pourquoi est-ce important ?\n\nDe nombreux problèmes de sécurité ne résident pas dans des attaques complexes, mais plutôt dans :\n\n👉 des mauvaises configurations\n👉 des permissions trop ouvertes\n👉 des services inutiles en cours d'exécution\n\nCe module vous aide à identifier cela simplement.\n\n---\n\n## 📊 Comment comprendre les résultats ?\n\nAURA classe tout de manière claire :\n\n* 🔴 **[HAUT]** → risque important, nécessite votre attention\n* 🟡 **[MOYEN]** → peut être amélioré\n* 🟢 **[OK]** → tout va bien\n\n---\n\n## 🚀 Quand l'utiliser ?\n\nVous pouvez lancer cet audit pour :\n\n* vérifier si votre système est sécurisé\n* mieux comprendre comment fonctionne la sécurité locale\n* apprendre par la pratique les configurations système\n\n---\n\n## ⚠️ Note importante\n\nCette analyse est **locale** (sur votre propre système).\nElle ne modifie rien — elle analyse et informe seulement.\n\n---\n\n## 💡 Conseil pour débutants\n\nUtilisez ce module comme un \"thermomètre\" :\n\n👉 lancez-le\n👉 regardez ce qui apparaît\n👉 faites des recherches sur chaque point\n\nCela accélère ÉNORMÉMENT votre apprentissage.\n\n---\n\n**La sécurité commence par la compréhension de votre propre système.**"
+    },
+    "sherlock": {
+      "title": "🔍 SHERLOCK",
+      "content": "# 🔍 Investigation de Présence Numérique\n\n---\n\n## 👋 Que fait cette fonction ?\n\nCe module vous permet de **rechercher des informations publiques sur Internet** concernant une personne ou un utilisateur.\n\nVous pouvez rechercher par :\n\n* 👤 nickname (ex : nom d'utilisateur sur les réseaux sociaux)\n* 🧑 nom réel\n\n---\n\n## 🌐 Que cherche AURA ?\n\nQuand vous faites une recherche, AURA tente de trouver :\n\n* des profils sur les réseaux sociaux\n* des comptes sur des sites populaires (GitHub, Reddit, etc.)\n* des mentions sur des pages Internet\n* d'éventuels registres publics\n\n👉 Tout cela en utilisant uniquement des informations déjà disponibles sur Internet.\n\n---\n\n## 🧠 Pourquoi est-ce important ?\n\nAujourd'hui, beaucoup d'informations personnelles sont exposées en ligne sans que les gens s'en rendent compte.\n\nCe type d'analyse aide à comprendre :\n\n* où un utilisateur apparaît sur Internet\n* à quel point son identité est exposée\n* les risques potentiels pour la vie privée\n\n---\n\n## 📊 Que verrez-vous ?\n\nAURA affichera :\n\n* les liens trouvés\n* où l'information a été localisée\n* les correspondances possibles avec le nom ou l'utilisateur\n\n👉 Et tout cela peut être enregistré pour une analyse ultérieure.\n\n---\n\n## 🚀 Quand l'utiliser ?\n\nVous pouvez utiliser ce module pour :\n\n* étudier la présence numérique (OSINT)\n* apprendre des techniques d'investigation\n* analyser l'exposition des profils en ligne\n* effectuer des recherches dans des environnements autorisés\n\n---\n\n## ⚠️ Usage responsable\n\nMême s'il s'agit d'informations publiques, cela ne signifie pas qu'elles peuvent être utilisées n'importe comment.\n\n✔️ Utilisez-le pour :\n\n* l'apprentissage\n* l'analyse autorisée\n* des recherches légitimes\n\n❌ Évitez :\n\n* le harcèlement (stalking)\n* l'invasion de la vie privée\n* l'utilisation indue de données\n\n---\n\n## 💡 Conseil pour débutants\n\nTestez avec :\n\n* votre propre nom\n* votre nickname\n* des profils connus\n\n👉 Cela aide à comprendre comment fonctionne la collecte d'informations ouvertes.\n\n---\n\n## 🧠 Comprendre le concept\n\nOSINT signifie :\n\n👉 **collecter des informations publiques de manière intelligente**\n\nCe n'est pas une intrusion — c'est de l'analyse.\n\n---\n\n**En sécurité, l'information publique est aussi un pouvoir.**"
+    },
+    "john": {
+      "title": "💀 JOHN THE RIPPER",
+      "content": "# 🔐 Test de Sécurité des Mots de Passe\n\n---\n\n## 👋 Que fait cette fonction ?\n\nCe module vous permet de **tester la sécurité des mots de passe protégés (hashes)**.\n\nAu lieu de travailler avec le mot de passe original, il analyse le hash — qui est une forme cryptée du mot de passe.\n\n---\n\n## 🧠 Qu'est-ce qu'un hash ?\n\nUn hash est une façon de transformer un mot de passe en un code unique.\n\nPar exemple :\n\n👉 mot de passe : `123456`\n👉 hash : `e10adc3949ba59abbe56e057f20f883e`\n\nLes systèmes utilisent des hashes pour protéger les mots de passe.\n\n---\n\n## 🔍 Que fait AURA ?\n\nAURA tente de découvrir si un mot de passe est faible en testant :\n\n* 📚 **Listes de mots de passe communs**\n  (mots de passe déjà connus et utilisés par beaucoup de monde)\n\n* 🔄 **Variations automatiques**\n  (comme ajouter des chiffres ou changer des lettres)\n\n* 🔢 **Combinaisons possibles**\n  (lorsque vous définissez un modèle)\n\n👉 Cela simule ce qu'un attaquant ferait — mais de manière contrôlée.\n\n---\n\n## 🧠 Pourquoi est-ce important ?\n\nSi un mot de passe peut être découvert rapidement, il est considéré comme faible.\n\nCe test aide à comprendre :\n\n* si un mot de passe est facile à deviner\n* s'il doit être plus fort\n* comment améliorer la protection des systèmes\n\n---\n\n## 📊 Que verrez-vous ?\n\nAURA montre :\n\n* si le mot de passe a été découvert ou non\n* quelle méthode a été utilisée\n* quel effort a été nécessaire\n\n---\n\n## 🚀 Quand l'utiliser ?\n\nCe module est utile pour :\n\n* apprendre la sécurité des mots de passe\n* tester des hashes dans des environnements contrôlés\n* valider la force des identifiants\n\n---\n\n## ⚠️ Usage responsable\n\nCette ressource doit être utilisée uniquement pour :\n\n✔️ vos propres tests\n✔️ des environnements de laboratoire\n✔️ des systèmes avec autorisation\n\n❌ Ne l'utilisez jamais pour accéder à des comptes tiers.\n\n---\n\n## 💡 Conseil pour débutants\n\nTestez avec :\n\n* des hashes de mots de passe simples\n* des exemples de laboratoire\n* vos propres données\n\n👉 Cela aide à comprendre comment les mots de passe peuvent être protégés (ou cassés).\n\n---\n\n## 🧠 Comprendre le concept\n\nLes mots de passe faibles sont l'une des plus grandes failles de sécurité.\n\n👉 Plus il est difficile à deviner, plus il est sûr.\n\n---\n\n**Un mot de passe fort est votre première ligne de défense.**"
+    },
+    "keylogger": {
+      "title": "⌨️ KEYLOGGER",
+      "content": "# ⌨️ Surveillance de la Frappe (Usage Contrôlé)\nCe module d'AURA permet de suivre et d'enregistrer ce qui est tapé au clavier pendant une session.\nDans le domaine de la Cybersécurité, cela est utilisé pour **comprendre les comportements, tester la sécurité et analyser les activités dans des environnements contrôlés**.\n\n### 🔎 Que fait ce module ?\nDe façon simple, il :\n\n* Enregistre tout ce qui est tapé pendant l'utilisation du système\n* Identifie dans quel programme ou fenêtre la frappe a eu lieu\n* Organise ces informations dans un fichier log\n* Génère un petit résumé avec des statistiques d'activité\n\nCela aide à comprendre **comment un utilisateur interagit avec le système** ou même à simuler le fonctionnement de certains types d'attaques.\n\n---\n\n### 📊 Informations collectées\nPendant l'exécution, AURA enregistre :\n\n* Texte tapé\n* Changements de fenêtre (ex : navigateur, terminal, etc.)\n* Quantité totale de touches pressées\n* Utilisation des touches comme Enter et Backspace\n* Touches les plus utilisées pendant la session\n\nTout est sauvegardé automatiquement dans le dossier `/logs`.\n\n---\n\n### ⏱️ Fonctionnement intelligent\nLe système a été conçu pour ne pas alourdir l'ordinateur :\n\n* Sauvegarde les données par blocs (n'écrit pas à chaque touche)\n* Détecte quand l'utilisateur devient inactif\n* Termine les sessions automatiquement après de longues pauses\n\n---\n\n### ⚠️ Usage responsable et éthique\nC'est un module extrêmement sensible.\n\n* ❌ **Ne l'utilisez jamais sur les ordinateurs d'autres personnes sans autorisation**\n* ❌ Surveiller quelqu'un sans son consentement peut être un crime\n* ✅ Utilisez-le uniquement dans votre propre environnement ou laboratoire\n* ✅ Idéal pour l'étude et les tests de sécurité\n\n---\n\n### 💡 Pourquoi est-ce important ?\nDes outils de ce type sont utilisés par des attaquants pour voler des mots de passe et des informations.\n\nEn comprenant leur fonctionnement, vous apprenez :\n\n* Comment vous protéger contre ce type de menace\n* Pourquoi l'utilisation de gestionnaires de mots de passe est importante\n* Comment identifier des comportements suspects sur le système\n\n---\n**Résumé :**\nCe module ne concerne pas l'espionnage — il s'agit de **comprendre les risques réels et d'apprendre à mieux se protéger dans le monde numérique.**"
+    },
+    "hydra": {
+      "title": "🧰 HYDRA",
+      "content": "# 🧰 Test de Mots de Passe et Logins\nCe module d'AURA permet de tester la sécurité des systèmes utilisant un login et un mot de passe.\nIl simule des tentatives d'accès pour vérifier si les identifiants sont faciles à découvrir.\n\nEn pratique, cela aide à répondre à une question simple :\n👉 *\"Ce mot de passe est-il vraiment sûr ?\"*\n\n---\n\n### 🔎 Que fait ce module ?\nDe façon simple, il :\n\n* Teste des combinaisons d'utilisateur et de mot de passe sur un système\n* Peut utiliser des listes de mots de passe communs (wordlists)\n* Simule automatiquement plusieurs tentatives de connexion\n* Montre si des identifiants valides ont été trouvés\n\nC'est très utilisé lors d'audits pour identifier des **mots de passe faibles ou prévisibles**.\n\n---\n\n### ⚙️ Comment ça marche en pratique ?\nLe module peut fonctionner de deux manières principales :\n\n* **Mot de passe unique :** tester un utilisateur et un mot de passe spécifique\n* **Liste de mots de passe :** tester plusieurs combinaisons automatiquement\n\nIl peut également travailler avec différents types de systèmes, tels que :\n\n* Accès distant (ex : SSH, FTP)\n* Systèmes internes\n* Sites avec écran de connexion\n\n---\n\n### 🚀 Exécution efficace\nAURA accélère les tests en utilisant :\n\n* Plusieurs tentatives en même temps (parallélisme)\n* Interruption automatique dès qu'un mot de passe valide est trouvé\n* Affichage de la progression en temps réel\n\nCela permet de tester rapidement si un système est protégé ou non.\n\n---\n\n### ⚠️ Usage responsable et éthique\nCe module doit être utilisé avec une extrême prudence :\n\n* ❌ Ne testez jamais de systèmes sans autorisation\n* ❌ Ne l'utilisez pas sur des réseaux ou serveurs tiers\n* ✅ Utilisez-le uniquement en laboratoire ou dans votre propre environnement\n* ✅ Idéal pour les tests de sécurité et l'apprentissage\n\n---\n\n### 💡 Pourquoi est-ce important ?\nDe nombreuses attaques réelles exploitent des mots de passe faibles.\n\nAvec ce module, vous apprenez :\n\n* Comment fonctionnent les attaques par force brute\n* Pourquoi les mots de passe simples sont dangereux\n* Comment mettre en œuvre des politiques de mots de passe plus sûres\n* L'importance des protections comme le blocage après plusieurs tentatives (ex : Fail2Ban)\n\n---\n\n**Résumé :**\nCe module ne sert pas à envahir des systèmes, mais plutôt à **tester et renforcer la sécurité des logins**, aidant ainsi à prévenir les accès non autorisés."
+    }
+  }
+}

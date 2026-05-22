@@ -1,0 +1,401 @@
+{
+  "app_title": "Security Toolkit — Dashboard Neon",
+  "app": {
+    "window_title": "AURA Security Toolkit",
+    "session_title": "AURA Security - 활성 감사 ({username})"
+  },
+  "common": {
+    "content_not_available": "콘텐츠를 사용할 수 없습니다."
+  },
+  "sidebar": {
+    "home": "홈",
+    "tools": "도구",
+    "diagnostic": "진단",
+    "scanner": "정보",
+    "scripts": "스크립트",
+    "logs": "로그",
+    "settings": "설정",
+    "exit": "나가기"
+  },
+  "header": {
+    "operations_panel": "운영 패널",
+    "search_placeholder": "도구 검색...",
+    "status_ready": "상태: 준비됨",
+    "status_page_loaded": "상태: {index} 페이지 로드됨"
+  },
+  "home_page": {
+    "welcome": "AURA Security Toolkit에 오신 것을 환영합니다!",
+    "cards": {
+      "scanner": { "title": "스캔", "subtitle": "호스트를 식별합니다." },
+      "stress": { "title": "부하 테스트", "subtitle": "DoS 시뮬레이션." },
+      "firewall": { "title": "방화벽", "subtitle": "규칙을 확인합니다." },
+      "sherlock": { "title": "Sherlock", "subtitle": "소셜 OSINT." },
+      "john": { "title": "John Ripper", "subtitle": "해시 크래커." },
+      "keylogger": { "title": "키보드 감사", "subtitle": "타이핑 기록." },
+      "hydra": { "title": "Hydra", "subtitle": "자격 증명 테스트." }
+    }
+  },
+  "placeholder_pages": {
+    "scripts": "스크립트 페이지 통합 중.",
+    "logs": "로그 페이지 통합 중."
+  },
+  "cards": {
+    "scanner": {
+      "title": "네트워크 스캔",
+      "subtitle": "호스트 스캔 및 감지"
+    },
+    "ports": {
+      "title": "포트 분석기",
+      "subtitle": "특정 포트 테스트"
+    },
+    "reports": {
+      "title": "보고서",
+      "subtitle": "CSV/LOG 자동 생성"
+    },
+    "scripts_auto": {
+      "title": "자동 스크립트",
+      "subtitle": "Python/.bat 루틴 실행"
+    },
+    "targets": {
+      "title": "대상",
+      "subtitle": "IP 및 범위 관리"
+    },
+    "logs": {
+      "title": "시스템 로그",
+      "subtitle": "실행 기록"
+    },
+    "advanced": {
+      "title": "고급 모드",
+      "subtitle": "추가 기능 / DevTools"
+    },
+    "status": {
+      "title": "상태",
+      "subtitle": "환경 확인"
+    },
+    "settings": {
+      "title": "설정",
+      "subtitle": "시스템 환경설정"
+    }
+  },
+  "settings_page": {
+    "title": "설정",
+    "themes": "테마",
+    "lang_group": "언어",
+    "reset_color": "기본값 복원",
+    "choose_theme": "테마 선택",
+    "interface_theme": "인터페이스 테마",
+    "theme_dark": "다크 테마",
+    "theme_light": "라이트 테마",
+    "neon_group": "네온 컬러",
+    "choose_color": "색상 선택",
+    "color_purple": "보라색",
+    "color_red": "빨간색",
+    "color_green": "초록색",
+    "color_blue": "파란색",
+    "color_pink": "분홍색",
+    "color_yellow": "노란색",
+    "color_none": "조명 효과 없음",
+    "special_themes": "특별 테마",
+    "theme_christmas": "크리스마스 테마",
+    "theme_halloween": "할로윈 테마",
+    "theme_easter": "부활절 테마",
+    "theme_brazil": "브라질 테마",
+    "languages": "언어",
+    "choose_language": "언어 선택",
+    "lang_pt": "포르투갈어",
+    "lang_en": "영어",
+    "lang_es": "스페인어",
+    "lang_fr": "프랑스어",
+    "lang_it": "이탈리아어",
+    "lang_de": "독일어",
+    "lang_ru": "러시아어",
+    "lang_ja": "일본어",
+    "lang_ko": "한국어",
+    "lang_zh": "중국어",
+    "lang_ar": "아랍어"
+  },
+  "scanner_page": {
+    "targets_group": "스캔 대상 (IP/범위)",
+    "ip_placeholder": "예: 192.168.1.1, 10.0.0.0/24",
+    "start_scan": "스캔 시작",
+    "results_group": "결과",
+    "awaiting_scan": "스캔 대기 중...",
+    "save_results": "로그/보고서에 결과 저장",
+    "send_hydra": "취약한 IP를 Hydra로 전송",
+    "please_enter_target": "IP 또는 범위를 하나 이상 입력하십시오.",
+    "scan_initiated": "{count}개의 대상에 대한 스캔 시작 중...",
+    "scan_message": "이 작업은 몇 분 정도 걸릴 수 있습니다.",
+    "scanning": "네트워크 스캔 중...",
+    "scan_completed": "스캔 완료 ✔",
+    "scan_finished": "✔ 스캔 종료",
+    "error_scan": "--- {ip}에서 오류 발생 ---",
+    "host_info": "--- IP: {ip} ---",
+    "unknown": "알 수 없음",
+    "na": "N/A",
+    "os_label": "운영체제:",
+    "requires_root": "알 수 없음 (root 권한 필요)",
+    "open_ports": "열린 포트:",
+    "no_open_ports": "열린 포트를 찾을 수 없습니다.",
+    "potential_vuln": "잠재적 취약점:",
+    "vuln_label": "VULN {i}",
+    "port_label": "포트",
+    "service_label": "서비스",
+    "port_unknown": "알 수 없음",
+    "error_during_scan": "스캔 중 오류 발생 ❌",
+    "unexpected_error": "예기치 않은 오류가 발생했습니다:",
+    "nmap_check": "Nmap이 설치되어 있고 sudo 권한이 있는지 확인하십시오.",
+    "report_saved": "보고서가 logs/{filename}에 저장되었습니다 ✔",
+    "failed_save": "보고서 저장 실패:",
+    "no_vulnerable_ips": "전송할 수 있는 취약한 IP가 없습니다."
+  },
+  "diagnostics_page": {
+    "title": "환경 진단",
+    "run_diagnostic": "진단 실행",
+    "description": "환경을 확인하려면 '진단 실행'을 클릭하십시오.",
+    "install_missing": "누락된 종속성 설치 (Linux/apt)",
+    "install_description": "주요 도구가 시스템에 설치되어 있는지 확인합니다.",
+    "tools_diagnostic": "--- 도구 진단 ---",
+    "detected": "✔ {tool_name} 감지됨",
+    "not_found": "❌ {tool_name} 찾을 수 없음",
+    "install_auto": "Linux (apt)에서 누락된 항목을 자동으로 설치할 수 있습니다.",
+    "environment_ready": "환경 준비 완료: 모든 도구가 감지되었습니다.",
+    "running": "실행 중:",
+    "output_label": "--- 출력 ---",
+    "installation_completed": "✔ 설치 완료. 진단을 다시 실행하십시오.",
+    "installation_failure": "❌ 설치 실패:",
+    "unknown_failure": "알 수 없는 실패",
+    "diagnostic_label": "진단",
+    "no_missing_tools": "설치할 누락된 도구가 없습니다.",
+    "installation_unavailable": "설치 불가",
+    "installation_linux_only": "자동 설치는 apt를 사용하는 Linux에서만 가능합니다.",
+    "pkexec_not_found": "❌ 'pkexec'를 찾을 수 없습니다. 수동 실행: sudo apt-get install -y"
+  },
+  "sherlock_page": {
+    "title": "🔍 Sherlock OSINT Pro",
+    "subtitle": "닉네임, 실명 및 유출 정보 고급 검색.",
+    "mode_label": "대상 유형:",
+    "mode_nickname": "닉네임",
+    "mode_fullname": "실명",
+    "placeholder": "여기에 대상을 입력하십시오...",
+    "investigate": "조사 시작",
+    "searching": "검색 중...",
+    "error_title": "Sherlock 조사 실패 ❌",
+    "error_label": "오류",
+    "search_failed": "검색 실패:",
+    "search_completed": "검색 완료",
+    "investigation_complete": "'{username}'에 대한 조사가 완료되었습니다!",
+    "file_generated": "파일이 성공적으로 생성되었습니다:",
+    "report_saved": "보고서 저장됨: {filename}",
+    "no_results": "결과를 찾을 수 없습니다.",
+    "warning_title": "경고",
+    "no_networks": "이 사용자에 대한 소셜 네트워크를 찾을 수 없습니다.",
+    "view_button": "보기",
+    "duckduckgo": "DuckDuckGo",
+    "osint_search": "OSINT-Search",
+    "webmii": "Webmii",
+    "peekYou": "PeekYou",
+    "truePeople": "TruePeople",
+    "document": "📄 문서",
+    "potential_leak": "유출 가능성/문서",
+    "gravatar": "Gravatar"
+  },
+  "firewall_page": {
+    "title": "🛡️ 보안 감사",
+    "audit_title": "🛡️ 보안 감사",
+    "execution_test": "실행 테스트",
+    "start_audit": "로컬 감사 시작",
+    "description": "로컬 호스트에서 권한, 의심스러운 프로세스, 파일 무결성 및 방화벽 준수 여부를 정밀 감사힙니다.",
+    "waiting": "명령 대기 중...",
+    "audit_label": "감사",
+    "audit_running": "감사가 이미 진행 중입니다.",
+    "audit_in_progress": "감사 진행 중...",
+    "metadata_collection": "[INFO] 메타데이터 수집 및 프로세스 분석 시작...",
+    "running_audit": "보안 감사 실행 중...",
+    "error_label": "오류",
+    "report_generated": "보고서 생성됨",
+    "audit_completed": "스테이션 감사 완료: {hostname}",
+    "audit_user": "사용자: {user}",
+    "summary": "발견 사항 요약:",
+    "unknown": "알 수 없음",
+    "report_saved": "[INFO] 보고서가 성공적으로 서명 및 저장되었습니다.",
+    "error_reading": "[ERROR] 로그 읽기 오류:"
+  },
+  "payload_page": {
+    "title": "📦 원격 에이전트 생성 (Payload)",
+    "description": "연결 에이전트를 생성할 대상 컴퓨터의 운영체제를 선택하십시오.",
+    "generate_windows": "🪟 Windows용 에이전트 생성 (.exe)",
+    "generate_linux": "🐧 Linux용 에이전트 생성 (.py)",
+    "go_listener": "제어 패널로 이동 📡",
+    "awaiting": "선택 대기 중...",
+    "back": "⬅ 뒤로",
+    "generating": "[INFO] {os_type}용 에이전트 생성 중 (IP: {my_ip})...",
+    "agent_not_found": "[ERROR] 'core/aura_agent.py' 파일을 찾을 수 없습니다!",
+    "linux_success": "[SUCCESS] Linux 에이전트 준비 완료:",
+    "compiling": "[INFO] EXE 컴파일 중... 잠시만 기다려 주십시오.",
+    "agent_success": "[SUCCESS] 에이전트 생성 완료!",
+    "agent_file": "파일: temp_win_agent.exe",
+    "compilation_error": "[ERROR] 컴파일 실패. 터미널을 확인하십시오.",
+    "error_prefix": "[ERROR]:"
+  },
+  "listener_page": {
+    "title": "📡 원격 제어 패널",
+    "status_label": "상태: 활성화 대기 중...",
+    "server_log": "서버 로그...",
+    "command_placeholder": "명령어 입력 (예: stress_test, dir, whoami)...",
+    "activate_listen": "리스닝 활성화 (포트 4444)",
+    "listening": "상태: 4444 포트에서 리스닝 중...",
+    "connected": "상태: 대상에 연결됨 ({addr})",
+    "connection_lost": "상태: 연결 끊김.",
+    "command_echo": "> {cmd}",
+    "server_error": "서버 오류:"
+  },
+  "john_page": {
+    "title": "💀 John The Ripper - 해시 크래커",
+    "basic_settings": "기본 설정",
+    "target_hash": "대상 해시:",
+    "hash_placeholder": "여기에 해시 입력...",
+    "attack_mode": "공격 모드:",
+    "wordlist": "Wordlist",
+    "mask": "마스크",
+    "algorithm": "알고리즘:",
+    "auto_detect": "자동 감지",
+    "md5": "MD5",
+    "sha1": "SHA1",
+    "sha256": "SHA256",
+    "sha512": "SHA512",
+    "select_wordlist": "Wordlist 파일 선택",
+    "apply_rules": "규칙 적용 (John 스타일)",
+    "mask_definition": "마스크 정의:",
+    "mask_placeholder": "예: ?l?l?l?d?d (L=문자, D=숫자)",
+    "salt_label": "Salt:",
+    "salt_placeholder": "Salt (선택 사항)",
+    "start_attack": "공격 시작",
+    "select_wordlist_title": "Wordlist 선택",
+    "text_files": "텍스트 파일 (*.txt)",
+    "error_title": "오류",
+    "enter_hash": "해시를 입력하십시오!",
+    "running": "실행 중...",
+    "select_wordlist_error": "Wordlist를 선택하십시오!",
+    "enter_mask": "마스크를 입력하십시오!",
+    "john_progress": "John: {tested} 해시 테스트 완료 | 속도: {speed} H/s",
+    "processing": "[*] 처리 중... {tested}명의 후보 테스트 완료.",
+    "unknown_failure": "알 수 없는 실패",
+    "password_found": "✅ 비밀번호 발견: {password}",
+    "report_label": "보고서: {filename}",
+    "success_title": "성공",
+    "failure": "❌ 실패: {error}"
+  },
+  "keylogger_page": {
+    "title": "⌨️ 키보드 감사 - 모니터링",
+    "dot": "●",
+    "status_ready": "상태: 캡처 준비 완료",
+    "status_monitoring": "키보드 모니터링 중...",
+    "status_finished": "감사 완료",
+    "recent_activity": "최근 활동:",
+    "start_audit": "감사 시작",
+    "stop_monitoring": "모니터링 중지",
+    "restart_capture": "캡처 재시작",
+    "open_logs": "📁 로그 열기"
+  },
+  "stress_test_page": {
+    "title": "🛡️ 방화벽 복원력 평가",
+    "target_parameters": "대상 매개변수",
+    "target_label": "대상:",
+    "target_placeholder": "IP 또는 호스트",
+    "port_label": "포트:",
+    "traffic_control": "트래픽 제어",
+    "rate_limit_label": "속도 제한 (초당 요청 - RPS):",
+    "duration_label": "테스트 기간 (초):",
+    "gradual_escalation": "점진적 강화 (Ramp-up)",
+    "awaiting_start": "테스트 시작 대기 중...",
+    "start_button": "⚡ 트래픽 감사 시작",
+    "stop_button": "🛑 테스트 중단",
+    "input_description": "입력 필드를 잠그거나 해제합니다."
+  },
+  "hydra_page": {
+    "title": "🧰 Hydra - 자격 증명 테스트",
+    "warning": "⚠️ 허가된 환경에서만 사용하십시오.",
+    "targets_group": "대상",
+    "targets_placeholder": "예: 192.168.0.10",
+    "service_and_port": "서비스 및 포트",
+    "service_label": "서비스:",
+    "port_label": "포트:",
+    "http_config": "HTTP POST 설정",
+    "form_path": "양식 경로",
+    "form_path_placeholder": "/login.php",
+    "post_params": "POST 매개변수",
+    "post_params_placeholder": "username=^USER^&password=^PASS^",
+    "fail_string": "실패 문자열",
+    "fail_string_placeholder": "실패 텍스트 (예: Login invalid)",
+    "credentials_group": "자격 증명",
+    "single_username": "단일 사용자",
+    "username_list": "사용자 목록",
+    "single_password": "단일 비밀번호",
+    "password_list": "비밀번호 목록",
+    "user_list_title": "사용자 목록",
+    "password_list_title": "비밀번호 목록",
+    "options_group": "옵션",
+    "threads_label": "스레드 (-t):",
+    "stop_on_success": "성공 시 중지",
+    "verbose": "자세히 보기",
+    "start_button": "시작",
+    "stop_button": "중지",
+    "already_running": "Hydra",
+    "already_running_msg": "이미 실행 중인 인스턴스가 있습니다.",
+    "no_targets": "Hydra",
+    "no_targets_msg": "최소 하나 이상의 대상을 제공하십시오.",
+    "no_service": "Hydra",
+    "no_service_msg": "서비스를 제공하십시오.",
+    "http_required": "Hydra",
+    "http_required_msg": "모든 HTTP POST 필드를 채우십시오.",
+    "params_error": "Hydra",
+    "params_error_msg": "매개변수에 ^USER^ 및 ^PASS^를 사용하십시오.",
+    "interruption_requested": "[INFO] 중단 요청됨.",
+    "completed": "[INFO] Hydra 종료 코드:",
+    "log_saved": "[INFO] 로그 저장 위치:"
+  },
+  "manual": {
+    "tabs": {
+      "manifesto": "선언문",
+      "scanner": "스캐너",
+      "ddos": "DDOS",
+      "auditoria": "감사",
+      "sherlock": "SHERLOCK",
+      "john": "JOHN",
+      "keylogger": "KEYLOGGER",
+      "hydra": "HYDRA"
+    },
+    "manifesto": {
+      "title": "🏠 AURA 소개",
+      "content": "# 🌌 AURA 프로젝트\n\n**Advanced Unified Reconnaissance Agent**\n\n---\n\n## 👋 AURA에 오신 것을 환영합니다\n\n사이버 보안 분야를 막 시작하셨다면, AURA는 당신을 위해 만들어졌습니다. 여러 프로그램을 사용할 필요 없이 한 곳에서 중요한 보안 기능을 배우고 실습할 수 있는 도구입니다.\n\n---\n\n## 🧠 AURA는 무엇을 하나요?\n\n* 🔍 네트워크 및 시스템 정보 탐색\n* 🧪 로그인 및 비밀번호 보안 테스트\n* 🛰️ 서버의 열린 포트 확인\n* 🔎 공개 정보 검색 (OSINT)\n* ⌨️ 입력 캡처 원리 이해 (통제된 방식)\n* 🔥 부하 테스트를 통한 시스템 반응 확인\n* 🛡️ 방화벽 동작 평가\n\n---\n\n## ⚖️ 책임감 있는 사용\n\n본인의 시스템, 실험실 또는 허가된 환경에서만 사용하십시오. 무단 침입이나 피해를 주는 용도로 절대 사용하지 마십시오.\n\n---\n\n**책임감을 가지고 사용하십시오. 목적을 가지고 배우십시오.**"
+    },
+    "scanner": {
+      "title": "🛰️ 네트워크 스캔",
+      "content": "# 🛰️ 네트워크 스캐너\n\n호스트가 온라인인지, 어떤 포트가 열려 있는지, 어떤 서비스가 실행 중인지 분석합니다. 보안 평가의 첫 번째 단계입니다."
+    },
+    "ddos": {
+      "title": "🔥 DDOS",
+      "content": "# 🔥 부하 테스트 (Stress Test)\n\n다수의 동시 접속에 대해 시스템이 어떻게 반응하는지 테스트합니다. 방화벽 규칙이나 시스템 안정성을 확인하는 데 사용됩니다."
+    },
+    "auditoria": {
+      "title": "🛡️ 시스템 감사",
+      "content": "# 🛡️ 보안 점검\n\n로컬 권한, 프로세스 및 설정을 분석합니다. 본인 컴퓨터의 취약한 설정을 찾는 데 도움이 됩니다."
+    },
+    "sherlock": {
+      "title": "🔍 SHERLOCK",
+      "content": "# 🔍 디지털 존재 조사\n\n사용자에 대한 공개 정보를 수집(OSINT)합니다. 개인정보 노출 정도와 위험을 이해하는 데 도움이 됩니다."
+    },
+    "john": {
+      "title": "💀 JOHN THE RIPPER",
+      "content": "# 🔐 비밀번호 보안 테스트\n\n비밀번호 해시를 분석합니다. 쉽게 뚫리는 비밀번호는 취약한 것입니다. 보안 강화의 필요성을 확인하십시오."
+    },
+    "keylogger": {
+      "title": "⌨️ KEYLOGGER",
+      "content": "# ⌨️ 입력 모니터링\n\n통제된 환경에서 타이핑을 기록합니다. 공격자가 데이터를 훔치는 방식을 이해하고 방어하는 법을 배웁니다."
+    },
+    "hydra": {
+      "title": "🧰 HYDRA",
+      "content": "# 🧰 로그인 보안 테스트\n\n사용자 이름과 비밀번호 조합을 자동으로 테스트합니다. 취약하거나 예측 가능한 자격 증명을 식별하는 데 사용됩니다."
+    }
+  }
+}

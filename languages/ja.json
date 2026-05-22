@@ -1,0 +1,401 @@
+{
+  "app_title": "Security Toolkit — Dashboard Neon",
+  "app": {
+    "window_title": "AURA Security Toolkit",
+    "session_title": "AURA Security - アクティブ監査 ({username})"
+  },
+  "common": {
+    "content_not_available": "コンテンツは利用できません。"
+  },
+  "sidebar": {
+    "home": "ホーム",
+    "tools": "ツール",
+    "diagnostic": "診断",
+    "scanner": "情報",
+    "scripts": "スクリプト",
+    "logs": "ログ",
+    "settings": "設定",
+    "exit": "終了"
+  },
+  "header": {
+    "operations_panel": "オペレーションパネル",
+    "search_placeholder": "ツールを検索...",
+    "status_ready": "ステータス: 準備完了",
+    "status_page_loaded": "ステータス: ページ {index} が読み込まれました"
+  },
+  "home_page": {
+    "welcome": "AURA Security Toolkit へようこそ！",
+    "cards": {
+      "scanner": { "title": "スキャン", "subtitle": "ホストを識別します。" },
+      "stress": { "title": "負荷テスト", "subtitle": "DoS シミュレーション。" },
+      "firewall": { "title": "ファイアウォール", "subtitle": "ルールを検証します。" },
+      "sherlock": { "title": "Sherlock", "subtitle": "ソーシャル OSINT。" },
+      "john": { "title": "John Ripper", "subtitle": "ハッシュクラッカー。" },
+      "keylogger": { "title": "キーボード監査", "subtitle": "タイピングログ。" },
+      "hydra": { "title": "Hydra", "subtitle": "資格情報のテスト。" }
+    }
+  },
+  "placeholder_pages": {
+    "scripts": "スクリプトページを統合中。",
+    "logs": "ログページを統合中。"
+  },
+  "cards": {
+    "scanner": {
+      "title": "ネットワークスキャン",
+      "subtitle": "ホストをスキャンして検出"
+    },
+    "ports": {
+      "title": "ポートアナライザー",
+      "subtitle": "特定のポートをテスト"
+    },
+    "reports": {
+      "title": "レポート",
+      "subtitle": "CSV/LOG 自動生成"
+    },
+    "scripts_auto": {
+      "title": "自動スクリプト",
+      "subtitle": "Python/.bat ルーチンを実行"
+    },
+    "targets": {
+      "title": "ターゲット",
+      "subtitle": "IP と範囲の管理"
+    },
+    "logs": {
+      "title": "システムログ",
+      "subtitle": "実行履歴"
+    },
+    "advanced": {
+      "title": "詳細モード",
+      "subtitle": "追加機能 / DevTools"
+    },
+    "status": {
+      "title": "ステータス",
+      "subtitle": "環境チェック"
+    },
+    "settings": {
+      "title": "設定",
+      "subtitle": "システム設定"
+    }
+  },
+  "settings_page": {
+    "title": "設定",
+    "themes": "テーマ",
+    "lang_group": "言語",
+    "reset_color": "デフォルトに戻す",
+    "choose_theme": "テーマを選択",
+    "interface_theme": "インターフェーステーマ",
+    "theme_dark": "ダークテーマ",
+    "theme_light": "ライトテーマ",
+    "neon_group": "ネオンカラー",
+    "choose_color": "カラーを選択",
+    "color_purple": "パープル",
+    "color_red": "レッド",
+    "color_green": "グリーン",
+    "color_blue": "ブルー",
+    "color_pink": "ピンク",
+    "color_yellow": "イエロー",
+    "color_none": "ライト効果なし",
+    "special_themes": "スペシャルテーマ",
+    "theme_christmas": "クリスマス",
+    "theme_halloween": "ハロウィン",
+    "theme_easter": "イースター",
+    "theme_brazil": "ブラジル",
+    "languages": "言語",
+    "choose_language": "言語を選択",
+    "lang_pt": "ポルトガル語",
+    "lang_en": "英語",
+    "lang_es": "スペイン語",
+    "lang_fr": "フランス語",
+    "lang_it": "イタリア語",
+    "lang_de": "ドイツ語",
+    "lang_ru": "ロシア語",
+    "lang_ja": "日本語",
+    "lang_ko": "韓国語",
+    "lang_zh": "中国語",
+    "lang_ar": "アラビア語"
+  },
+  "scanner_page": {
+    "targets_group": "スキャンターゲット (IP/範囲)",
+    "ip_placeholder": "例: 192.168.1.1, 10.0.0.0/24",
+    "start_scan": "スキャン開始",
+    "results_group": "結果",
+    "awaiting_scan": "スキャン待機中...",
+    "save_results": "ログ/レポートに結果を保存",
+    "send_hydra": "脆弱な IP を Hydra に送信",
+    "please_enter_target": "IP または範囲を少なくとも1つ入力してください。",
+    "scan_initiated": "{count} 個のターゲットのスキャンを開始...",
+    "scan_message": "これには数分かかる場合があります。",
+    "scanning": "ネットワークスキャン中...",
+    "scan_completed": "スキャン完了 ✔",
+    "scan_finished": "✔ スキャン終了",
+    "error_scan": "--- {ip} でエラー ---",
+    "host_info": "--- IP: {ip} ---",
+    "unknown": "不明",
+    "na": "N/A",
+    "os_label": "OS:",
+    "requires_root": "不明 (root 権限が必要)",
+    "open_ports": "オープンポート:",
+    "no_open_ports": "開いているポートは見つかりませんでした。",
+    "potential_vuln": "潜在的な脆弱性:",
+    "vuln_label": "VULN {i}",
+    "port_label": "ポート",
+    "service_label": "サービス",
+    "port_unknown": "不明",
+    "error_during_scan": "スキャン中にエラー ❌",
+    "unexpected_error": "予期しないエラーが発生しました:",
+    "nmap_check": "Nmap がインストールされているか、sudo 権限があるか確認してください。",
+    "report_saved": "レポートを logs/{filename} に保存しました ✔",
+    "failed_save": "レポートの保存に失敗しました:",
+    "no_vulnerable_ips": "送信可能な脆弱な IP はありません。"
+  },
+  "diagnostics_page": {
+    "title": "環境診断",
+    "run_diagnostic": "診断を実行",
+    "description": "「診断を実行」をクリックして環境を確認してください。",
+    "install_missing": "不足している依存関係をインストール (Linux/apt)",
+    "install_description": "主要なツールがシステムにインストールされているか確認します。",
+    "tools_diagnostic": "--- ツール診断 ---",
+    "detected": "✔ {tool_name} を検出",
+    "not_found": "❌ {tool_name} が見つかりません",
+    "install_auto": "Linux (apt) では不足項目を自動インストールできます。",
+    "environment_ready": "環境準備完了: すべて検出されました。",
+    "running": "実行中:",
+    "output_label": "--- 出力 ---",
+    "installation_completed": "✔ インストール完了。診断を再実行してください。",
+    "installation_failure": "❌ インストール失敗:",
+    "unknown_failure": "不明な失敗",
+    "diagnostic_label": "診断",
+    "no_missing_tools": "インストールが必要なツールはありません。",
+    "installation_unavailable": "インストール不可",
+    "installation_linux_only": "自動インストールは apt を使用する Linux でのみ利用可能です。",
+    "pkexec_not_found": "❌ 'pkexec' が見つかりません。手動実行: sudo apt-get install -y"
+  },
+  "sherlock_page": {
+    "title": "🔍 Sherlock OSINT Pro",
+    "subtitle": "ニックネーム、フルネーム、漏洩情報の高度な検索。",
+    "mode_label": "ターゲットタイプ:",
+    "mode_nickname": "ニックネーム",
+    "mode_fullname": "フルネーム",
+    "placeholder": "ターゲットを入力...",
+    "investigate": "調査開始",
+    "searching": "検索中...",
+    "error_title": "Sherlock 調査失敗 ❌",
+    "error_label": "エラー",
+    "search_failed": "検索に失敗しました:",
+    "search_completed": "検索完了",
+    "investigation_complete": "'{username}' の調査が完了しました！",
+    "file_generated": "ファイルが正常に生成されました:",
+    "report_saved": "レポート保存完了: {filename}",
+    "no_results": "結果が見つかりませんでした。",
+    "warning_title": "警告",
+    "no_networks": "このユーザーのソーシャルネットワークは見つかりませんでした。",
+    "view_button": "表示",
+    "duckduckgo": "DuckDuckGo",
+    "osint_search": "OSINT-Search",
+    "webmii": "Webmii",
+    "peekYou": "PeekYou",
+    "truePeople": "TruePeople",
+    "document": "📄 ドキュメント",
+    "potential_leak": "情報漏洩/ドキュメントの可能性",
+    "gravatar": "Gravatar"
+  },
+  "firewall_page": {
+    "title": "🛡️ セキュリティ監査",
+    "audit_title": "🛡️ セキュリティ監査",
+    "execution_test": "実行テスト",
+    "start_audit": "ローカル監査を開始",
+    "description": "ローカルホストのディープ監査を実行し、権限、プロセス、整合性、ファイアウォールを検証します。",
+    "waiting": "コマンド待機中...",
+    "audit_label": "監査",
+    "audit_running": "監査は既に進行中です。",
+    "audit_in_progress": "監査進行中...",
+    "metadata_collection": "[INFO] メタデータ収集とプロセス分析を開始...",
+    "running_audit": "セキュリティ監査を実行中...",
+    "error_label": "エラー",
+    "report_generated": "レポート生成完了",
+    "audit_completed": "監査完了 ホスト名: {hostname}",
+    "audit_user": "ユーザー: {user}",
+    "summary": "発見事項の概要:",
+    "unknown": "不明",
+    "report_saved": "[INFO] レポートが署名され、保存されました。",
+    "error_reading": "[ERROR] ログの読み取りエラー:"
+  },
+  "payload_page": {
+    "title": "📦 リモートエージェント生成 (Payload)",
+    "description": "接続エージェントを生成するターゲット OS を選択してください。",
+    "generate_windows": "🪟 Windows 用エージェント生成 (.exe)",
+    "generate_linux": "🐧 Linux 用エージェント生成 (.py)",
+    "go_listener": "コントロールパネルへ 📡",
+    "awaiting": "選択待機中...",
+    "back": "⬅ 戻る",
+    "generating": "[INFO] {os_type} 用エージェントを生成中 (IP: {my_ip})...",
+    "agent_not_found": "[ERROR] 'core/aura_agent.py' が見つかりません！",
+    "linux_success": "[SUCCESS] Linux 用エージェントの準備完了:",
+    "compiling": "[INFO] EXE コンパイル中... お待ちください。",
+    "agent_success": "[SUCCESS] エージェント生成完了！",
+    "agent_file": "ファイル: temp_win_agent.exe",
+    "compilation_error": "[ERROR] コンパイル失敗。ターミナルを確認してください。",
+    "error_prefix": "[ERROR]:"
+  },
+  "listener_page": {
+    "title": "📡 リモートコントロールパネル",
+    "status_label": "ステータス: 有効化待機中...",
+    "server_log": "サーバーログ...",
+    "command_placeholder": "コマンドを入力 (例: stress_test, dir, whoami)...",
+    "activate_listen": "リスニング有効化 (Port 4444)",
+    "listening": "ステータス: ポート 4444 でリスニング中...",
+    "connected": "ステータス: ターゲットに接続完了 ({addr})",
+    "connection_lost": "ステータス: 接続が切断されました。",
+    "command_echo": "> {cmd}",
+    "server_error": "サーバーエラー:"
+  },
+  "john_page": {
+    "title": "💀 John The Ripper - ハッシュクラッカー",
+    "basic_settings": "基本設定",
+    "target_hash": "ターゲットハッシュ:",
+    "hash_placeholder": "ここにハッシュを入力...",
+    "attack_mode": "攻撃モード:",
+    "wordlist": "ワードリスト",
+    "mask": "マスク",
+    "algorithm": "アルゴリズム:",
+    "auto_detect": "自動検出",
+    "md5": "MD5",
+    "sha1": "SHA1",
+    "sha256": "SHA256",
+    "sha512": "SHA512",
+    "select_wordlist": "ワードリストファイルを選択",
+    "apply_rules": "ルールを適用 (John 形式)",
+    "mask_definition": "マスク定義:",
+    "mask_placeholder": "例: ?l?l?l?d?d (L=英字, D=数字)",
+    "salt_label": "ソルト (Salt):",
+    "salt_placeholder": "ソルト (任意)",
+    "start_attack": "アタック開始",
+    "select_wordlist_title": "ワードリスト選択",
+    "text_files": "テキストファイル (*.txt)",
+    "error_title": "エラー",
+    "enter_hash": "ハッシュを入力してください！",
+    "running": "実行中...",
+    "select_wordlist_error": "ワードリストを選択してください！",
+    "enter_mask": "マスクを入力してください！",
+    "john_progress": "John: {tested} ハッシュテスト済み | 速度: {speed} H/s",
+    "processing": "[*] 処理中... {tested} 個の候補をテスト済み。",
+    "unknown_failure": "不明な失敗",
+    "password_found": "✅ パスワード発見: {password}",
+    "report_label": "レポート: {filename}",
+    "success_title": "成功",
+    "failure": "❌ 失敗: {error}"
+  },
+  "keylogger_page": {
+    "title": "⌨️ キーボード監査 - モニタリング",
+    "dot": "●",
+    "status_ready": "ステータス: キャプチャ準備完了",
+    "status_monitoring": "キーボード監視中...",
+    "status_finished": "監査完了",
+    "recent_activity": "最近のアクティビティ:",
+    "start_audit": "監査開始",
+    "stop_monitoring": "監視停止",
+    "restart_capture": "キャプチャ再開",
+    "open_logs": "📁 ログを開く"
+  },
+  "stress_test_page": {
+    "title": "🛡️ ファイアウォール耐性評価",
+    "target_parameters": "ターゲットパラメータ",
+    "target_label": "ターゲット:",
+    "target_placeholder": "IP またはホスト",
+    "port_label": "ポート:",
+    "traffic_control": "トラフィック制御",
+    "rate_limit_label": "レート制限 (Req/Sec - RPS):",
+    "duration_label": "テスト期間 (秒):",
+    "gradual_escalation": "段階的な拡大 (Ramp-up)",
+    "awaiting_start": "テスト開始待機中...",
+    "start_button": "⚡ トラフィック監査開始",
+    "stop_button": "🛑 テスト中断",
+    "input_description": "入力フィールドをロックまたは解除。"
+  },
+  "hydra_page": {
+    "title": "🧰 Hydra - 資格情報テスト",
+    "warning": "⚠️ 許可された環境でのみ使用してください。",
+    "targets_group": "ターゲット",
+    "targets_placeholder": "例: 192.168.0.10",
+    "service_and_port": "サービスとポート",
+    "service_label": "サービス:",
+    "port_label": "ポート:",
+    "http_config": "HTTP POST 設定",
+    "form_path": "フォームパス",
+    "form_path_placeholder": "/login.php",
+    "post_params": "POST パラメータ",
+    "post_params_placeholder": "username=^USER^&password=^PASS^",
+    "fail_string": "失敗文字列",
+    "fail_string_placeholder": "失敗時のテキスト (例: Login invalid)",
+    "credentials_group": "資格情報",
+    "single_username": "単一ユーザー",
+    "username_list": "ユーザーリスト",
+    "single_password": "単一パスワード",
+    "password_list": "パスワードリスト",
+    "user_list_title": "ユーザーリスト",
+    "password_list_title": "パスワードリスト",
+    "options_group": "オプション",
+    "threads_label": "スレッド数 (-t):",
+    "stop_on_success": "成功時に停止",
+    "verbose": "詳細表示 (Verbose)",
+    "start_button": "開始",
+    "stop_button": "停止",
+    "already_running": "Hydra",
+    "already_running_msg": "既に実行中です。",
+    "no_targets": "Hydra",
+    "no_targets_msg": "ターゲットを少なくとも1つ入力してください。",
+    "no_service": "Hydra",
+    "no_service_msg": "サービスを入力してください。",
+    "http_required": "Hydra",
+    "http_required_msg": "HTTP POST フィールドをすべて入力してください。",
+    "params_error": "Hydra",
+    "params_error_msg": "パラメータには ^USER^ と ^PASS^ を使用してください。",
+    "interruption_requested": "[INFO] 中断リクエストを受信。",
+    "completed": "[INFO] Hydra がコードで終了:",
+    "log_saved": "[INFO] ログ保存先:"
+  },
+  "manual": {
+    "tabs": {
+      "manifesto": "マニフェスト",
+      "scanner": "スキャナー",
+      "ddos": "DDOS",
+      "auditoria": "監査",
+      "sherlock": "SHERLOCK",
+      "john": "JOHN",
+      "keylogger": "KEYLOGGER",
+      "hydra": "HYDRA"
+    },
+    "manifesto": {
+      "title": "🏠 AURA について",
+      "content": "# 🌌 AURA プロジェクト\n\n**Advanced Unified Reconnaissance Agent**\n\n---\n\n## 👋 AURA へようこそ\n\nサイバーセキュリティの学習を始めたばかりなら、AURA はあなたのために作られました。複数のツールを使い分けることなく、重要なセキュリティ機能を一箇所で学び、実践することができます。\n\n---\n\n## 🧠 AURA でできること\n\n* 🔍 ネットワークとシステムの情報を発見\n* 🧪 ログインとパスワードのセキュリティをテスト\n* 🛰️ サーバーのオープンポートを確認\n* 🔎 公開情報の検索 (OSINT)\n* ⌨️ 入力キャプチャの仕組みを理解 (制御された環境下)\n* 🔥 システムの負荷耐性をテスト\n* 🛡️ ファイアウォールの挙動を評価\n\n---\n\n## ⚖️ 責任ある使用\n\n自身のシステム、ラボ、または許可を得た環境でのみ使用してください。無断での侵入や攻撃には絶対に使用しないでください。\n\n---\n\n**責任を持って使用し、目的を持って学びましょう。**"
+    },
+    "scanner": {
+      "title": "🛰️ ネットワークスキャン",
+      "content": "# 🛰️ ネットワークスキャナー\n\nホストがオンラインか、どのポートが開いているか、どのサービスが動作しているかを分析します。これはセキュリティ評価の第一歩です。"
+    },
+    "ddos": {
+      "title": "🔥 DDOS",
+      "content": "# 🔥 負荷テスト (Stress Test)\n\n多数の同時接続に対するシステムの反応をテストします。ファイアウォールの制限やシステムの安定性を確認するために使用します。"
+    },
+    "auditoria": {
+      "title": "🛡️ システム監査",
+      "content": "# 🛡️ セキュリティチェック\n\nローカル権限、プロセス、設定を分析します。自身のコンピュータの脆弱な設定を見つけるのに役立ちます。"
+    },
+    "sherlock": {
+      "title": "🔍 SHERLOCK",
+      "content": "# 🔍 デジタルプレゼンス調査\n\nユーザーに関する公開情報を収集 (OSINT) します。アイデンティティの露出度やプライバシーのリスクを理解するのに役立ちます。"
+    },
+    "john": {
+      "title": "💀 JOHN THE RIPPER",
+      "content": "# 🔐 パスワード強度テスト\n\nハッシュ化されたパスワードを分析します。短時間で解読されるパスワードは脆弱です。保護の改善に役立ててください。"
+    },
+    "keylogger": {
+      "title": "⌨️ KEYLOGGER",
+      "content": "# ⌨️ 入力モニタリング\n\n制御された環境でタイピングを記録します。脅威がどのようにデータを盗むかを知り、防御策を学ぶためのものです。"
+    },
+    "hydra": {
+      "title": "🧰 HYDRA",
+      "content": "# 🧰 ログインセキュリティテスト\n\nID とパスワードの組み合わせを自動テストします。脆弱なパスワードや推測されやすい資格情報の特定に使用されます。"
+    }
+  }
+}

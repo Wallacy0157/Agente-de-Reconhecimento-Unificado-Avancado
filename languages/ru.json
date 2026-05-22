@@ -1,0 +1,401 @@
+{
+  "app_title": "Security Toolkit — Dashboard Neon",
+  "app": {
+    "window_title": "AURA Security Toolkit",
+    "session_title": "AURA Security - Активный аудит ({username})"
+  },
+  "common": {
+    "content_not_available": "Контент недоступен."
+  },
+  "sidebar": {
+    "home": "Главная",
+    "tools": "Инструменты",
+    "diagnostic": "Диагностика",
+    "scanner": "Информация",
+    "scripts": "Скрипты",
+    "logs": "Логи",
+    "settings": "Настройки",
+    "exit": "Выход"
+  },
+  "header": {
+    "operations_panel": "Панель операций",
+    "search_placeholder": "Поиск инструментов...",
+    "status_ready": "Статус: Готов",
+    "status_page_loaded": "Статус: Страница {index} загружена"
+  },
+  "home_page": {
+    "welcome": "Добро пожаловать в AURA Security Toolkit!",
+    "cards": {
+      "scanner": { "title": "Сканирование", "subtitle": "Идентификация хостов." },
+      "stress": { "title": "Стресс-тест", "subtitle": "Симуляция DoS." },
+      "firewall": { "title": "Firewall", "subtitle": "Проверка правил." },
+      "sherlock": { "title": "Sherlock", "subtitle": "Социальный OSINT." },
+      "john": { "title": "John Ripper", "subtitle": "Взломщик хешей." },
+      "keylogger": { "title": "Аудитор клавиатуры", "subtitle": "Лог печати." },
+      "hydra": { "title": "Hydra", "subtitle": "Тест учетных данных." }
+    }
+  },
+  "placeholder_pages": {
+    "scripts": "Страница скриптов находится в процессе консолидации.",
+    "logs": "Страница логов находится в процессе консолидации."
+  },
+  "cards": {
+    "scanner": {
+      "title": "Сканирование сети",
+      "subtitle": "Сканирование и поиск хостов"
+    },
+    "ports": {
+      "title": "Анализатор портов",
+      "subtitle": "Тестирование портов"
+    },
+    "reports": {
+      "title": "Отчеты",
+      "subtitle": "Автогенерация CSV/LOG"
+    },
+    "scripts_auto": {
+      "title": "Авто-скрипты",
+      "subtitle": "Запуск Python/.bat рутин"
+    },
+    "targets": {
+      "title": "Цели",
+      "subtitle": "Управление IP и диапазонами"
+    },
+    "logs": {
+      "title": "Системные логи",
+      "subtitle": "История выполнений"
+    },
+    "advanced": {
+      "title": "Продвинутый режим",
+      "subtitle": "Доп. функции / DevTools"
+    },
+    "status": {
+      "title": "Статус",
+      "subtitle": "Проверка окружения"
+    },
+    "settings": {
+      "title": "Настройки",
+      "subtitle": "Настройки системы"
+    }
+  },
+  "settings_page": {
+    "title": "Настройки",
+    "themes": "Темы",
+    "lang_group": "Язык",
+    "reset_color": "Сбросить по умолчанию",
+    "choose_theme": "Выбрать тему",
+    "interface_theme": "Тема интерфейса",
+    "theme_dark": "Темная тема",
+    "theme_light": "Светлая тема",
+    "neon_group": "Неоновый цвет",
+    "choose_color": "Выбрать цвет",
+    "color_purple": "Фиолетовый",
+    "color_red": "Красный",
+    "color_green": "Зеленый",
+    "color_blue": "Синий",
+    "color_pink": "Розовый",
+    "color_yellow": "Желтый",
+    "color_none": "Без свечения",
+    "special_themes": "Спецтемы",
+    "theme_christmas": "Рождество",
+    "theme_halloween": "Хэллоуин",
+    "theme_easter": "Пасха",
+    "theme_brazil": "Бразилия",
+    "languages": "Языки",
+    "choose_language": "Выбрать язык",
+    "lang_pt": "Португальский",
+    "lang_en": "Английский",
+    "lang_es": "Испанский",
+    "lang_fr": "Французский",
+    "lang_it": "Итальянский",
+    "lang_de": "Немецкий",
+    "lang_ru": "Русский",
+    "lang_ja": "Японский",
+    "lang_ko": "Корейский",
+    "lang_zh": "Китайский",
+    "lang_ar": "Арабский"
+  },
+  "scanner_page": {
+    "targets_group": "Цели сканирования (IP/диапазоны)",
+    "ip_placeholder": "Напр: 192.168.1.1, 10.0.0.0/24",
+    "start_scan": "Начать сканирование",
+    "results_group": "Результаты",
+    "awaiting_scan": "Ожидание сканирования...",
+    "save_results": "Сохранить результаты в Логи/Отчеты",
+    "send_hydra": "Отправить уязвимые IP в Hydra",
+    "please_enter_target": "Пожалуйста, введите хотя бы один IP или диапазон.",
+    "scan_initiated": "Запуск сканирования {count} целей...",
+    "scan_message": "Это может занять несколько минут.",
+    "scanning": "Сканирование сети...",
+    "scan_completed": "Сканирование завершено ✔",
+    "scan_finished": "✔ Сканирование окончено",
+    "error_scan": "--- ОШИБКА в {ip} ---",
+    "host_info": "--- IP: {ip} ---",
+    "unknown": "Неизвестно",
+    "na": "Н/Д",
+    "os_label": "ОС:",
+    "requires_root": "Неизвестно (требуются права root)",
+    "open_ports": "Открытые порты:",
+    "no_open_ports": "Открытых портов не найдено.",
+    "potential_vuln": "Потенциальные уязвимости:",
+    "vuln_label": "VULN {i}",
+    "port_label": "Порт",
+    "service_label": "Сервис",
+    "port_unknown": "неизвестно",
+    "error_during_scan": "Ошибка при сканировании ❌",
+    "unexpected_error": "Произошла непредвиденная ошибка:",
+    "nmap_check": "Убедитесь, что Nmap установлен и у вас есть права sudo.",
+    "report_saved": "Отчет сохранен в logs/{filename} ✔",
+    "failed_save": "Не удалось сохранить отчет:",
+    "no_vulnerable_ips": "Нет уязвимых IP для отправки."
+  },
+  "diagnostics_page": {
+    "title": "Диагностика окружения",
+    "run_diagnostic": "Запустить диагностику",
+    "description": "Нажмите 'Запустить диагностику' для проверки системы.",
+    "install_missing": "Установить недостающие зависимости (Linux/apt)",
+    "install_description": "Проверяет наличие основных инструментов в системе.",
+    "tools_diagnostic": "--- Диагностика инструментов ---",
+    "detected": "✔ {tool_name} обнаружен",
+    "not_found": "❌ {tool_name} не найден",
+    "install_auto": "Вы можете автоматически установить недостающие компоненты в Linux (apt).",
+    "environment_ready": "Окружение готово: всё обнаружено.",
+    "running": "Выполнение:",
+    "output_label": "--- Вывод ---",
+    "installation_completed": "✔ Установка завершена. Запустите диагностику снова.",
+    "installation_failure": "❌ Ошибка установки:",
+    "unknown_failure": "Неизвестная ошибка",
+    "diagnostic_label": "Диагностика",
+    "no_missing_tools": "Нет недостающих инструментов для установки.",
+    "installation_unavailable": "Установка недоступна",
+    "installation_linux_only": "Автоматическая установка доступна только для Linux с apt.",
+    "pkexec_not_found": "❌ 'pkexec' не найден. Используйте вручную: sudo apt-get install -y"
+  },
+  "sherlock_page": {
+    "title": "🔍 Sherlock OSINT Pro",
+    "subtitle": "Поиск по никнейму, ФИО и утечкам.",
+    "mode_label": "Тип цели:",
+    "mode_nickname": "Никнейм",
+    "mode_fullname": "Полное имя",
+    "placeholder": "Введите цель здесь...",
+    "investigate": "ИССЛЕДОВАТЬ",
+    "searching": "ПОИСК...",
+    "error_title": "Ошибка исследования Sherlock ❌",
+    "error_label": "Ошибка",
+    "search_failed": "Поиск не удался:",
+    "search_completed": "Поиск завершен",
+    "investigation_complete": "Исследование '{username}' завершено!",
+    "file_generated": "Файл успешно создан в:",
+    "report_saved": "Отчет сохранен: {filename}",
+    "no_results": "Результатов не найдено.",
+    "warning_title": "Предупреждение",
+    "no_networks": "Соцсетей для этого пользователя не найдено.",
+    "view_button": "СМОТРЕТЬ",
+    "duckduckgo": "DuckDuckGo",
+    "osint_search": "OSINT-Search",
+    "webmii": "Webmii",
+    "peekYou": "PeekYou",
+    "truePeople": "TruePeople",
+    "document": "📄 Документ",
+    "potential_leak": "Возможная утечка/Док",
+    "gravatar": "Gravatar"
+  },
+  "firewall_page": {
+    "title": "🛡️ Аудит безопасности",
+    "audit_title": "🛡️ Аудит безопасности",
+    "execution_test": "Тест выполнения",
+    "start_audit": "Начать локальный аудит",
+    "description": "Глубокий аудит локального хоста: проверка критических разрешений, подозрительных процессов и конфигурации Firewall.",
+    "waiting": "Ожидание команды...",
+    "audit_label": "Аудит",
+    "audit_running": "Аудит уже запущен.",
+    "audit_in_progress": "Аудит выполняется...",
+    "metadata_collection": "[INFO] Сбор метаданных и анализ процессов...",
+    "running_audit": "Выполнение аудита безопасности...",
+    "error_label": "ОШИБКА",
+    "report_generated": "Отчет создан",
+    "audit_completed": "Аудит завершен на станции: {hostname}",
+    "audit_user": "Пользователь: {user}",
+    "summary": "Резюме находок:",
+    "unknown": "Неизвестно",
+    "report_saved": "[INFO] Отчет подписан и сохранен.",
+    "error_reading": "[ERROR] ошибка чтения лога:"
+  },
+  "payload_page": {
+    "title": "📦 Генератор агентов (Payload)",
+    "description": "Выберите ОС целевого компьютера для создания агента подключения.",
+    "generate_windows": "🪟 Создать агент для Windows (.exe)",
+    "generate_linux": "🐧 Создать агент для Linux (.py)",
+    "go_listener": "В панель управления 📡",
+    "awaiting": "Ожидание выбора...",
+    "back": "⬅ Назад",
+    "generating": "[INFO] Генерация агента для {os_type} (IP: {my_ip})...",
+    "agent_not_found": "[ERROR] Файл 'core/aura_agent.py' не найден!",
+    "linux_success": "[SUCCESS] Агент Linux готов в:",
+    "compiling": "[INFO] Компиляция EXE... Подождите.",
+    "agent_success": "[SUCCESS] Агент создан!",
+    "agent_file": "Файл: temp_win_agent.exe",
+    "compilation_error": "[ERROR] Компиляция не удалась. Проверьте терминал.",
+    "error_prefix": "[ERROR]:"
+  },
+  "listener_page": {
+    "title": "📡 Панель удаленного управления",
+    "status_label": "Статус: Ожидание активации...",
+    "server_log": "Лог сервера...",
+    "command_placeholder": "Введите команду (напр: stress_test, dir, whoami)...",
+    "activate_listen": "Слушать порт (4444)",
+    "listening": "Статус: Прослушивание порта 4444...",
+    "connected": "Статус: ПОДКЛЮЧЕНО к цели ({addr})",
+    "connection_lost": "Статус: Соединение разорвано.",
+    "command_echo": "> {cmd}",
+    "server_error": "Ошибка сервера:"
+  },
+  "john_page": {
+    "title": "💀 John The Ripper - Взлом хешей",
+    "basic_settings": "Базовые настройки",
+    "target_hash": "Целевой хеш:",
+    "hash_placeholder": "Вставьте хеш здесь...",
+    "attack_mode": "Режим атаки:",
+    "wordlist": "Wordlist",
+    "mask": "Маска",
+    "algorithm": "Алгоритм:",
+    "auto_detect": "Автоопределение",
+    "md5": "MD5",
+    "sha1": "SHA1",
+    "sha256": "SHA256",
+    "sha512": "SHA512",
+    "select_wordlist": "Выбрать файл Wordlist",
+    "apply_rules": "Применить правила (John style)",
+    "mask_definition": "Определение маски:",
+    "mask_placeholder": "Пример: ?l?l?l?d?d (L=буква, D=цифра)",
+    "salt_label": "Salt (соль):",
+    "salt_placeholder": "Соль (опционально)",
+    "start_attack": "НАЧАТЬ АТАКУ",
+    "select_wordlist_title": "Выбор Wordlist",
+    "text_files": "Текстовые файлы (*.txt)",
+    "error_title": "Ошибка",
+    "enter_hash": "Введите хеш!",
+    "running": "ВЫПОЛНЕНИЕ...",
+    "select_wordlist_error": "Выберите wordlist!",
+    "enter_mask": "Введите маску!",
+    "john_progress": "John: протестировано {tested} хешей | Скорость: {speed} H/s",
+    "processing": "[*] Обработка... {tested} кандидатов проверено.",
+    "unknown_failure": "Неизвестная ошибка",
+    "password_found": "✅ ПАРОЛЬ НАЙДЕН: {password}",
+    "report_label": "Отчет: {filename}",
+    "success_title": "Успех",
+    "failure": "❌ ОШИБКА: {error}"
+  },
+  "keylogger_page": {
+    "title": "⌨️ Аудитор клавиатуры - Мониторинг",
+    "dot": "●",
+    "status_ready": "СТАТУС: ГОТОВ К ЗАХВАТУ",
+    "status_monitoring": "МОНИТОРИНГ КЛАВИАТУРЫ...",
+    "status_finished": "АУДИТ ЗАВЕРШЕН",
+    "recent_activity": "Последняя активность:",
+    "start_audit": "НАЧАТЬ АУДИТ",
+    "stop_monitoring": "ОСТАНОВИТЬ МОНИТОРИНГ",
+    "restart_capture": "ПЕРЕЗАПУСТИТЬ ЗАХВАТ",
+    "open_logs": "📁 ОТКРЫТЬ ЛОГИ"
+  },
+  "stress_test_page": {
+    "title": "🛡️ Проверка устойчивости Firewall",
+    "target_parameters": "Параметры цели",
+    "target_label": "Цель:",
+    "target_placeholder": "IP или Хост",
+    "port_label": "Порт:",
+    "traffic_control": "Управление трафиком",
+    "rate_limit_label": "Лимит (Req/Sec - RPS):",
+    "duration_label": "Длительность (сек):",
+    "gradual_escalation": "Постепенное нарастание (Ramp-up)",
+    "awaiting_start": "Ожидание начала теста...",
+    "start_button": "⚡ НАЧАТЬ АУДИТ ТРАФИКА",
+    "stop_button": "🛑 ПРЕКРАТИТЬ ТЕСТ",
+    "input_description": "Блокировка или разблокировка полей ввода."
+  },
+  "hydra_page": {
+    "title": "🧰 Hydra - Тест учетных данных",
+    "warning": "⚠️ Используйте только в авторизованных средах.",
+    "targets_group": "Цели",
+    "targets_placeholder": "Напр: 192.168.0.10",
+    "service_and_port": "Сервис и Порт",
+    "service_label": "Сервис:",
+    "port_label": "Порт:",
+    "http_config": "Настройка HTTP POST",
+    "form_path": "Путь к форме",
+    "form_path_placeholder": "/login.php",
+    "post_params": "Параметры POST",
+    "post_params_placeholder": "username=^USER^&password=^PASS^",
+    "fail_string": "Строка ошибки",
+    "fail_string_placeholder": "Текст при неудаче (напр: Неверный логин)",
+    "credentials_group": "Учетные данные",
+    "single_username": "Один пользователь",
+    "username_list": "Список пользователей",
+    "single_password": "Один пароль",
+    "password_list": "Список паролей",
+    "user_list_title": "Список пользователей",
+    "password_list_title": "Список паролей",
+    "options_group": "Опции",
+    "threads_label": "Потоки (-t):",
+    "stop_on_success": "Стоп при успехе",
+    "verbose": "Подробно",
+    "start_button": "СТАРТ",
+    "stop_button": "СТОП",
+    "already_running": "Hydra",
+    "already_running_msg": "Запуск уже выполняется.",
+    "no_targets": "Hydra",
+    "no_targets_msg": "Укажите хотя бы одну цель.",
+    "no_service": "Hydra",
+    "no_service_msg": "Укажите сервис.",
+    "http_required": "Hydra",
+    "http_required_msg": "Заполните все поля HTTP POST.",
+    "params_error": "Hydra",
+    "params_error_msg": "Используйте ^USER^ и ^PASS^ в параметрах.",
+    "interruption_requested": "[INFO] Запрошена остановка.",
+    "completed": "[INFO] Hydra завершена с кодом",
+    "log_saved": "[INFO] Лог сохранен в"
+  },
+  "manual": {
+    "tabs": {
+      "manifesto": "МАНИФЕСТ",
+      "scanner": "СКАНЕР",
+      "ddos": "DDOS",
+      "auditoria": "АУДИТ",
+      "sherlock": "SHERLOCK",
+      "john": "JOHN",
+      "keylogger": "KEYLOGGER",
+      "hydra": "HYDRA"
+    },
+    "manifesto": {
+      "title": "🏠 О проекте AURA",
+      "content": "# 🌌 Проект AURA\n\n**Advanced Unified Reconnaissance Agent**\n\n---\n\n## 👋 Добро пожаловать\n\nЕсли вы новичок в кибербезопасности, AURA создан для вас. Это инструмент, объединяющий ключевые функции безопасности для обучения и практики.\n\n---\n\n## 🧠 Что умеет AURA?\n\n* 🔍 Поиск информации о сетях\n* 🧪 Тестирование безопасности паролей\n* 🛰️ Сканирование портов\n* 🔎 Публичный поиск (OSINT)\n* ⌨️ Анализ ввода данных\n* 🔥 Нагрузочное тестирование\n* 🛡️ Оценка работы Firewall\n\n---\n\n## ⚖️ Ответственное использование\n\nТолько для собственных систем или лабораторий. Никогда не используйте без разрешения.\n\n---\n\n**Используйте ответственно. Учитесь с целью.**"
+    },
+    "scanner": {
+      "title": "🛰️ СКАНИРОВАНИЕ СЕТИ",
+      "content": "# 🛰️ Сетевой сканер\n\nПозволяет анализировать хост: онлайн ли он, какие порты открыты и какие сервисы запущены. Это первый шаг в оценке безопасности."
+    },
+    "ddos": {
+      "title": "🔥 DDOS",
+      "content": "# 🔥 Стресс-тест\n\nПроверка устойчивости системы к большому количеству одновременных запросов. Помогает понять пределы нагрузки и эффективность защиты."
+    },
+    "auditoria": {
+      "title": "🛡️ АУДИТ СИСТЕМЫ",
+      "content": "# 🛡️ Проверка безопасности\n\nАнализ локальных разрешений, процессов и настроек защиты. Помогает найти слабые места в конфигурации вашего компьютера."
+    },
+    "sherlock": {
+      "title": "🔍 SHERLOCK",
+      "content": "# 🔍 Цифровой поиск\n\nСбор публичной информации о пользователе (OSINT). Помогает понять степень публичного присутствия и риски конфиденциальности."
+    },
+    "john": {
+      "title": "💀 JOHN THE RIPPER",
+      "content": "# 🔐 Тест надежности паролей\n\nАнализ хешей паролей. Если пароль взламывается быстро — он небезопасен. Используется для проверки криптостойкости учетных данных."
+    },
+    "keylogger": {
+      "title": "⌨️ KEYLOGGER",
+      "content": "# ⌨️ Мониторинг ввода\n\nРегистрация нажатий клавиш в учебных целях. Помогает понять, как вредоносное ПО может красть данные и как от этого защититься."
+    },
+    "hydra": {
+      "title": "🧰 HYDRA",
+      "content": "# 🧰 Тест аутентификации\n\nАвтоматизированная проверка пар логин/пароль. Позволяет выявить использование слабых паролей в различных сервисах (SSH, HTTP и др.)."
+    }
+  }
+}

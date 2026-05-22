@@ -4,6 +4,8 @@ import json
 import os
 import pytz
 import shutil
+import re
+import threading
 from datetime import datetime
 
 NMAP_BASE_CMD = [
@@ -378,12 +380,23 @@ def parse_vulners_output(vulners_data: dict, port: int):
 
 
 def build_nmap_command(ip):
-    cmd = ["nmap", "-sV", "--script", "vuln,http-enum,http-headers,http-methods", "-oX", "-"]
+    # Aponta direto para o caminho padrão do Nmap no Windows 🛠️
+    cmd = [
+        "C:\\Program Files (x86)\\Nmap\\nmap.exe", 
+        "-sV", 
+        "--script", "vuln,http-enum,http-headers,http-methods", 
+        "-oX", "-"
+    ]
 
-    if os.geteuid() == 0:
-        cmd.insert(1, "-O")
+    # Se NÃO for Windows (ou seja, Linux/Mac), ele volta para o comando padrão
+    if os.name != "nt":
+        cmd[0] = "nmap"
+        if os.geteuid() == 0:
+            cmd.insert(1, "-O")
+        else:
+            print("[!] Rodando sem OS detection (sem privilégios)")
     else:
-        print("[!] Rodando sem OS detection (sem privilégios)")
+        print("[!] Usando o caminho absoluto do Nmap no Windows.")
 
     cmd.append(ip)
     return cmd
@@ -406,4 +419,11 @@ def save_json(results, filename):
         json.dump(report, f, indent=4, ensure_ascii=False)
 
 def is_root():
-    return os.geteuid() == 0
+    if os.name != "nt":
+        return os.geteuid() == 0
+    else:
+        import ctypes
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        except Exception:
+            return False

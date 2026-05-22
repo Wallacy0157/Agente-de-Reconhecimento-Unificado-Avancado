@@ -14,7 +14,7 @@ import uuid
 from auth_ui import AuthWindow
 from datetime import datetime
 #from docs.i18n_docs import get_manual_docs
-#from core.sherlock import SherlockEngine, SherlockExecutor
+from core.sherlock import SherlockEngine, SherlockExecutor
 from PyQt6.QtCore import (
     Qt, QTimer, QTime, QSize, QLocale, QPropertyAnimation, QPoint, QEasingCurve
 )
@@ -29,7 +29,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy, QFileDialog, QComboBox, QTabWidget
 )
 from random import randint
-#from core.stress_test import StressTestExecutor
+from core.stress_test import StressTestExecutor
 from core.components import (
     NeonCard, ConfigPage, 
     load_language_json, lang_get 
@@ -39,10 +39,10 @@ from core.config import (
     THEMES, NEON_DEFAULT, load_user_settings,
     save_user_settings, ThemeManager, SHERLOCK_STYLES, HYDRA_STYLES, JOHN_STYLES, FIREWALL_STYLES, KEYLOGGER_STYLES, STRESS_TEST_STYLES, MANUAL_STYLES, sherlock_investigate_button_style, sherlock_result_card_style, sherlock_result_button_style, john_start_button_style, firewall_description_style, keylogger_toggle_button_style, main_window_stylesheet,
 )
-# from core.john_engine import JohnEngine, JohnExecutor
-# from core.hydra_engine import HydraExecutor
-# from core.logger_engine import KeyloggerEngine
-# from core.interaction_test import InteractionTestExecutor
+from core.john_engine import JohnEngine, JohnExecutor
+from core.hydra_engine import HydraExecutor
+from core.logger_engine import KeyloggerEngine
+from core.interaction_test import InteractionTestExecutor
 
 # --- DIAGNOSTICO ---
 class EnvironmentDiagnosticsPage(QWidget):

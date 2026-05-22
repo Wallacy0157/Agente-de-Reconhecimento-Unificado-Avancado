@@ -1,0 +1,17 @@
+{
+    "attack_id": "e49226c9-05fa-444a-a0f5-2b3aca4e4b97",
+    "tool": "Hydra",
+    "timestamp": "2026-05-22T19:38:10.727944",
+    "duration_seconds": 0.24064,
+    "targets": [
+        "192.168.64.76"
+    ],
+    "service": "ssh",
+    "port": 0,
+    "attack_type": "wordlist",
+    "severity": "INFO",
+    "success": false,
+    "credentials_found": null,
+    "evidence": "No credentials found",
+    "return_code": 127
+}

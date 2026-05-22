@@ -1,0 +1,401 @@
+{
+  "app_title": "Security Toolkit — Dashboard Neon",
+  "app": {
+    "window_title": "AURA Security Toolkit",
+    "session_title": "AURA Security - التدقيق النشط ({username})"
+  },
+  "common": {
+    "content_not_available": "المحتوى غير متوفر."
+  },
+  "sidebar": {
+    "home": "الرئيسية",
+    "tools": "الأدوات",
+    "diagnostic": "التشخيص",
+    "scanner": "المعلومات",
+    "scripts": "السكربتات",
+    "logs": "السجلات",
+    "settings": "الإعدادات",
+    "exit": "خروج"
+  },
+  "header": {
+    "operations_panel": "لوحة العمليات",
+    "search_placeholder": "بحث عن أدوات...",
+    "status_ready": "الحالة: جاهز",
+    "status_page_loaded": "الحالة: تم تحميل الصفحة {index}"
+  },
+  "home_page": {
+    "welcome": "مرحباً بك في AURA Security Toolkit!",
+    "cards": {
+      "scanner": { "title": "الفحص", "subtitle": "تحديد المضيفين (Hosts)." },
+      "stress": { "title": "اختبار الجهد", "subtitle": "محاكاة هجوم DoS." },
+      "firewall": { "title": "الجدار الناري", "subtitle": "التحقق من القواعد." },
+      "sherlock": { "title": "Sherlock", "subtitle": "البحث في المصادر المفتوحة (OSINT)." },
+      "john": { "title": "John Ripper", "subtitle": "كسر التشفير (Hashes)." },
+      "keylogger": { "title": "مدقق لوحة المفاتيح", "subtitle": "سجل الكتابة." },
+      "hydra": { "title": "Hydra", "subtitle": "اختبار بيانات الاعتماد." }
+    }
+  },
+  "placeholder_pages": {
+    "scripts": "صفحة السكربتات قيد الدمج.",
+    "logs": "صفحة السجلات قيد الدمج."
+  },
+  "cards": {
+    "scanner": {
+      "title": "فحص الشبكة",
+      "subtitle": "فحص واكتشاف المضيفين"
+    },
+    "ports": {
+      "title": "محلل المنافذ",
+      "subtitle": "اختبار منافذ محددة"
+    },
+    "reports": {
+      "title": "التقارير",
+      "subtitle": "إنشاء تلقائي لملفات CSV/LOG"
+    },
+    "scripts_auto": {
+      "title": "سكربتات تلقائية",
+      "subtitle": "تنفيذ مهام Python/.bat"
+    },
+    "targets": {
+      "title": "الأهداف",
+      "subtitle": "إدارة عناوين IP والنطاقات"
+    },
+    "logs": {
+      "title": "سجلات النظام",
+      "subtitle": "تاريخ التنفيذ"
+    },
+    "advanced": {
+      "title": "الوضع المتقدم",
+      "subtitle": "وظائف إضافية / DevTools"
+    },
+    "status": {
+      "title": "الحالة",
+      "subtitle": "التحقق من البيئة"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "subtitle": "تفضيلات النظام"
+    }
+  },
+  "settings_page": {
+    "title": "الإعدادات",
+    "themes": "السمات",
+    "lang_group": "اللغة",
+    "reset_color": "استعادة الافتراضي",
+    "choose_theme": "اختر سمة",
+    "interface_theme": "سمة الواجهة",
+    "theme_dark": "المظهر الداكن",
+    "theme_light": "المظهر الفاتح",
+    "neon_group": "لون النيون",
+    "choose_color": "اختر لوناً",
+    "color_purple": "أرجواني",
+    "color_red": "أحمر",
+    "color_green": "أخضر",
+    "color_blue": "أزرق",
+    "color_pink": "وردي",
+    "color_yellow": "أصفر",
+    "color_none": "بدون تأثير ضوئي",
+    "special_themes": "سمات خاصة",
+    "theme_christmas": "سمة عيد الميلاد",
+    "theme_halloween": "سمة الهالوين",
+    "theme_easter": "سمة عيد الفصح",
+    "theme_brazil": "سمة البرازيل",
+    "languages": "اللغات",
+    "choose_language": "اختر لغة",
+    "lang_pt": "البرتغالية",
+    "lang_en": "الإنجليزية",
+    "lang_es": "الإسبانية",
+    "lang_fr": "الفرنسية",
+    "lang_it": "الإيطالية",
+    "lang_de": "الألمانية",
+    "lang_ru": "الروسية",
+    "lang_ja": "اليابانية",
+    "lang_ko": "الكورية",
+    "lang_zh": "الصينية",
+    "lang_ar": "العربية"
+  },
+  "scanner_page": {
+    "targets_group": "أهداف الفحص (IPs/Ranges)",
+    "ip_placeholder": "مثال: 192.168.1.1, 10.0.0.0/24",
+    "start_scan": "بدء الفحص",
+    "results_group": "النتائج",
+    "awaiting_scan": "في انتظار الفحص...",
+    "save_results": "حفظ النتائج في السجلات/التقارير",
+    "send_hydra": "إرسال عناوين IP الضعيفة إلى Hydra",
+    "please_enter_target": "يرجى إدخال عنوان IP واحد أو نطاق على الأقل.",
+    "scan_initiated": "بدء الفحص على {count} من الأهداف...",
+    "scan_message": "قد يستغرق هذا بضع دقائق.",
+    "scanning": "جاري فحص الشبكة...",
+    "scan_completed": "اكتمل الفحص ✔",
+    "scan_finished": "✔ انتهى الفحص",
+    "error_scan": "--- خطأ في {ip} ---",
+    "host_info": "--- IP: {ip} ---",
+    "unknown": "غير معروف",
+    "na": "غير متاح",
+    "os_label": "نظام التشغيل:",
+    "requires_root": "غير معروف (يتطلب صلاحيات root)",
+    "open_ports": "المنافذ المفتوحة:",
+    "no_open_ports": "لم يتم العثور على منافذ مفتوحة.",
+    "potential_vuln": "الثغرات المحتملة:",
+    "vuln_label": "ثغرة {i}",
+    "port_label": "المنفذ",
+    "service_label": "الخدمة",
+    "port_unknown": "غير معروف",
+    "error_during_scan": "خطأ أثناء الفحص ❌",
+    "unexpected_error": "حدث خطأ غير متوقع:",
+    "nmap_check": "تأكد من تثبيت Nmap ومن امتلاكك لصلاحيات sudo.",
+    "report_saved": "تم حفظ التقرير في logs/{filename} ✔",
+    "failed_save": "فشل حفظ التقرير:",
+    "no_vulnerable_ips": "لا توجد عناوين IP ضعيفة متاحة للإرسال."
+  },
+  "diagnostics_page": {
+    "title": "تشخيص البيئة",
+    "run_diagnostic": "تشغيل التشخيص",
+    "description": "انقر على 'تشغيل التشخيص' للتحقق من البيئة.",
+    "install_missing": "تثبيت الملحقات المفقودة (Linux/apt)",
+    "install_description": "التحقق مما إذا كانت الأدوات الأساسية مثبتة بالفعل على النظام.",
+    "tools_diagnostic": "--- تشخيص الأدوات ---",
+    "detected": "✔ تم اكتشاف {tool_name}",
+    "not_found": "❌ لم يتم العثور على {tool_name}",
+    "install_auto": "يمكنك تثبيت العناصر المفقودة تلقائياً على Linux (apt).",
+    "environment_ready": "البيئة جاهزة: تم اكتشاف كل شيء.",
+    "running": "جاري التنفيذ:",
+    "output_label": "--- المخرجات ---",
+    "installation_completed": "✔ اكتمل التثبيت. قم بتشغيل التشخيص مرة أخرى.",
+    "installation_failure": "❌ فشل التثبيت:",
+    "unknown_failure": "فشل غير معروف",
+    "diagnostic_label": "التشخيص",
+    "no_missing_tools": "لا توجد أدوات مفقودة للتثبيت.",
+    "installation_unavailable": "التثبيت غير متاح",
+    "installation_linux_only": "التثبيت التلقائي متاح فقط لنظام Linux باستخدام apt.",
+    "pkexec_not_found": "❌ لم يتم العثور على 'pkexec'. استخدم يدوياً: sudo apt-get install -y"
+  },
+  "sherlock_page": {
+    "title": "🔍 Sherlock OSINT Pro",
+    "subtitle": "بحث متقدم عن طريق اللقب، الاسم الكامل، والتسريبات.",
+    "mode_label": "نوع الهدف:",
+    "mode_nickname": "اللقب",
+    "mode_fullname": "الاسم الكامل",
+    "placeholder": "اكتب الهدف هنا...",
+    "investigate": "تحقيق",
+    "searching": "جاري البحث...",
+    "error_title": "فشل تحقيق Sherlock ❌",
+    "error_label": "خطأ",
+    "search_failed": "فشل البحث:",
+    "search_completed": "اكتمل البحث",
+    "investigation_complete": "انتهى التحقيق مع '{username}'!",
+    "file_generated": "تم إنشاء الملف بنجاح في:",
+    "report_saved": "تم حفظ التقرير: {filename}",
+    "no_results": "لم يتم العثور على نتائج.",
+    "warning_title": "تنبيه",
+    "no_networks": "لم يتم العثور على شبكات اجتماعية لهذا المستخدم.",
+    "view_button": "عرض",
+    "duckduckgo": "DuckDuckGo",
+    "osint_search": "OSINT-Search",
+    "webmii": "Webmii",
+    "peekYou": "PeekYou",
+    "truePeople": "TruePeople",
+    "document": "📄 وثيقة",
+    "potential_leak": "تسريب محتمل/وثيقة",
+    "gravatar": "Gravatar"
+  },
+  "firewall_page": {
+    "title": "🛡️ تدقيق الأمان",
+    "audit_title": "🛡️ تدقيق الأمان",
+    "execution_test": "اختبار التنفيذ",
+    "start_audit": "بدء التدقيق المحلي",
+    "description": "يقوم هذا الاختبار بإجراء تدقيق عميق للمضيف المحلي، والتحقق من الأذونات الحساسة، والعمليات المشبوهة، وسلامة الملفات، وامتثال الجدار الناري.",
+    "waiting": "في انتظار الأمر...",
+    "audit_label": "التدقيق",
+    "audit_running": "التدقيق قيد التنفيذ بالفعل.",
+    "audit_in_progress": "التدقيق قيد العمل...",
+    "metadata_collection": "[INFO] بدء جمع البيانات الوصفية وتحليل العمليات...",
+    "running_audit": "جاري تنفيذ تدقيق الأمان...",
+    "error_label": "خطأ",
+    "report_generated": "تم إنشاء التقرير",
+    "audit_completed": "اكتمل التدقيق في المحطة: {hostname}",
+    "audit_user": "المستخدم: {user}",
+    "summary": "ملخص النتائج:",
+    "unknown": "غير معروف",
+    "report_saved": "[INFO] تم توقيع التقرير وحفظه بنجاح.",
+    "error_reading": "[ERRO] خطأ في قراءة السجل:"
+  },
+  "payload_page": {
+    "title": "📦 مولد العميل البعيد (Payload)",
+    "description": "اختر نظام تشغيل الكمبيوتر المستهدف لإنشاء عميل الاتصال.",
+    "generate_windows": "🪟 إنشاء عميل لنظام Windows (.exe)",
+    "generate_linux": "🐧 إنشاء عميل لنظام Linux (.py)",
+    "go_listener": "الانتقال إلى لوحة التحكم 📡",
+    "awaiting": "في انتظار الاختيار...",
+    "back": "⬅ رجوع",
+    "generating": "[INFO] جاري إنشاء العميل لنظام {os_type} (IP: {my_ip})...",
+    "agent_not_found": "[ERRO] الملف 'core/aura_agent.py' غير موجود!",
+    "linux_success": "[SUCESSO] عميل Linux جاهز في:",
+    "compiling": "[INFO] جاري تجميع ملف EXE... يرجى الانتظار.",
+    "agent_success": "[SUCESSO] تم إنشاء العميل!",
+    "agent_file": "الملف: temp_win_agent.exe",
+    "compilation_error": "[ERRO] فشل التجميع. تحقق من الطرفية.",
+    "error_prefix": "[ERRO]:"
+  },
+  "listener_page": {
+    "title": "📡 لوحة التحكم عن بعد",
+    "status_label": "الحالة: في انتظار التنشيط...",
+    "server_log": "سجل الخادم...",
+    "command_placeholder": "اكتب أمراً (مثلاً: stress_test, dir, whoami)...",
+    "activate_listen": "تفعيل الاستماع (منفذ 4444)",
+    "listening": "الحالة: جاري الاستماع على منفذ 4444...",
+    "connected": "الحالة: متصل بالهدف ({addr})",
+    "connection_lost": "الحالة: فُقد الاتصال.",
+    "command_echo": "> {cmd}",
+    "server_error": "خطأ في الخادم:"
+  },
+  "john_page": {
+    "title": "💀 John The Ripper - كاسر التشفير",
+    "basic_settings": "الإعدادات الأساسية",
+    "target_hash": "التشفير المستهدف (Hash):",
+    "hash_placeholder": "أدخل التشفير هنا...",
+    "attack_mode": "وضع الهجوم:",
+    "wordlist": "قائمة الكلمات",
+    "mask": "القناع (Mask)",
+    "algorithm": "الخوارزمية:",
+    "auto_detect": "كشف تلقائي",
+    "md5": "MD5",
+    "sha1": "SHA1",
+    "sha256": "SHA256",
+    "sha512": "SHA512",
+    "select_wordlist": "اختيار ملف قائمة الكلمات",
+    "apply_rules": "تطبيق القواعد (أسلوب John)",
+    "mask_definition": "تعريف القناع:",
+    "mask_placeholder": "مثال: ?l?l?l?d?d (L=حرف، D=رقم)",
+    "salt_label": "Salt:",
+    "salt_placeholder": "Salt (اختياري)",
+    "start_attack": "بدء الهجوم",
+    "select_wordlist_title": "اختر قائمة كلمات",
+    "text_files": "ملفات نصية (*.txt)",
+    "error_title": "خطأ",
+    "enter_hash": "يرجى إدخال التشفير!",
+    "running": "جاري التنفيذ...",
+    "select_wordlist_error": "اختر قائمة الكلمات!",
+    "enter_mask": "أدخل القناع!",
+    "john_progress": "John: تم اختبار {tested} من التشفيرات | السرعة: {speed} H/s",
+    "processing": "[*] جاري المعالجة... تم اختبار {tested} من المرشحين.",
+    "unknown_failure": "فشل غير معروف",
+    "password_found": "✅ تم العثور على كلمة المرور: {password}",
+    "report_label": "التقرير: {filename}",
+    "success_title": "نجاح",
+    "failure": "❌ فشل: {error}"
+  },
+  "keylogger_page": {
+    "title": "⌨️ مدقق لوحة المفاتيح - المراقبة",
+    "dot": "●",
+    "status_ready": "الحالة: جاهز للالتقاط",
+    "status_monitoring": "جاري مراقبة لوحة المفاتيح...",
+    "status_finished": "اكتمل التدقيق",
+    "recent_activity": "النشاط الأخير:",
+    "start_audit": "بدء التدقيق",
+    "stop_monitoring": "إيقاف المراقبة",
+    "restart_capture": "إعادة بدء الالتقاط",
+    "open_logs": "📁 فتح السجلات"
+  },
+  "stress_test_page": {
+    "title": "🛡️ تقييم مرونة الجدار الناري",
+    "target_parameters": "معايير الهدف",
+    "target_label": "الهدف:",
+    "target_placeholder": "IP أو مضيف",
+    "port_label": "المنفذ:",
+    "traffic_control": "التحكم في حركة المرور",
+    "rate_limit_label": "حد المعدل (طلب/ثانية - RPS):",
+    "duration_label": "مدة الاختبار (ثواني):",
+    "gradual_escalation": "تصعيد تدريجي (Ramp-up)",
+    "awaiting_start": "في انتظار بدء الاختبار...",
+    "start_button": "⚡ بدء تدقيق حركة المرور",
+    "stop_button": "🛑 إيقاف الاختبار",
+    "input_description": "قفل أو تحرير حقول الإدخال."
+  },
+  "hydra_page": {
+    "title": "🧰 Hydra - اختبار بيانات الاعتماد",
+    "warning": "⚠️ استخدمه فقط في البيئات المصرح بها.",
+    "targets_group": "الأهداف",
+    "targets_placeholder": "مثال: 192.168.0.10",
+    "service_and_port": "الخدمة والمنفذ",
+    "service_label": "الخدمة:",
+    "port_label": "المنفذ:",
+    "http_config": "إعداد HTTP POST",
+    "form_path": "مسار النموذج",
+    "form_path_placeholder": "/login.php",
+    "post_params": "معايير POST",
+    "post_params_placeholder": "username=^USER^&password=^PASS^",
+    "fail_string": "نص الفشل",
+    "fail_string_placeholder": "نص الفشل (مثلاً: دخول غير صالح)",
+    "credentials_group": "بيانات الاعتماد",
+    "single_username": "مستخدم واحد",
+    "username_list": "قائمة مستخدمين",
+    "single_password": "كلمة مرور واحدة",
+    "password_list": "قائمة كلمات مرور",
+    "user_list_title": "قائمة مستخدمين",
+    "password_list_title": "قائمة كلمات مرور",
+    "options_group": "خيارات",
+    "threads_label": "الخيوط (Threads -t):",
+    "stop_on_success": "التوقف عند النجاح",
+    "verbose": "مفصل (Verbose)",
+    "start_button": "بدء",
+    "stop_button": "إيقاف",
+    "already_running": "Hydra",
+    "already_running_msg": "هناك عملية قيد التنفيذ بالفعل.",
+    "no_targets": "Hydra",
+    "no_targets_msg": "يرجى تقديم هدف واحد على الأقل.",
+    "no_service": "Hydra",
+    "no_service_msg": "يرجى تحديد الخدمة.",
+    "http_required": "Hydra",
+    "http_required_msg": "يرجى ملء جميع حقول HTTP POST.",
+    "params_error": "Hydra",
+    "params_error_msg": "استخدم ^USER^ و ^PASS^ في المعايير.",
+    "interruption_requested": "[INFO] تم طلب المقاطعة.",
+    "completed": "[INFO] انتهى Hydra بالكود",
+    "log_saved": "[INFO] تم حفظ السجل في"
+  },
+  "manual": {
+    "tabs": {
+      "manifesto": "البيان",
+      "scanner": "الفاحص",
+      "ddos": "DDOS",
+      "auditoria": "التدقيق",
+      "sherlock": "SHERLOCK",
+      "john": "JOHN",
+      "keylogger": "KEYLOGGER",
+      "hydra": "HYDRA"
+    },
+    "manifesto": {
+      "title": "🏠 حول AURA",
+      "content": "# 🌌 مشروع AURA\n\n**Advanced Unified Reconnaissance Agent**\n\n---\n\n## 👋 مرحباً بك في AURA\n\nإذا كنت تبدأ في مجال الأمن السيبراني، فقد صُمم AURA من أجلك. إنه أداة تجمع العديد من وظائف الأمان الهامة في مكان واحد.\n\n---\n\n## 🧠 ماذا يفعل AURA؟\n\n* 🔍 اكتشاف معلومات عن الشبكات والأنظمة\n* 🧪 اختبار أمان الدخول وكلمات المرور\n* 🛰️ معرفة المنافذ المفتوحة في الخادم\n* 🔎 البحث عن المعلومات العامة (OSINT)\n* ⌨️ فهم كيفية التقاط المدخلات (بشكل مراقب)\n* 🔥 إجراء اختبارات الجهد لرؤية رد فعل النظام\n* 🛡️ تقييم سلوك الجدران النارية\n\n---\n\n## ⚖️ الاستخدام المسؤول\n\nيستخدم في أنظمتك الخاصة، المختبرات، أو البيئات المصرح بها فقط. لا تستخدمه أبداً لاختراق الأنظمة أو الإضرار بها.\n\n---\n\n**استخدمه بمسؤولية. تعلم بهدف.**"
+    },
+    "scanner": {
+      "title": "🛰️ فحص الشبكة",
+      "content": "# 🛰️ فاحص الشبكة\n\nيحلل المضيف لمعرفة ما إذا كان متصلاً، وما هي المنافذ المفتوحة والخدمات التي تعمل. هذه هي الخطوة الأولى في أي تقييم أمني."
+    },
+    "ddos": {
+      "title": "🔥 اختبار الجهد",
+      "content": "# 🔥 اختبار الجهد (Stress Test)\n\nيحاكي العديد من الاتصالات المتزامنة لرؤية مدى تحمل النظام واختبار قواعد الجدار الناري."
+    },
+    "auditoria": {
+      "title": "🛡️ تدقيق النظام",
+      "content": "# 🛡️ فحص أمان النظام\n\nيحلل الأذونات المحلية، والعمليات، وإعدادات الحماية في جهازك للعثور على نقاط الضعف."
+    },
+    "sherlock": {
+      "title": "🔍 SHERLOCK",
+      "content": "# 🔍 التحقيق في البصمة الرقمية\n\nجمع المعلومات العامة عن مستخدم (OSINT) لفهم مدى تعرض هويته وخصوصيته للمخاطر."
+    },
+    "john": {
+      "title": "💀 JOHN THE RIPPER",
+      "content": "# 🔐 اختبار أمان كلمات المرور\n\nتحليل التشفيرات (Hashes). إذا تم كسر كلمة المرور بسرعة، فهي تعتبر ضعيفة. يساعد في فهم قوة الحماية."
+    },
+    "keylogger": {
+      "title": "⌨️ KEYLOGGER",
+      "content": "# ⌨️ مراقبة الكتابة\n\nتسجيل ضغطات المفاتيح في بيئات مراقبة لفهم كيفية عمل التهديدات وكيفية الحماية منها."
+    },
+    "hydra": {
+      "title": "🧰 HYDRA",
+      "content": "# 🧰 اختبار الدخول وكلمات المرور\n\nاختبار تركيبات المستخدم وكلمة المرور تلقائياً لتحديد كلمات المرور الضعيفة أو المتوقعة."
+    }
+  }
+}

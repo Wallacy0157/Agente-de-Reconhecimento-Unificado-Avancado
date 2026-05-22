@@ -1,0 +1,401 @@
+{
+  "app_title": "Security Toolkit — Dashboard Neon",
+  "app": {
+    "window_title": "AURA Security Toolkit",
+    "session_title": "AURA Security - Aktives Audit ({username})"
+  },
+  "common": {
+    "content_not_available": "Inhalt nicht verfügbar."
+  },
+  "sidebar": {
+    "home": "Startseite",
+    "tools": "Werkzeuge",
+    "diagnostic": "Diagnose",
+    "scanner": "Informationen",
+    "scripts": "Skripte",
+    "logs": "Logs",
+    "settings": "Einstellungen",
+    "exit": "Beenden"
+  },
+  "header": {
+    "operations_panel": "Operations-Panel",
+    "search_placeholder": "Tools suchen...",
+    "status_ready": "Status: Bereit",
+    "status_page_loaded": "Status: Seite {index} geladen"
+  },
+  "home_page": {
+    "welcome": "Willkommen beim AURA Security Toolkit!",
+    "cards": {
+      "scanner": { "title": "Scan", "subtitle": "Identifiziert Hosts." },
+      "stress": { "title": "Lasttest", "subtitle": "DoS-Simulation." },
+      "firewall": { "title": "Firewall", "subtitle": "Prüft Regeln." },
+      "sherlock": { "title": "Sherlock", "subtitle": "Soziales OSINT." },
+      "john": { "title": "John Ripper", "subtitle": "Hash-Knacker." },
+      "keylogger": { "title": "Tastatur-Auditor", "subtitle": "Eingabeprotokoll." },
+      "hydra": { "title": "Hydra", "subtitle": "Prüft Anmeldedaten." }
+    }
+  },
+  "placeholder_pages": {
+    "scripts": "Skriptseite in Konsolidierung.",
+    "logs": "Logseite in Konsolidierung."
+  },
+  "cards": {
+    "scanner": {
+      "title": "Netzwerk-Scan",
+      "subtitle": "Scannt und erkennt Hosts"
+    },
+    "ports": {
+      "title": "Port-Analysator",
+      "subtitle": "Testet spezifische Ports"
+    },
+    "reports": {
+      "title": "Berichte",
+      "subtitle": "Automatische CSV/LOG-Erstellung"
+    },
+    "scripts_auto": {
+      "title": "Auto-Skripte",
+      "subtitle": "Führt Python/.bat Routinen aus"
+    },
+    "targets": {
+      "title": "Ziele",
+      "subtitle": "IPs und Bereiche verwalten"
+    },
+    "logs": {
+      "title": "System-Logs",
+      "subtitle": "Ausführungshistorie"
+    },
+    "advanced": {
+      "title": "Erweiterter Modus",
+      "subtitle": "Zusatzfunktionen / DevTools"
+    },
+    "status": {
+      "title": "Status",
+      "subtitle": "Umgebungsprüfung"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "subtitle": "Systempräferenzen"
+    }
+  },
+  "settings_page": {
+    "title": "Einstellungen",
+    "themes": "Themes",
+    "lang_group": "Sprache",
+    "reset_color": "Standard wiederherstellen",
+    "choose_theme": "Theme wählen",
+    "interface_theme": "Interface-Theme",
+    "theme_dark": "Dunkel",
+    "theme_light": "Hell",
+    "neon_group": "Neon-Farbe",
+    "choose_color": "Farbe wählen",
+    "color_purple": "Lila",
+    "color_red": "Rot",
+    "color_green": "Grün",
+    "color_blue": "Blau",
+    "color_pink": "Pink",
+    "color_yellow": "Gelb",
+    "color_none": "Kein Lichteffekt",
+    "special_themes": "Spezial-Themes",
+    "theme_christmas": "Weihnachten",
+    "theme_halloween": "Halloween",
+    "theme_easter": "Ostern",
+    "theme_brazil": "Brasilien",
+    "languages": "Sprachen",
+    "choose_language": "Sprache wählen",
+    "lang_pt": "Portugiesisch",
+    "lang_en": "Englisch",
+    "lang_es": "Spanisch",
+    "lang_fr": "Französisch",
+    "lang_it": "Italienisch",
+    "lang_de": "Deutsch",
+    "lang_ru": "Russisch",
+    "lang_ja": "Japanisch",
+    "lang_ko": "Koreanisch",
+    "lang_zh": "Chinesisch",
+    "lang_ar": "Arabisch"
+  },
+  "scanner_page": {
+    "targets_group": "Scan-Ziele (IPs/Bereiche)",
+    "ip_placeholder": "Z.B.: 192.168.1.1, 10.0.0.0/24",
+    "start_scan": "Scan starten",
+    "results_group": "Ergebnisse",
+    "awaiting_scan": "Warte auf Scan...",
+    "save_results": "Ergebnisse in Logs/Berichten speichern",
+    "send_hydra": "Vulnerable IPs an Hydra senden",
+    "please_enter_target": "Bitte mindestens eine IP oder einen Bereich eingeben.",
+    "scan_initiated": "Scan auf {count} Ziel(en) gestartet...",
+    "scan_message": "Dies kann einige Minuten dauern.",
+    "scanning": "Netzwerk wird gescannt...",
+    "scan_completed": "Scan abgeschlossen ✔",
+    "scan_finished": "✔ Scan beendet",
+    "error_scan": "--- FEHLER bei {ip} ---",
+    "host_info": "--- IP: {ip} ---",
+    "unknown": "Unbekannt",
+    "na": "N/A",
+    "os_label": "BS:",
+    "requires_root": "Unbekannt (Root-Rechte erforderlich)",
+    "open_ports": "Offene Ports:",
+    "no_open_ports": "Keine offenen Ports gefunden.",
+    "potential_vuln": "Potenzielle Schwachstellen:",
+    "vuln_label": "VULN {i}",
+    "port_label": "Port",
+    "service_label": "Dienst",
+    "port_unknown": "unbekannt",
+    "error_during_scan": "Fehler beim Scannen ❌",
+    "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten:",
+    "nmap_check": "Prüfen Sie, ob Nmap installiert ist und ob Sie sudo-Rechte haben.",
+    "report_saved": "Bericht in logs/{filename} gespeichert ✔",
+    "failed_save": "Speichern fehlgeschlagen:",
+    "no_vulnerable_ips": "Keine vulnerablen IPs zum Senden vorhanden."
+  },
+  "diagnostics_page": {
+    "title": "Umgebungsdiagnose",
+    "run_diagnostic": "Diagnose ausführen",
+    "description": "Klicken Sie auf 'Diagnose ausführen', um die Umgebung zu prüfen.",
+    "install_missing": "Fehlende Abhängigkeiten installieren (Linux/apt)",
+    "install_description": "Prüft, ob die Haupttools bereits im System installiert sind.",
+    "tools_diagnostic": "--- Tool-Diagnose ---",
+    "detected": "✔ {tool_name} erkannt",
+    "not_found": "❌ {tool_name} nicht gefunden",
+    "install_auto": "Sie können fehlende Elemente automatisch unter Linux (apt) installieren.",
+    "environment_ready": "Umgebung bereit: alles erkannt.",
+    "running": "Wird ausgeführt:",
+    "output_label": "--- Ausgabe ---",
+    "installation_completed": "✔ Installation abgeschlossen. Diagnose erneut ausführen.",
+    "installation_failure": "❌ Installation fehlgeschlagen:",
+    "unknown_failure": "Unbekannter Fehler",
+    "diagnostic_label": "Diagnose",
+    "no_missing_tools": "Keine fehlenden Tools für die Installation.",
+    "installation_unavailable": "Installation nicht verfügbar",
+    "installation_linux_only": "Die automatische Installation ist nur für Linux mit apt verfügbar.",
+    "pkexec_not_found": "❌ 'pkexec' nicht gefunden. Manuelle Installation: sudo apt-get install -y"
+  },
+  "sherlock_page": {
+    "title": "🔍 Sherlock OSINT Pro",
+    "subtitle": "Erweiterte Suche nach Nickname, Name und Leaks.",
+    "mode_label": "Zieltyp:",
+    "mode_nickname": "Nickname",
+    "mode_fullname": "Vollständiger Name",
+    "placeholder": "Ziel hier eingeben...",
+    "investigate": "INVESTIGIEREN",
+    "searching": "SUCHE LÄUFT...",
+    "error_title": "Sherlock-Investigation fehlgeschlagen ❌",
+    "error_label": "Fehler",
+    "search_failed": "Suche fehlgeschlagen:",
+    "search_completed": "Suche abgeschlossen",
+    "investigation_complete": "Investigation von '{username}' abgeschlossen!",
+    "file_generated": "Datei erfolgreich erstellt in:",
+    "report_saved": "Bericht gespeichert: {filename}",
+    "no_results": "Keine Ergebnisse gefunden.",
+    "warning_title": "Warnung",
+    "no_networks": "Keine sozialen Netzwerke für diesen Nutzer gefunden.",
+    "view_button": "ANSEHEN",
+    "duckduckgo": "DuckDuckGo",
+    "osint_search": "OSINT-Search",
+    "webmii": "Webmii",
+    "peekYou": "PeekYou",
+    "truePeople": "TruePeople",
+    "document": "📄 Dokument",
+    "potential_leak": "Möglicher Leak/Dokument",
+    "gravatar": "Gravatar"
+  },
+  "firewall_page": {
+    "title": "🛡️ Sicherheitsaudit",
+    "audit_title": "🛡️ Sicherheitsaudit",
+    "execution_test": "Ausführungstest",
+    "start_audit": "Lokales Audit starten",
+    "description": "Führt ein tiefes Audit auf dem lokalen Host durch: Berechtigungen, Prozesse und Firewall-Konformität.",
+    "waiting": "Warte auf Befehl...",
+    "audit_label": "Audit",
+    "audit_running": "Ein Audit läuft bereits.",
+    "audit_in_progress": "Audit läuft...",
+    "metadata_collection": "[INFO] Metadatensammlung und Prozessanalyse gestartet...",
+    "running_audit": "Sicherheitsaudit wird ausgeführt...",
+    "error_label": "FEHLER",
+    "report_generated": "Bericht erstellt",
+    "audit_completed": "Audit abgeschlossen auf: {hostname}",
+    "audit_user": "Nutzer: {user}",
+    "summary": "Zusammenfassung der Funde:",
+    "unknown": "Unbekannt",
+    "report_saved": "[INFO] Bericht signiert und gespeichert.",
+    "error_reading": "[FEHLER] beim Lesen des Logs:"
+  },
+  "payload_page": {
+    "title": "📦 Remote-Agent-Generator (Payload)",
+    "description": "Wählen Sie das BS des Zielrechners, um den Verbindungs-Agenten zu generieren.",
+    "generate_windows": "🪟 Windows-Agent generieren (.exe)",
+    "generate_linux": "🐧 Linux-Agent generieren (.py)",
+    "go_listener": "Zum Control Panel 📡",
+    "awaiting": "Warte auf Auswahl...",
+    "back": "⬅ Zurück",
+    "generating": "[INFO] Agent für {os_type} wird generiert (IP: {my_ip})...",
+    "agent_not_found": "[FEHLER] Datei 'core/aura_agent.py' nicht gefunden!",
+    "linux_success": "[ERFOLG] Linux-Agent bereit unter:",
+    "compiling": "[INFO] Kompiliere EXE... Bitte warten.",
+    "agent_success": "[ERFOLG] Agent generiert!",
+    "agent_file": "Datei: temp_win_agent.exe",
+    "compilation_error": "[FEHLER] Kompilierung fehlgeschlagen.",
+    "error_prefix": "[FEHLER]:"
+  },
+  "listener_page": {
+    "title": "📡 Remote Control Panel",
+    "status_label": "Status: Warte auf Aktivierung...",
+    "server_log": "Server-Log...",
+    "command_placeholder": "Befehl eingeben (z.B. stress_test, dir, whoami)...",
+    "activate_listen": "Listening aktivieren (Port 4444)",
+    "listening": "Status: Listening auf Port 4444...",
+    "connected": "Status: VERBUNDEN mit Ziel ({addr})",
+    "connection_lost": "Status: Verbindung verloren.",
+    "command_echo": "> {cmd}",
+    "server_error": "Server-Fehler:"
+  },
+  "john_page": {
+    "title": "💀 John The Ripper - Hash-Knacker",
+    "basic_settings": "Basiseinstellungen",
+    "target_hash": "Ziel-Hash:",
+    "hash_placeholder": "Hash hier einfügen...",
+    "attack_mode": "Angriffsmodus:",
+    "wordlist": "Wortliste",
+    "mask": "Maske",
+    "algorithm": "Algorithmus:",
+    "auto_detect": "Auto-Erkennung",
+    "md5": "MD5",
+    "sha1": "SHA1",
+    "sha256": "SHA256",
+    "sha512": "SHA512",
+    "select_wordlist": "Wortlistendatei wählen",
+    "apply_rules": "Regeln anwenden (John-Style)",
+    "mask_definition": "Maskendefinition:",
+    "mask_placeholder": "Z.B.: ?l?l?l?d?d (L=Buchstabe, D=Ziffer)",
+    "salt_label": "Salt:",
+    "salt_placeholder": "Salt (Optional)",
+    "start_attack": "ANGRIFF STARTEN",
+    "select_wordlist_title": "Wortliste wählen",
+    "text_files": "Textdateien (*.txt)",
+    "error_title": "Fehler",
+    "enter_hash": "Hash eingeben!",
+    "running": "WIRD AUSGEFÜHRT...",
+    "select_wordlist_error": "Wortliste wählen!",
+    "enter_mask": "Maske eingeben!",
+    "john_progress": "John: {tested} Hashes geprüft | Speed: {speed} H/s",
+    "processing": "[*] Verarbeitung... {tested} Kandidaten geprüft.",
+    "unknown_failure": "Unbekannter Fehler",
+    "password_found": "✅ PASSWORT GEFUNDEN: {password}",
+    "report_label": "Bericht: {filename}",
+    "success_title": "Erfolg",
+    "failure": "❌ FEHLGESCHLAGEN: {error}"
+  },
+  "keylogger_page": {
+    "title": "⌨️ Tastatur-Auditor - Überwachung",
+    "dot": "●",
+    "status_ready": "STATUS: BEREIT ZUR ERFASSUNG",
+    "status_monitoring": "ÜBERWACHE TASTATUR...",
+    "status_finished": "AUDIT ABGESCHLOSSEN",
+    "recent_activity": "Letzte Aktivität:",
+    "start_audit": "AUDIT STARTEN",
+    "stop_monitoring": "ÜBERWACHUNG STOPPEN",
+    "restart_capture": "ERFASSUNG NEU STARTEN",
+    "open_logs": "📁 LOGS ÖFFNEN"
+  },
+  "stress_test_page": {
+    "title": "🛡️ Firewall-Resilienz-Bewertung",
+    "target_parameters": "Zielparameter",
+    "target_label": "Ziel:",
+    "target_placeholder": "IP oder Host",
+    "port_label": "Port:",
+    "traffic_control": "Traffic-Kontrolle",
+    "rate_limit_label": "Ratenbegrenzung (Req/Sek - RPS):",
+    "duration_label": "Dauer (Sekunden):",
+    "gradual_escalation": "Graduelle Eskalation (Ramp-up)",
+    "awaiting_start": "Warte auf Testbeginn...",
+    "start_button": "⚡ TRAFFIC-AUDIT STARTEN",
+    "stop_button": "🛑 TEST ABBRECHEN",
+    "input_description": "Sperrt oder entsperrt Eingabefelder."
+  },
+  "hydra_page": {
+    "title": "🧰 Hydra - Anmeldedaten-Test",
+    "warning": "⚠️ Nur in autorisierten Umgebungen verwenden.",
+    "targets_group": "Ziele",
+    "targets_placeholder": "Z.B.: 192.168.0.10",
+    "service_and_port": "Dienst und Port",
+    "service_label": "Dienst:",
+    "port_label": "Port:",
+    "http_config": "HTTP POST Konfiguration",
+    "form_path": "Formular-Pfad",
+    "form_path_placeholder": "/login.php",
+    "post_params": "POST-Parameter",
+    "post_params_placeholder": "username=^USER^&password=^PASS^",
+    "fail_string": "Fehlermeldung (String)",
+    "fail_string_placeholder": "Z.B.: Login ungültig",
+    "credentials_group": "Anmeldedaten",
+    "single_username": "Einzelner Nutzer",
+    "username_list": "Nutzerliste",
+    "single_password": "Einzelnes Passwort",
+    "password_list": "Passwortliste",
+    "user_list_title": "Nutzerliste wählen",
+    "password_list_title": "Passwortliste wählen",
+    "options_group": "Optionen",
+    "threads_label": "Threads (-t):",
+    "stop_on_success": "Bei Erfolg stoppen",
+    "verbose": "Verbose-Modus",
+    "start_button": "START",
+    "stop_button": "STOPP",
+    "already_running": "Hydra",
+    "already_running_msg": "Es läuft bereits eine Instanz.",
+    "no_targets": "Hydra",
+    "no_targets_msg": "Mindestens ein Ziel angeben.",
+    "no_service": "Hydra",
+    "no_service_msg": "Dienst angeben.",
+    "http_required": "Hydra",
+    "http_required_msg": "Alle HTTP POST Felder ausfüllen.",
+    "params_error": "Hydra",
+    "params_error_msg": "Benutzen Sie ^USER^ und ^PASS^.",
+    "interruption_requested": "[INFO] Unterbrechung angefordert.",
+    "completed": "[INFO] Hydra abgeschlossen mit Code",
+    "log_saved": "[INFO] Log gespeichert in"
+  },
+  "manual": {
+    "tabs": {
+      "manifesto": "MANIFEST",
+      "scanner": "SCANNER",
+      "ddos": "DDOS",
+      "auditoria": "AUDIT",
+      "sherlock": "SHERLOCK",
+      "john": "JOHN",
+      "keylogger": "KEYLOGGER",
+      "hydra": "HYDRA"
+    },
+    "manifesto": {
+      "title": "🏠 Über AURA",
+      "content": "# 🌌 Projekt AURA\n\n**Advanced Unified Reconnaissance Agent**\n\n---\n\n## 👋 Willkommen bei AURA\n\nWenn Sie neu im Bereich Cybersicherheit sind, ist AURA genau richtig für Sie. Es vereint wichtige Sicherheitsfunktionen an einem Ort, um das Lernen und Üben zu erleichtern.\n\n---\n\n## 🧠 Was macht AURA?\n\n* 🔍 Informationen über Netzwerke finden\n* 🧪 Logins und Passwörter testen\n* 🛰️ Offene Ports finden\n* 🔎 OSINT-Suche\n* ⌨️ Eingabeanalyse (kontrolliert)\n* 🔥 Belastungstests\n* 🛡️ Firewall-Bewertung\n\n---\n\n## ⚖️ Verantwortungsvolle Nutzung\n\nNur für eigene Systeme oder Labore. Niemals ohne Erlaubnis nutzen.\n\n---\n\n**Verantwortungsvoll nutzen. Mit Ziel lernen.**"
+    },
+    "scanner": {
+      "title": "🛰️ NETZWERK-SCAN",
+      "content": "# 🛰️ Netzwerk-Scanner\n\nAnalysiert einen Host: Ist er online? Welche Ports sind offen? Welche Dienste laufen? Dies ist der erste Schritt jeder Sicherheitsbewertung."
+    },
+    "ddos": {
+      "title": "🔥 DDOS",
+      "content": "# 🔥 Belastungstest\n\nSimuliert viele gleichzeitige Zugriffe, um die Stabilität eines Systems zu prüfen und zu sehen, ob die Firewall die Last bewältigen kann."
+    },
+    "auditoria": {
+      "title": "🛡️ SYSTEM-AUDIT",
+      "content": "# 🛡️ Sicherheitsprüfung\n\nAnalysiert lokale Berechtigungen, Prozesse und Einstellungen. Hilft dabei, Fehlkonfigurationen auf dem eigenen Rechner zu finden."
+    },
+    "sherlock": {
+      "title": "🔍 SHERLOCK",
+      "content": "# 🔍 Digitale Präsenz\n\nSammelt öffentliche Informationen (OSINT). Hilft zu verstehen, wie viel der eigenen Identität im Internet exponiert ist."
+    },
+    "john": {
+      "title": "💀 JOHN THE RIPPER",
+      "content": "# 🔐 Passwort-Sicherheitstest\n\nAnalysiert Passwort-Hashes. Wenn ein Passwort schnell geknackt wird, ist es zu schwach. Simuliert Angreifer-Methoden."
+    },
+    "keylogger": {
+      "title": "⌨️ KEYLOGGER",
+      "content": "# ⌨️ Eingabe-Überwachung\n\nProtokolliert Tastatureingaben in kontrollierten Umgebungen. Hilft zu verstehen, wie Bedrohungen funktionieren und wie man sich schützt."
+    },
+    "hydra": {
+      "title": "🧰 HYDRA",
+      "content": "# 🧰 Login-Sicherheitstest\n\nTestet automatisch Login-Kombinationen, um schwache oder vorhersehbare Passwörter in Diensten wie SSH oder HTTP zu identifizieren."
+    }
+  }
+}

@@ -4,6 +4,7 @@ import com.ucb.agente_reconhecimento.domain.entities.Usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import static java.util.Optional.ofNullable;
 
@@ -14,10 +15,10 @@ public record UsuarioCadastroDTO (
         String email,
         @NotBlank
         String username,
-        @Min(value = 6)
+        @Size(min = 4)
         @NotBlank
         String senha,
-        @Min(value = 6)
+        @Size(min = 4)
         @NotBlank
         String confirmaSenha
 ) {

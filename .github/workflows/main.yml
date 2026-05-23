@@ -33,17 +33,17 @@ jobs:
     needs: test  # só executa se os testes passarem
  
     steps: 
-      - uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v6.0.2
       - name: Autenticação Docker HUB
-        uses: docker/login-action@v3.3.0
+        uses: docker/login-action@v4.2.0
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PWD }}
       - name: Construção e push da imagem Docker
-        uses: docker/build-push-action@v6.9.0
+        uses: docker/build-push-action@v7.2.0
         with:
-          context: ../../api/
-          file: Dockerfile
+          context: .
+          file: api/Dockerfile
           push: true
           tags: |
             caiovrodrigues/agente-reconhecimento-api:latest

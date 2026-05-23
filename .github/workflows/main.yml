@@ -42,8 +42,8 @@ jobs:
       - name: Construção e push da imagem Docker
         uses: docker/build-push-action@v7.2.0
         with:
-          context: .
-          file: api/Dockerfile
+          context: ./api
+          file: ./api/Dockerfile
           push: true
           tags: |
             caiovrodrigues/agente-reconhecimento-api:latest

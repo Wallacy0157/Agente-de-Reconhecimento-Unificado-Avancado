@@ -17,7 +17,7 @@ public class Vulnerabilidade extends EntidadeAuditavel {
     @JoinColumn(name = "id_porta_aberta")
     private PortaAberta portaAberta;
 
-    @Column(name = "detalhes")
+    @Column(name = "detalhes", length = 2000)
     private String detalhes;
 
     @Column(name = "cve")

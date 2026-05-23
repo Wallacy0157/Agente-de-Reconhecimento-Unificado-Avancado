@@ -174,6 +174,8 @@ class AuthWindow(QWidget):
             auth_service.registrar(email, nome, username, senha, confirma)
             QMessageBox.information(self, "Sucesso", "Conta criada com sucesso! Faça seu login.")
             self.stack.setCurrentIndex(0)
+        except auth_service.AuthError as e:
+            QMessageBox.critical(self, "Erro no cadastro", str(e))
         except Exception as e:
             QMessageBox.critical(self, "Erro", str(e))
 
@@ -184,8 +186,10 @@ class AuthWindow(QWidget):
             auth_service.login(email, senha)
             self.login_successful.emit(email)
             self.close()
+        except auth_service.AuthError as e:
+            QMessageBox.critical(self, "Falha no login", str(e))
         except Exception:
-            QMessageBox.critical(self, "Erro", "Credenciais inválidas.")
+            QMessageBox.critical(self, "Erro", "Não foi possível conectar ao servidor.")
 
 
 if __name__ == "__main__":

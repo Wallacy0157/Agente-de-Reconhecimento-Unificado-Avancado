@@ -43,6 +43,7 @@ from core.john_engine import JohnEngine, JohnExecutor
 from core.hydra_engine import HydraExecutor
 from core.logger_engine import KeyloggerEngine
 from core.interaction_test import InteractionTestExecutor
+from core.history_dialog import HistoryDialog
 
 # --- DIAGNOSTICO ---
 class EnvironmentDiagnosticsPage(QWidget):
@@ -257,6 +258,10 @@ class ScannerPage(QWidget):
         self.send_hydra_button.clicked.connect(self.send_vulnerable_targets_to_hydra)
         layout.addWidget(self.send_hydra_button)
 
+        self.history_button = QPushButton(lang_get(self.L, "scanner_page.history", "Histórico de Varreduras"))
+        self.history_button.clicked.connect(self.open_history)
+        layout.addWidget(self.history_button)
+
         layout.addStretch()
         self.setLayout(layout)
 
@@ -268,6 +273,7 @@ class ScannerPage(QWidget):
         self.result_group.setTitle(lang_get(L, "scanner_page.results_group", "Resultados"))
         self.save_button.setText(lang_get(L, "scanner_page.save_results", "Salvar Resultados no Logs/Relatórios"))
         self.send_hydra_button.setText(lang_get(L, "scanner_page.send_hydra", "Enviar IPs Vulneráveis para Hydra"))
+        self.history_button.setText(lang_get(L, "scanner_page.history", "Histórico de Varreduras"))
         
         if not self.last_results:
             self.results_text.setText(lang_get(L, "scanner_page.awaiting_scan", "Aguardando varredura..."))
@@ -431,6 +437,10 @@ class ScannerPage(QWidget):
             QMessageBox.information(self, "Hydra", lang_get(self.L, "scanner_page.no_vulnerable_ips", "Nenhum IP vulnerável disponível para enviar."))
             return
         self.parent_window.open_hydra_with_targets(targets)
+
+    def open_history(self):
+        dialog = HistoryDialog(self, self.L)
+        dialog.exec()
 
 # --- SHERLOCK ---
 class SherlockPage(QWidget):

@@ -418,6 +418,89 @@ def save_json(results, filename):
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=4, ensure_ascii=False)
 
+    return report
+
+
+def save_and_persist(results, filename):
+    import logging
+    logger = logging.getLogger(__name__)
+
+    report = save_json(results, filename)
+
+    api_response = None
+    try:
+        from services.scan_client import enviar_resultado_scan
+
+        payload = {
+            "metadata": {
+                "scanDate": report["scan_metadata"]["scan_date"],
+                "scanTime": report["scan_metadata"]["scan_time"],
+                "timezone": report["scan_metadata"]["timezone"],
+            },
+            "results": _convert_results_to_api_format(report["results"]),
+        }
+
+        api_response = enviar_resultado_scan(payload)
+
+        if api_response is not None:
+            logger.info(
+                "Scan persistido no backend com sucesso (ID: %s).",
+                api_response.get("id"),
+            )
+        else:
+            logger.warning(
+                "Falha ao persistir scan no backend. Resultados salvos apenas localmente em: %s",
+                filename,
+            )
+
+    except Exception as exc:
+        logger.error("Erro inesperado ao tentar persistir scan no backend: %s", exc)
+        api_response = None
+
+    return report, api_response
+
+
+def _convert_results_to_api_format(results: list) -> list:
+    api_results = []
+
+    for host in results:
+        api_host = {
+            "ip": host.get("ip", ""),
+            "os": host.get("os"),
+            "error": host.get("error"),
+            "openPorts": [],
+            "serviceProfile": None,
+            "suggestedTests": host.get("suggested_tests", []),
+            "vulnerabilities": [],
+        }
+
+        for port in host.get("open_ports", []):
+            api_host["openPorts"].append({
+                "port": int(port["port"]) if port.get("port") else None,
+                "protocol": port.get("protocol", ""),
+                "service": port.get("service", ""),
+            })
+
+        sp = host.get("service_profile")
+        if sp:
+            api_host["serviceProfile"] = {
+                "web": sp.get("web", False),
+                "database": sp.get("database", False),
+                "remoteAccess": sp.get("remote_access", False),
+                "authService": sp.get("auth_service", False),
+            }
+
+        for vuln in host.get("vulnerabilities", []):
+            api_host["vulnerabilities"].append({
+                "port": str(vuln.get("port", "")),
+                "script": vuln.get("script", ""),
+                "details": vuln.get("details", ""),
+            })
+
+        api_results.append(api_host)
+
+    return api_results
+
 def is_root():
     if os.name != "nt":
         return os.geteuid() == 0

@@ -20,8 +20,8 @@ def _request(method: str, endpoint: str, **kwargs) -> Response:
     return session.request(method, f"{BASE_URL}{endpoint}", **kwargs)
 
 
-def post(endpoint: str, payload: dict) -> Response:
-    return _request("POST", endpoint, json=payload)
+def post(endpoint: str, payload: dict, **kwargs) -> Response:
+    return _request("POST", endpoint, json=payload, **kwargs)
 
 
 def get(endpoint: str, **kwargs) -> Response:

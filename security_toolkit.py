@@ -399,11 +399,24 @@ class ScannerPage(QWidget):
         filename = os.path.join(log_dir, f"scan_report_{timestamp}.json")
 
         try:
-            network_scanner.save_json(self.last_results, filename)
+            report, api_response = network_scanner.save_and_persist(self.last_results, filename)
 
-            self.parent_window.status_label.setText(
-                lang_get(self.L, "scanner_page.report_saved", "Relatório salvo em logs/{filename} ✔").format(filename=os.path.basename(filename))
-            )
+            if api_response is not None:
+                scan_id = api_response.get("id", "?")
+                self.parent_window.status_label.setText(
+                    lang_get(self.L, "scanner_page.report_saved_and_persisted",
+                             "Relatório salvo em logs/{filename} e persistido no backend (ID: {scan_id}) ✔").format(
+                        filename=os.path.basename(filename), scan_id=scan_id
+                    )
+                )
+            else:
+                self.parent_window.status_label.setText(
+                    lang_get(self.L, "scanner_page.report_saved_local_only",
+                             "Relatório salvo em logs/{filename} ✔ (falha ao persistir no backend — salvo apenas localmente)").format(
+                        filename=os.path.basename(filename)
+                    )
+                )
+
             self.save_button.setEnabled(False)
 
         except Exception as e:

@@ -26,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Optional;
 
 @Setter
 @ConfigurationProperties(prefix = "security.jwt")
@@ -39,18 +40,29 @@ public class CustomSecurityFilterChain {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
-        return http
+        var httpSecurity = http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(auth2 -> auth2.jwt(Customizer.withDefaults()))
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .build();
+                .oauth2ResourceServer(auth2 -> auth2.jwt(Customizer.withDefaults()));
+        adicionarConfiguracoesSeAmbienteLocal(http);
+        return httpSecurity.build();
+    }
+
+    private void adicionarConfiguracoesSeAmbienteLocal(HttpSecurity http) {
+        if (isAmbienteLocal()) {
+            http.authorizeHttpRequests(authz -> authz
+                    .requestMatchers(PathRequest.toH2Console()).permitAll());
+            http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+        }
+    }
+
+    private boolean isAmbienteLocal() {
+        return Optional.ofNullable(System.getenv("SPRING_ACTIVE_PROFILE")).map("local"::equalsIgnoreCase).orElse(false);
     }
 
     @Bean

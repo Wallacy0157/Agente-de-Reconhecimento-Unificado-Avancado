@@ -2,6 +2,9 @@ package com.ucb.agente_reconhecimento.service;
 
 import com.ucb.agente_reconhecimento.domain.entities.Usuario;
 import com.ucb.agente_reconhecimento.domain.entities.UsuarioPreferencia;
+import com.ucb.agente_reconhecimento.infra.exception.ConflitoCadastroException;
+import com.ucb.agente_reconhecimento.infra.exception.CredenciaisInvalidasException;
+import com.ucb.agente_reconhecimento.infra.exception.SenhasNaoCoincidemException;
 import com.ucb.agente_reconhecimento.repository.UsuarioRepository;
 import com.ucb.agente_reconhecimento.web.dto.TokenResponse;
 import com.ucb.agente_reconhecimento.web.dto.UsuarioCadastroDTO;
@@ -43,23 +46,24 @@ public class UsuarioService {
 
     private void validarUsuarioDto(UsuarioCadastroDTO usuarioCadastroDTO) {
         if (!Objects.equals(usuarioCadastroDTO.senha(), usuarioCadastroDTO.confirmaSenha())) {
-            throw new RuntimeException("Senhas não coincidem");
+            throw new SenhasNaoCoincidemException();
         }
 
         if (usuarioRepository.existsByEmail(usuarioCadastroDTO.email())) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new ConflitoCadastroException("Email", usuarioCadastroDTO.email());
         }
 
         if (usuarioRepository.existsByUsername(usuarioCadastroDTO.username())) {
-            throw new RuntimeException("Username já cadastrado");
+            throw new ConflitoCadastroException("Username", usuarioCadastroDTO.username());
         }
     }
 
     public TokenResponse autenticarUsuario(UsuarioLoginDTO usuarioLoginDTO) {
-        Usuario usuario = usuarioRepository.findByEmail(usuarioLoginDTO.email()).orElseThrow();
+        Usuario usuario = usuarioRepository.findByEmail(usuarioLoginDTO.email())
+                .orElseThrow(CredenciaisInvalidasException::new);
 
         if (!passwordEncoder.matches(usuarioLoginDTO.senha(), usuario.getSenhaHash())) {
-            throw new RuntimeException("Credenciais inválidas");
+            throw new CredenciaisInvalidasException();
         }
 
         Instant agora = Instant.now();

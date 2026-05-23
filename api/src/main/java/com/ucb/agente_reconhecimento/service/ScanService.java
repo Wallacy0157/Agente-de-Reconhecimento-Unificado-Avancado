@@ -4,13 +4,13 @@ import com.ucb.agente_reconhecimento.domain.entities.*;
 import com.ucb.agente_reconhecimento.domain.entities.scan.*;
 import com.ucb.agente_reconhecimento.domain.enums.Disponibilidade;
 import com.ucb.agente_reconhecimento.domain.enums.Gravidade;
+import com.ucb.agente_reconhecimento.infra.exception.AcessoNegadoException;
+import com.ucb.agente_reconhecimento.infra.exception.RecursoNaoEncontradoException;
 import com.ucb.agente_reconhecimento.repository.*;
 import com.ucb.agente_reconhecimento.web.dto.scan.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -117,11 +117,11 @@ public class ScanService {
 
     public ScanDetalheResponse buscarScanPorId(Integer scanId, Integer usuarioId) {
         ScanRede scanRede = scanRedeRepository.findById(scanId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Scan não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Scan", scanId));
 
         Integer donoId = scanRede.getExecucao().getProjeto().getUsuario().getId();
         if (!donoId.equals(usuarioId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado: scan pertence a outro usuário");
+            throw new AcessoNegadoException("Scan pertence a outro usuário");
         }
 
         Execucao execucao = scanRede.getExecucao();

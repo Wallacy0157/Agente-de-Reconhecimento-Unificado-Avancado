@@ -146,7 +146,27 @@
     "nmap_check": "Verifique se o Nmap está instalado e se você possui permissões sudo.",
     "report_saved": "Relatório salvo em logs/{filename} ✔",
     "failed_save": "Falha ao salvar relatório:",
-    "no_vulnerable_ips": "Nenhum IP vulnerável disponível para enviar."
+    "no_vulnerable_ips": "Nenhum IP vulnerável disponível para enviar.",
+    "history": "Histórico de Varreduras",
+    "report_saved_and_persisted": "Relatório salvo em logs/{filename} e persistido no backend (ID: {scan_id}) ✔",
+    "report_saved_local_only": "Relatório salvo em logs/{filename} ✔ (falha ao persistir no backend — salvo apenas localmente)"
+  },
+  "history_dialog": {
+    "title": "Histórico de Varreduras",
+    "empty": "Nenhuma varredura encontrada. Execute uma varredura no módulo Scanner para começar.",
+    "no_detail": "Selecione uma varredura para ver os detalhes.",
+    "retry": "Tentar novamente",
+    "hosts": "Hosts Descobertos",
+    "ports": "Portas Abertas",
+    "vulnerabilities": "Vulnerabilidades",
+    "error": {
+      "connection": "Não foi possível conectar ao servidor.",
+      "timeout": "Tempo de conexão esgotado. Verifique sua conexão.",
+      "session_expired": "Sessão expirada. Faça login novamente.",
+      "access_denied": "Acesso negado a este recurso.",
+      "not_found": "Varredura não encontrada.",
+      "server_error": "Erro interno do servidor. Tente novamente."
+    }
   },
   "diagnostics_page": {
     "title": "Diagnóstico do Ambiente",

@@ -37,7 +37,7 @@ public class UsuarioService {
         String senhaHash = passwordEncoder.encode(usuarioCadastroDTO.senha());
 
         Usuario novoUsuario = usuarioCadastroDTO.toEntity();
-        novoUsuario.setSenhaHash(senhaHash);
+//        novoUsuario.setSenhaHash(senhaHash);
         novoUsuario.setAtivo(true);
         novoUsuario.setUsuarioPreferencia(UsuarioPreferencia.getDefault());
 

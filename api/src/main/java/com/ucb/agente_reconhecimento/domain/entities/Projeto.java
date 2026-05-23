@@ -9,11 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-public class Projeto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Projeto extends EntidadeAuditavel {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_usuario")

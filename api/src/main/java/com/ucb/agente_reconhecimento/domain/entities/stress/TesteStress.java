@@ -1,5 +1,6 @@
 package com.ucb.agente_reconhecimento.domain.entities.stress;
 
+import com.ucb.agente_reconhecimento.domain.entities.EntidadeAuditavel;
 import com.ucb.agente_reconhecimento.domain.entities.Execucao;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,11 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-public class TesteStress {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class TesteStress extends EntidadeAuditavel {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_execucao")

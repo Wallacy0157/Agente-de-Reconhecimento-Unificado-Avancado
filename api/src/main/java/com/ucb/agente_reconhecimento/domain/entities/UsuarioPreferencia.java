@@ -9,11 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-public class UsuarioPreferencia {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class UsuarioPreferencia extends EntidadeAuditavel {
 
     @OneToOne(mappedBy = "usuarioPreferencia")
     @JoinColumn(name = "id_usuario", nullable = false)

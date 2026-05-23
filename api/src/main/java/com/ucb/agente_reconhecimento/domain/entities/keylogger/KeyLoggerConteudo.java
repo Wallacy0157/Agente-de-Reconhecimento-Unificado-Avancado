@@ -1,5 +1,6 @@
 package com.ucb.agente_reconhecimento.domain.entities.keylogger;
 
+import com.ucb.agente_reconhecimento.domain.entities.EntidadeAuditavel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,11 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-public class KeyLoggerConteudo {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class KeyLoggerConteudo extends EntidadeAuditavel {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_key_logger")

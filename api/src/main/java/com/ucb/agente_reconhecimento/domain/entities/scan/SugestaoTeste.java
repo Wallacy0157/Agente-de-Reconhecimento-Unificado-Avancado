@@ -1,5 +1,6 @@
 package com.ucb.agente_reconhecimento.domain.entities.scan;
 
+import com.ucb.agente_reconhecimento.domain.entities.EntidadeAuditavel;
 import com.ucb.agente_reconhecimento.domain.entities.Ferramenta;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,11 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-public class SugestaoTeste {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class SugestaoTeste extends EntidadeAuditavel {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_host_descoberto")

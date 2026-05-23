@@ -1,5 +1,6 @@
 package com.ucb.agente_reconhecimento.domain.entities.keylogger;
 
+import com.ucb.agente_reconhecimento.domain.entities.EntidadeAuditavel;
 import com.ucb.agente_reconhecimento.domain.entities.Execucao;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,11 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class KeyLogger {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class KeyLogger extends EntidadeAuditavel {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_execucao")

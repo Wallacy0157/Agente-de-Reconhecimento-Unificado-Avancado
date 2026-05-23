@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Builder
@@ -13,11 +14,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
-public class Execucao {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Execucao extends EntidadeAuditavel {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_projeto")
@@ -34,10 +31,10 @@ public class Execucao {
     private String status;
 
     @Column(nullable = false)
-    private String inicio;
+    private LocalDateTime inicio;
 
     @Column(nullable = false)
-    private String fim;
+    private LocalDateTime fim;
 
     @Column(nullable = false)
     private String gravidade;

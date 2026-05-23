@@ -1,5 +1,6 @@
 package com.ucb.agente_reconhecimento.domain.entities.stress;
 
+import com.ucb.agente_reconhecimento.domain.entities.EntidadeAuditavel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,11 +12,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-public class TesteStressRequisicao {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class TesteStressRequisicao extends EntidadeAuditavel {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_teste_stress")

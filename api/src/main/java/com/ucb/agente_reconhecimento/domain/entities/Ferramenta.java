@@ -12,11 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class Ferramenta {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Ferramenta extends EntidadeAuditavel {
 
     @Column(nullable = false, length = 50)
     private String nome;

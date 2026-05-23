@@ -1,5 +1,6 @@
 package com.ucb.agente_reconhecimento.domain.entities.hydra;
 
+import com.ucb.agente_reconhecimento.domain.entities.EntidadeAuditavel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,11 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-public class HydraAlvo {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class HydraAlvo extends EntidadeAuditavel {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_ataque_hydra")

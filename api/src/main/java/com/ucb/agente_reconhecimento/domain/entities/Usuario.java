@@ -11,11 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class Usuario {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Usuario extends EntidadeAuditavel {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_usuario_preferencia")

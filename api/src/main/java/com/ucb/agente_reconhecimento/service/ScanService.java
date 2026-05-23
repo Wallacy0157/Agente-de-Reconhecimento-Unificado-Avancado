@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +39,10 @@ public class ScanService {
         Ferramenta ferramenta = obterOuCriarFerramenta();
 
         ScanMetadataDTO metadata = request.metadata();
-        String inicio = metadata.scanDate() + " " + metadata.scanTime();
+        LocalDateTime inicio = LocalDateTime.of(
+                LocalDate.parse(metadata.scanDate()),
+                LocalTime.parse(metadata.scanTime())
+        );
 
         Execucao execucao = Execucao.builder()
                 .projeto(projeto)
@@ -91,9 +97,8 @@ public class ScanService {
             String scanDate = "";
             String scanTime = "";
             if (execucao.getInicio() != null) {
-                String[] parts = execucao.getInicio().split(" ", 2);
-                scanDate = parts[0];
-                scanTime = parts.length > 1 ? parts[1] : "";
+                scanDate = execucao.getInicio().toLocalDate().toString();
+                scanTime = execucao.getInicio().toLocalTime().toString();
             }
 
             int totalHosts = hostDescobertoRepository.findByScanRede_Id(scan.getId()).size();
@@ -123,9 +128,8 @@ public class ScanService {
         String scanDate = "";
         String scanTime = "";
         if (execucao.getInicio() != null) {
-            String[] parts = execucao.getInicio().split(" ", 2);
-            scanDate = parts[0];
-            scanTime = parts.length > 1 ? parts[1] : "";
+            scanDate = execucao.getInicio().toLocalDate().toString();
+            scanTime = execucao.getInicio().toLocalTime().toString();
         }
         ScanMetadataDTO metadata = new ScanMetadataDTO(scanDate, scanTime, null);
 

@@ -1,5 +1,6 @@
 package com.ucb.agente_reconhecimento.domain.entities.scan;
 
+import com.ucb.agente_reconhecimento.domain.entities.EntidadeAuditavel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,11 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-public class AplicacaoWeb {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class AplicacaoWeb extends EntidadeAuditavel {
 
     @Column(name = "url", nullable = false)
     private String url;

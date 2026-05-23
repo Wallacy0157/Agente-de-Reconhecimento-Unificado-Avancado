@@ -5,10 +5,12 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,7 +28,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Optional;
+import java.util.Arrays;
 
 @Setter
 @ConfigurationProperties(prefix = "security.jwt")
@@ -38,6 +40,9 @@ public class CustomSecurityFilterChain {
 
     private RSAPrivateKey privateKey;
 
+    @Autowired
+    private Environment environment;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         var httpSecurity = http
@@ -45,11 +50,11 @@ public class CustomSecurityFilterChain {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
-                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(auth2 -> auth2.jwt(Customizer.withDefaults()));
         adicionarConfiguracoesSeAmbienteLocal(http);
+        http.authorizeHttpRequests(authz -> authz.anyRequest().authenticated());
         return httpSecurity.build();
     }
 
@@ -62,7 +67,7 @@ public class CustomSecurityFilterChain {
     }
 
     private boolean isAmbienteLocal() {
-        return Optional.ofNullable(System.getenv("SPRING_ACTIVE_PROFILE")).map("local"::equalsIgnoreCase).orElse(false);
+        return Arrays.asList(environment.getActiveProfiles()).contains("local");
     }
 
     @Bean

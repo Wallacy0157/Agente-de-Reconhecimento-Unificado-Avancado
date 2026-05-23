@@ -42,7 +42,7 @@ jobs:
       - name: Construção e push da imagem Docker
         uses: docker/build-push-action@v6.9.0
         with:
-          context: ./api
+          context: ../../api/
           file: Dockerfile
           push: true
           tags: |

@@ -1,0 +1,21 @@
+==========================================================
+             AURA SECURITY - RELATÓRIO DE AUDITORIA       
+==========================================================
+DATA/HORA INÍCIO   : 22/05/2026 19:48:40
+USUÁRIO SISTEMA    : lucas
+ESTAÇÃO TRABALHO   : LAPTOP-EG70J1D6 (192.168.1.52)
+SISTEMA OPERACIONAL: Windows 11
+==========================================================
+
+
+
+[EVENTO: TROCA DE JANELA | 22/05/2026 19:48:41]
+[JANELA: Generic Window]
+> adasdasdasdassdadwqdfwdadawdffqqq
+
+==========================================================
+FIM DA AUDITORIA    : 19:48:49
+TOTAL DE TECLAS     : 33
+ENTERS / BACKSPACES : 0 / 0
+TECLAS MAIS USADAS  : [('d', 10), ('a', 8), ('s', 5)]
+==========================================================

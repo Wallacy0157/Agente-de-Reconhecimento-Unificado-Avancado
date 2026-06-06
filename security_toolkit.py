@@ -1575,6 +1575,7 @@ class StressTestPage(QWidget):
         super().__init__()
         self.parent_window = parent_window
         self.executor = None
+        self._results_persisted = False
         self.L = getattr(parent_window, 'L', {})
         
         self.TEXT_START = "⚡ INICIAR AUDITORIA DE TRÁFEGO"
@@ -1655,9 +1656,14 @@ class StressTestPage(QWidget):
     def toggle_test(self):
         if self.executor and self.executor.is_running:
             self.executor.stop()
+            self.metrics_box.setText(self.executor.get_report())
             self._finalize_ui_state()
+            if not self._results_persisted:
+                self._results_persisted = True
+                self._persist_results()
             return
 
+        self._results_persisted = False
         self.executor = StressTestExecutor(
             target=self.target_input.text(),
             port=self.port_input.value(),
@@ -1685,6 +1691,26 @@ class StressTestPage(QWidget):
         
         if not self.executor.is_running:
             self._finalize_ui_state()
+            if not self._results_persisted:
+                self._results_persisted = True
+                self._persist_results()
+
+    def _persist_results(self):
+        """Persiste resultados no backend de forma síncrona (operação rápida)."""
+        from core.stress_test import build_stress_test_payload
+        from services.stress_client import enviar_resultado_stress
+
+        payload = build_stress_test_payload(self.executor)
+        response = enviar_resultado_stress(payload)
+
+        if response is not None:
+            self.parent_window.statusBar().showMessage(
+                f"✅ Teste de stress salvo com sucesso (ID: {response.get('id')})", 8000
+            )
+        else:
+            self.parent_window.statusBar().showMessage(
+                "⚠️ Resultados disponíveis apenas na visualização atual (falha ao salvar no backend)", 8000
+            )
 
     def update_ui_language(self, L):
         """Atualiza a linguagem da página."""

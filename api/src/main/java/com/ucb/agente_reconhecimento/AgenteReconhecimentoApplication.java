@@ -12,7 +12,7 @@ public class AgenteReconhecimentoApplication {
 		SpringApplication springApplication = new SpringApplication(AgenteReconhecimentoApplication.class);
 
 		String profileActive = System.getenv("SPRING_PROFILE_ACTIVE");
-		springApplication.setAdditionalProfiles(Objects.requireNonNullElse(profileActive, "local"));
+		springApplication.setAdditionalProfiles(Objects.requireNonNullElse(profileActive, "prod"));
 
 		springApplication.run(args);
 	}

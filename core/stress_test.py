@@ -5,6 +5,7 @@ import random
 import aiohttp
 import threading
 from collections import defaultdict
+from datetime import datetime, timezone
 
 class StressTestExecutor:
     def __init__(self, target, port, rps_limit=100, duration=60, workers=50, gradual=False):
@@ -149,3 +150,60 @@ class StressTestExecutor:
             
         lines.append("-" * 40)
         return "\n".join(lines)
+
+
+def _get_percentile_safe(data: list, p: float) -> float:
+    """Calcula percentil. Retorna 0.0 se a lista estiver vazia."""
+    if not data:
+        return 0.0
+    sorted_data = sorted(data)
+    idx = (len(sorted_data) - 1) * p
+    lower = int(idx)
+    upper = lower + 1
+    weight = idx - lower
+    if upper >= len(sorted_data):
+        return sorted_data[lower]
+    return sorted_data[lower] * (1 - weight) + sorted_data[upper] * weight
+
+
+def _format_status_codes(status_codes: dict) -> str:
+    """Formata status_codes como 'código:contagem' ordenado crescente."""
+    if not status_codes:
+        return ""
+    return ",".join(f"{code}:{count}" for code, count in sorted(status_codes.items()))
+
+
+def build_stress_test_payload(executor) -> dict:
+    """Converte métricas do StressTestExecutor para formato StressTestResultadoRequest."""
+    metrics = executor.metrics
+
+    total_enviado = sum(data["total_sent"] for data in metrics.values())
+    quantidade_erros = sum(data["errors"] for data in metrics.values())
+    quantidade_sucesso = total_enviado - quantidade_erros
+
+    cenarios = []
+    for name, data in metrics.items():
+        lats = data["steady_latencies"]
+        p95 = _get_percentile_safe(lats, 0.95)
+        status_str = _format_status_codes(data["status_codes"])
+
+        cenarios.append({
+            "nome": name,
+            "porta": executor.port,
+            "status": status_str,
+            "latenciaP95Ms": round(p95, 2)
+        })
+
+    now = datetime.now(timezone.utc)
+    return {
+        "ipAlvo": executor.target,
+        "portaAlvo": executor.port,
+        "rpsLimite": executor.target_rps,
+        "duracaoConfiguracao": executor.duration,
+        "totalEnviado": total_enviado,
+        "quantidadeSucesso": quantidade_sucesso,
+        "quantidadeErros": quantidade_erros,
+        "inicio": now.isoformat(),
+        "fim": now.isoformat(),
+        "cenarios": cenarios
+    }

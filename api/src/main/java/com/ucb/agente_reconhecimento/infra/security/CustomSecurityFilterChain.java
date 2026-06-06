@@ -67,7 +67,7 @@ public class CustomSecurityFilterChain {
     }
 
     private boolean isAmbienteLocal() {
-        return Arrays.asList(environment.getActiveProfiles()).contains("prod");
+        return Arrays.asList(environment.getActiveProfiles()).contains("local");
     }
 
     @Bean

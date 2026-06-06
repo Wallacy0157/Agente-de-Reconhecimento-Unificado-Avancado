@@ -247,3 +247,52 @@ class HydraExecutor:
             json.dump(log_data, file_obj, indent=4, ensure_ascii=False)
 
         return filepath
+
+
+def parse_credentials(output_lines):
+    """Parseia credenciais encontradas do output do Hydra. """
+    credentials = []
+    pattern = re.compile(
+        r'\[(\d+)\]\[([^\]]+)\]\s+host:\s+(\S+)\s+login:\s+(\S+)\s+password:\s+(.+)'
+    )
+    for line in output_lines:
+        match = pattern.search(line)
+        if match:
+            credentials.append({
+                "username": match.group(4),
+                "password": match.group(5).strip(),
+            })
+    return credentials
+
+
+def build_hydra_payload(executor) -> dict:
+    """Converte resultado do HydraExecutor para formato HydraResultadoRequest."""
+    from datetime import datetime, timezone
+
+    output = executor.get_output()
+    sucesso = executor.return_code == 0
+
+    credenciais = parse_credentials(output)
+
+    if not credenciais and sucesso and executor.username and executor.password:
+        credenciais = [{"username": executor.username, "password": executor.password}]
+
+    # Tipo de ataque
+    if executor.user_list or executor.pass_list:
+        tipo_ataque = "wordlist"
+    else:
+        tipo_ataque = "single"
+
+    now = datetime.now(timezone.utc)
+    inicio = executor.start_time.astimezone(timezone.utc).isoformat() if executor.start_time else now.isoformat()
+
+    return {
+        "servico": executor.service,
+        "porta": executor.port or 0,
+        "tipoAtaque": tipo_ataque,
+        "sucesso": sucesso,
+        "inicio": inicio,
+        "fim": now.isoformat(),
+        "alvos": executor.targets,
+        "credenciaisEncontradas": credenciais if credenciais else [],
+    }

@@ -906,7 +906,32 @@ class HydraPage(QWidget):
         if self.executor:
             filepath = self.executor.save_log(self.parent_window.base_dir)
             self.console.append(f"{lang_get(self.L, 'hydra_page.log_saved', '[INFO] Log salvo em')} {filepath}")
+            self._persist_results()
         self.executor = None
+
+    def _persist_results(self):
+        """Persiste resultados do ataque Hydra no backend."""
+        if not self.executor:
+            return
+        try:
+            from core.hydra_engine import build_hydra_payload
+            from services.hydra_client import enviar_resultado_hydra
+
+            payload = build_hydra_payload(self.executor)
+            response = enviar_resultado_hydra(payload)
+
+            if response is not None:
+                self.parent_window.statusBar().showMessage(
+                    f"✅ Ataque Hydra salvo com sucesso (ID: {response.get('id')})", 8000
+                )
+            else:
+                self.parent_window.statusBar().showMessage(
+                    "⚠️ Falha ao salvar resultado Hydra no backend", 8000
+                )
+        except Exception as exc:
+            self.parent_window.statusBar().showMessage(
+                f"⚠️ Erro ao persistir Hydra: {exc}", 8000
+            )
 
     def set_targets(self, targets):
         """Define os alvos a partir de uma lista."""

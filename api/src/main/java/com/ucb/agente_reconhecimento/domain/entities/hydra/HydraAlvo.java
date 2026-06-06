@@ -17,6 +17,6 @@ public class HydraAlvo extends EntidadeAuditavel {
     private HydraAtaque hydraAtaque;
 
     @Column(name = "ip", nullable = false)
-    private Integer ip;
+    private String ip;
 
 }

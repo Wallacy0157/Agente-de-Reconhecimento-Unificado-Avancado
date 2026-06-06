@@ -551,6 +551,8 @@ class SherlockPage(QWidget):
         self.btn_investigate.setEnabled(True)
         self.btn_investigate.setText(lang_get(self.L, "sherlock_page.investigate", "INVESTIGAR"))
         
+        self._persist_results()
+        
         if results:
             path = self.executor.save_results(self.parent_window.base_dir) if self.executor else SherlockEngine().save_to_json(username, results, self.parent_window.base_dir)
             
@@ -569,6 +571,30 @@ class SherlockPage(QWidget):
         else:
             self.parent_window.status_label.setText(lang_get(self.L, "sherlock_page.no_results", "Nenhum resultado encontrado."))
             QMessageBox.warning(self, lang_get(self.L, "sherlock_page.warning_title", "Aviso"), lang_get(self.L, "sherlock_page.no_networks", "Nenhuma rede social encontrada para este username."))
+
+    def _persist_results(self):
+        """Persiste resultados da investigação OSINT no backend."""
+        if not self.executor:
+            return
+        try:
+            from core.sherlock import build_osint_payload
+            from services.osint_client import enviar_resultado_osint
+
+            payload = build_osint_payload(self.executor)
+            response = enviar_resultado_osint(payload)
+
+            if response is not None:
+                self.parent_window.statusBar().showMessage(
+                    f"✅ Investigação OSINT salva com sucesso (ID: {response.get('id')})", 8000
+                )
+            else:
+                self.parent_window.statusBar().showMessage(
+                    "⚠️ Falha ao salvar investigação OSINT no backend", 8000
+                )
+        except Exception as exc:
+            self.parent_window.statusBar().showMessage(
+                f"⚠️ Erro ao persistir OSINT: {exc}", 8000
+            )
 
     def add_result_card(self, site, url):
         card = QFrame()

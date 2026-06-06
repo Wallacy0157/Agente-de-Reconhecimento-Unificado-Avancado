@@ -177,3 +177,29 @@ class SherlockExecutor:
         finally:
             with self._state_lock:
                 self._running = False
+
+
+def build_osint_payload(executor) -> dict:
+    """Converte resultados do SherlockExecutor para formato OsintResultadoRequest."""
+    from datetime import datetime, timezone
+
+    results = executor.get_results()
+
+    resultados = []
+    for item in results:
+        resultados.append({
+            "site": item.get("site", ""),
+            "url": item.get("url", ""),
+            "titulo": item.get("title"),
+            "fonte": item.get("source"),
+        })
+
+    now = datetime.now(timezone.utc)
+    return {
+        "alvo": executor.target,
+        "modo": executor.mode,
+        "totalEncontrado": len(results),
+        "inicio": now.isoformat(),
+        "fim": now.isoformat(),
+        "resultados": resultados,
+    }

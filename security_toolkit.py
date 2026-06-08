@@ -2118,6 +2118,28 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 
+    app.setStyleSheet("""
+        QMessageBox {
+            background-color: #0B0813;
+            border: 1px solid #C1128C;
+        }
+        QMessageBox QLabel {
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+        QMessageBox QPushButton {
+            background-color: #C1128C;
+            color: white;
+            border-radius: 4px;
+            padding: 6px 16px;
+            font-weight: bold;
+            min-width: 65px;
+        }
+        QMessageBox QPushButton:hover {
+            background-color: #A00F75;
+        }
+    """)
+
     auth_screen = AuthWindow()
     main_dashboard = None
 

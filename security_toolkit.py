@@ -26,7 +26,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QSpacerItem,
     QSizePolicy, QLineEdit, QGroupBox, QScrollArea, QGraphicsDropShadowEffect,
     QMessageBox, QCheckBox, QSpinBox, QTextEdit, QGridLayout, QSpacerItem, 
-    QSizePolicy, QFileDialog, QComboBox, QTabWidget
+    QSizePolicy, QFileDialog, QComboBox, QTabWidget, QListWidget,
+    QListWidgetItem, QSplitter
 )
 from random import randint
 from core.stress_test import StressTestExecutor
@@ -37,13 +38,13 @@ from core.components import (
 from core import network_scanner 
 from core.config import (
     THEMES, NEON_DEFAULT, load_user_settings,
-    save_user_settings, ThemeManager, SHERLOCK_STYLES, HYDRA_STYLES, JOHN_STYLES, FIREWALL_STYLES, KEYLOGGER_STYLES, STRESS_TEST_STYLES, MANUAL_STYLES, sherlock_investigate_button_style, sherlock_result_card_style, sherlock_result_button_style, john_start_button_style, firewall_description_style, keylogger_toggle_button_style, main_window_stylesheet,
+    save_user_settings, ThemeManager, SHERLOCK_STYLES, HYDRA_STYLES, JOHN_STYLES, FIREWALL_STYLES, KEYLOGGER_STYLES, STRESS_TEST_STYLES, MANUAL_STYLES, sherlock_investigate_button_style, sherlock_mode_selector_style, sherlock_search_box_style, sherlock_user_input_style, sherlock_result_card_style, sherlock_result_button_style, john_start_button_style, firewall_description_style, themed_console_style, themed_panel_style, john_common_group_style, manual_tab_label_style, status_text_style, keylogger_toggle_button_style, main_window_stylesheet,
 )
 from core.john_engine import JohnEngine, JohnExecutor
 from core.hydra_engine import HydraExecutor
 from core.logger_engine import KeyloggerEngine
 from core.interaction_test import InteractionTestExecutor
-from core.history_dialog import HistoryDialog
+from core.history_dialog import HistoryDialog, HistoryView
 
 # --- DIAGNOSTICO ---
 class EnvironmentDiagnosticsPage(QWidget):
@@ -191,6 +192,171 @@ class EnvironmentDiagnosticsPage(QWidget):
             self.result_box.setText(lang_get(self.L, "diagnostics_page.description",
                                              "Clique em 'Executar diagnóstico' para verificar o ambiente."))
             
+class ReportsPage(QWidget):
+    """Lists every local report generated under the logs directory."""
+
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.L = getattr(parent_window, "L", {})
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(12)
+
+        self.title_label = QLabel(
+            lang_get(self.L, "logs_page.title", "Relatorios das Ferramentas")
+        )
+        self.title_label.setFont(QFont("Arial", 18, QFont.Weight.Bold))
+        self.title_label.setSizePolicy(
+            QSizePolicy.Policy.Preferred,
+            QSizePolicy.Policy.Maximum,
+        )
+        layout.addWidget(self.title_label)
+
+        self.description_label = QLabel(
+            lang_get(
+                self.L,
+                "logs_page.description",
+                "Todos os relatorios gerados pelas ferramentas aparecem aqui.",
+            )
+        )
+        self.description_label.setWordWrap(True)
+        self.description_label.setSizePolicy(
+            QSizePolicy.Policy.Preferred,
+            QSizePolicy.Policy.Maximum,
+        )
+        layout.addWidget(self.description_label)
+
+        self.refresh_button = QPushButton(
+            lang_get(self.L, "logs_page.refresh", "Atualizar relatorios")
+        )
+        self.refresh_button.clicked.connect(self.refresh_reports)
+        self.refresh_button.setSizePolicy(
+            QSizePolicy.Policy.Preferred,
+            QSizePolicy.Policy.Maximum,
+        )
+        layout.addWidget(self.refresh_button)
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+
+        self.report_list = QListWidget()
+        self.report_list.itemClicked.connect(self._show_report)
+        splitter.addWidget(self.report_list)
+
+        self.report_preview = QTextEdit()
+        self.report_preview.setReadOnly(True)
+        self.report_preview.setPlaceholderText(
+            lang_get(
+                self.L,
+                "logs_page.select_report",
+                "Selecione um relatorio para visualizar.",
+            )
+        )
+        splitter.addWidget(self.report_preview)
+        splitter.setSizes([330, 650])
+        layout.addWidget(splitter)
+
+        self.summary_label = QLabel()
+        layout.addWidget(self.summary_label)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.refresh_reports()
+
+    def refresh_reports(self):
+        self.report_list.clear()
+        log_dir = os.path.join(self.parent_window.base_dir, "logs")
+        os.makedirs(log_dir, exist_ok=True)
+
+        report_paths = []
+        for root, _, filenames in os.walk(log_dir):
+            for filename in filenames:
+                path = os.path.join(root, filename)
+                if os.path.isfile(path):
+                    report_paths.append(path)
+
+        report_paths.sort(key=os.path.getmtime, reverse=True)
+        for path in report_paths:
+            relative_path = os.path.relpath(path, log_dir)
+            modified = datetime.fromtimestamp(os.path.getmtime(path)).strftime(
+                "%d/%m/%Y %H:%M"
+            )
+            size_kb = max(1, round(os.path.getsize(path) / 1024))
+            item = QListWidgetItem(
+                f"{relative_path}\n{modified} | {size_kb} KB"
+            )
+            item.setData(Qt.ItemDataRole.UserRole, path)
+            self.report_list.addItem(item)
+
+        count = len(report_paths)
+        self.summary_label.setText(
+            lang_get(
+                self.L,
+                "logs_page.count",
+                "{count} relatorio(s) encontrado(s).",
+            ).format(count=count)
+        )
+        if not report_paths:
+            self.report_preview.clear()
+            self.report_preview.setPlaceholderText(
+                lang_get(
+                    self.L,
+                    "logs_page.empty",
+                    "Nenhum relatorio foi gerado ainda.",
+                )
+            )
+
+    def _show_report(self, item):
+        path = item.data(Qt.ItemDataRole.UserRole)
+        if not path or not os.path.isfile(path):
+            return
+
+        try:
+            with open(path, "r", encoding="utf-8", errors="replace") as report_file:
+                content = report_file.read(2_000_000)
+
+            if path.lower().endswith(".json"):
+                try:
+                    content = json.dumps(
+                        json.loads(content),
+                        indent=2,
+                        ensure_ascii=False,
+                    )
+                except json.JSONDecodeError:
+                    pass
+
+            self.report_preview.setPlainText(content)
+        except OSError as exc:
+            self.report_preview.setPlainText(
+                lang_get(
+                    self.L,
+                    "logs_page.read_error",
+                    "Nao foi possivel abrir o relatorio:",
+                )
+                + f" {exc}"
+            )
+
+    def update_ui_language(self, L):
+        self.L = L
+        self.title_label.setText(
+            lang_get(self.L, "logs_page.title", "Relatorios das Ferramentas")
+        )
+        self.description_label.setText(
+            lang_get(
+                self.L,
+                "logs_page.description",
+                "Todos os relatorios gerados pelas ferramentas aparecem aqui.",
+            )
+        )
+        self.refresh_button.setText(
+            lang_get(self.L, "logs_page.refresh", "Atualizar relatorios")
+        )
+        self.refresh_reports()
+
+
 # --- SCANNER ---
 class ScannerPage(QWidget):
     def __init__(self, parent_window):
@@ -467,7 +633,6 @@ class SherlockPage(QWidget):
 
         mode_container = QHBoxLayout()
         self.mode_label = QLabel(lang_get(self.L, "sherlock_page.mode_label", "Tipo de Alvo:"))
-        self.mode_label.setStyleSheet(SHERLOCK_STYLES["mode_label"])
         
         self.mode_selector = QComboBox()
         self.mode_selector.addItems([
@@ -475,19 +640,16 @@ class SherlockPage(QWidget):
             lang_get(self.L, "sherlock_page.mode_fullname", "Nome Completo")
         ])
         self.mode_selector.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.mode_selector.setStyleSheet(SHERLOCK_STYLES["mode_selector"])
         mode_container.addWidget(self.mode_label)
         mode_container.addWidget(self.mode_selector)
         mode_container.addStretch()
         layout.addLayout(mode_container)
 
-        search_box = QFrame()
-        search_box.setStyleSheet(SHERLOCK_STYLES["search_box"])
-        search_layout = QHBoxLayout(search_box)
+        self.search_box = QFrame()
+        search_layout = QHBoxLayout(self.search_box)
 
         self.user_input = QLineEdit()
         self.user_input.setPlaceholderText(lang_get(self.L, "sherlock_page.placeholder", "Digite o alvo aqui..."))
-        self.user_input.setStyleSheet(SHERLOCK_STYLES["user_input"])
         
         self.btn_investigate = QPushButton(lang_get(self.L, "sherlock_page.investigate", "INVESTIGAR"))
         self.btn_investigate.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -497,16 +659,16 @@ class SherlockPage(QWidget):
 
         search_layout.addWidget(self.user_input)
         search_layout.addWidget(self.btn_investigate)
-        layout.addWidget(search_box)
+        layout.addWidget(self.search_box)
 
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
-        self.scroll.setStyleSheet(SHERLOCK_STYLES["scroll"])
         self.results_container = QWidget()
         self.results_layout = QVBoxLayout(self.results_container)
         self.results_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.scroll.setWidget(self.results_container)
         layout.addWidget(self.scroll)
+        self.apply_theme(self.parent_window.theme_manager.current_theme)
 
     def run_sherlock(self):
         target = self.user_input.text().strip()
@@ -565,7 +727,13 @@ class SherlockPage(QWidget):
             msg.setText(lang_get(self.L, "sherlock_page.investigation_complete", "A investigação de '{username}' foi concluída!").format(username=username))
             msg.setInformativeText(lang_get(self.L, "sherlock_page.file_generated", "O arquivo foi gerado com sucesso em:") + f"\n\n{path}")
             
-            msg.setStyleSheet(SHERLOCK_STYLES["finished_msg_box"])
+            T = self.parent_window.get_theme_colors()
+            msg.setStyleSheet(
+                f"QMessageBox {{ background-color: {T['bg_card']}; }}"
+                f"QLabel {{ color: {T['text_main']}; }}"
+                f"QPushButton {{ background-color: {T['bg_button']}; "
+                f"color: {T['text_main']}; padding: 5px 15px; }}"
+            )
             msg.exec()
             
         else:
@@ -598,6 +766,7 @@ class SherlockPage(QWidget):
 
     def add_result_card(self, site, url):
         card = QFrame()
+        card.setObjectName("SherlockResultCard")
         
         color_map = {
             "DuckDuckGo": "#ff8c00",
@@ -612,20 +781,25 @@ class SherlockPage(QWidget):
         
         neon = self.parent_window.theme_manager.neon_color
         border_color = color_map.get(site, neon)
-        
-        card.setStyleSheet(sherlock_result_card_style(border_color))
+        theme_key = self.parent_window.theme_manager.current_theme
+        T = self.parent_window.get_theme_colors(theme_key)
+        card.setProperty("borderColor", border_color)
+        card.setStyleSheet(sherlock_result_card_style(border_color, theme_key))
         
         l = QHBoxLayout(card)
         
         display_url = (url[:65] + '...') if len(url) > 65 else url
         label_text = f"""
-            <div style='color: white;'>
+            <div style='color: {T['text_main']};'>
                 <b style='font-size: 14px;'>{site}</b><br>
-                <span style='color: #888; font-size: 12px;'>{display_url}</span>
+                <span style='color: {T['text_secondary']}; font-size: 12px;'>{display_url}</span>
             </div>
         """
         
         info_label = QLabel(label_text)
+        info_label.setObjectName("SherlockResultInfo")
+        info_label.setProperty("siteName", site)
+        info_label.setProperty("displayUrl", display_url)
         l.addWidget(info_label)
         
         l.addStretch()
@@ -633,11 +807,53 @@ class SherlockPage(QWidget):
         btn = QPushButton(lang_get(self.L, "sherlock_page.view_button", "VISUALIZAR"))
         btn.setCursor(Qt.CursorShape.PointingHandCursor)
         btn.setFixedWidth(100)
-        btn.setStyleSheet(sherlock_result_button_style(border_color))
+        btn.setProperty("borderColor", border_color)
+        btn.setStyleSheet(
+            sherlock_result_button_style(border_color, theme_key)
+        )
         btn.clicked.connect(lambda: webbrowser.open(url))
         l.addWidget(btn)
         
         self.results_layout.insertWidget(0, card)
+
+    def apply_theme(self, theme_key):
+        T = self.parent_window.get_theme_colors(theme_key)
+        neon = self.parent_window.theme_manager.neon_color
+        self.subtitle_label.setStyleSheet(f"color: {T['text_secondary']};")
+        self.mode_selector.setStyleSheet(
+            sherlock_mode_selector_style(theme_key, neon)
+        )
+        self.search_box.setStyleSheet(sherlock_search_box_style(theme_key))
+        self.user_input.setStyleSheet(sherlock_user_input_style(theme_key))
+        self.scroll.setStyleSheet(
+            f"border: none; background: {T['bg_main']}; margin-top: 10px;"
+        )
+        self.results_container.setStyleSheet(
+            f"background-color: {T['bg_main']};"
+        )
+
+        for card in self.results_container.findChildren(
+            QFrame, "SherlockResultCard"
+        ):
+            border_color = card.property("borderColor") or neon
+            card.setStyleSheet(
+                sherlock_result_card_style(border_color, theme_key)
+            )
+            info_label = card.findChild(QLabel, "SherlockResultInfo")
+            if info_label:
+                site = info_label.property("siteName") or ""
+                display_url = info_label.property("displayUrl") or ""
+                info_label.setText(
+                    f"<div style='color: {T['text_main']};'>"
+                    f"<b style='font-size: 14px;'>{site}</b><br>"
+                    f"<span style='color: {T['text_secondary']}; "
+                    f"font-size: 12px;'>{display_url}</span></div>"
+                )
+            for button in card.findChildren(QPushButton):
+                button_color = button.property("borderColor") or border_color
+                button.setStyleSheet(
+                    sherlock_result_button_style(button_color, theme_key)
+                )
 
     def update_ui_language(self, L):
         self.L = L
@@ -660,16 +876,16 @@ class HydraPage(QWidget):
         self.hydra_timer = QTimer()
         self.hydra_timer.timeout.connect(self._poll_hydra_state)
 
-        scroll = QScrollArea(self)
-        scroll.setWidgetResizable(True)
+        self.scroll = QScrollArea(self)
+        self.scroll.setWidgetResizable(True)
 
         container = QWidget()
         self.main_layout = QVBoxLayout(container)
 
-        scroll.setWidget(container)
+        self.scroll.setWidget(container)
 
         outer_layout = QVBoxLayout(self)
-        outer_layout.addWidget(scroll)
+        outer_layout.addWidget(self.scroll)
 
         self._setup_ui()
 
@@ -689,15 +905,23 @@ class HydraPage(QWidget):
         layout.addWidget(self.warning_label)
 
         self.targets_group = QGroupBox(lang_get(self.L, "hydra_page.targets_group", "Alvos"))
+        self.targets_group.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Maximum,
+        )
         targets_layout = QVBoxLayout()
         self.targets_input = QTextEdit()
         self.targets_input.setPlaceholderText(lang_get(self.L, "hydra_page.targets_placeholder", "Ex: 192.168.0.10\n192.168.0.20"))
-        self.targets_input.setFixedHeight(80)
+        self.targets_input.setFixedHeight(36)
         targets_layout.addWidget(self.targets_input)
         self.targets_group.setLayout(targets_layout)
         layout.addWidget(self.targets_group)
 
         self.service_group = QGroupBox(lang_get(self.L, "hydra_page.service_and_port", "Serviço e Porta"))
+        self.service_group.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Maximum,
+        )
         service_layout = QHBoxLayout()
 
         self.service_combo = QComboBox()
@@ -724,6 +948,10 @@ class HydraPage(QWidget):
         layout.addWidget(self.service_group)
 
         self.http_group = QGroupBox(lang_get(self.L, "hydra_page.http_config", "Configuração HTTP POST"))
+        self.http_group.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Maximum,
+        )
         self.http_group.setVisible(False)
 
         http_layout = QVBoxLayout()
@@ -751,6 +979,10 @@ class HydraPage(QWidget):
         layout.addWidget(self.http_group)
 
         self.creds_group = QGroupBox(lang_get(self.L, "hydra_page.credentials_group", "Credenciais"))
+        self.creds_group.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Maximum,
+        )
         creds_layout = QVBoxLayout()
 
         user_row = QHBoxLayout()
@@ -775,6 +1007,10 @@ class HydraPage(QWidget):
         layout.addWidget(self.creds_group)
 
         self.options_group = QGroupBox(lang_get(self.L, "hydra_page.options_group", "Opções"))
+        self.options_group.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Maximum,
+        )
         options_layout = QHBoxLayout()
 
         self.tasks_input = QSpinBox()
@@ -808,8 +1044,9 @@ class HydraPage(QWidget):
 
         self.console = QTextEdit()
         self.console.setReadOnly(True)
-        self.console.setStyleSheet(HYDRA_STYLES["console"])
+        self.console.setMinimumHeight(260)
         layout.addWidget(self.console)
+        self.apply_theme(self.parent_window.theme_manager.current_theme)
 
     def _on_service_changed(self, service):
         self.http_group.setVisible(service.strip() == "http-post-form")
@@ -938,6 +1175,13 @@ class HydraPage(QWidget):
         if targets:
             self.targets_input.setPlainText("\n".join(targets))
 
+    def apply_theme(self, theme_key):
+        T = self.parent_window.get_theme_colors(theme_key)
+        self.console.setStyleSheet(themed_console_style(theme_key))
+        self.scroll.setStyleSheet(
+            f"border: none; background-color: {T['bg_main']};"
+        )
+
     def update_ui_language(self, L):
         self.L = L
         self.title_label.setText(lang_get(L, "hydra_page.title", "🧰 Hydra - Teste de Credenciais"))
@@ -1016,9 +1260,14 @@ class ManualScannerPage(QWidget):
         widget = QWidget()
         layout = QVBoxLayout(widget)
         label = QLabel(markdown_text)
+        label.setObjectName("ManualContentLabel")
         label.setWordWrap(True)
         label.setTextFormat(Qt.TextFormat.MarkdownText)
-        label.setStyleSheet(MANUAL_STYLES["tab_label"])
+        label.setStyleSheet(
+            manual_tab_label_style(
+                self.main_window.theme_manager.current_theme
+            )
+        )
         label.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         scroll = QScrollArea()
@@ -1028,6 +1277,12 @@ class ManualScannerPage(QWidget):
         
         layout.addWidget(scroll)
         return widget
+
+    def apply_theme(self, theme_key):
+        T = self.main_window.get_theme_colors(theme_key)
+        self.tabs.setStyleSheet(f"background-color: {T['bg_main']};")
+        for label in self.tabs.findChildren(QLabel, "ManualContentLabel"):
+            label.setStyleSheet(manual_tab_label_style(theme_key))
 
 # --- AUDITORIA DE SEGURANÇA ---
 class FirewallPage(QWidget):
@@ -1051,7 +1306,6 @@ class FirewallPage(QWidget):
 
         self.description_label = QLabel(lang_get(self.L, "firewall_page.description", "Este teste realiza uma auditoria profunda no host local, verificando permissões críticas, processos suspeitos, integridade de arquivos e conformidade do firewall."))
         self.description_label.setWordWrap(True)
-        self.description_label.setStyleSheet(firewall_description_style("dark"))
         layout.addWidget(self.description_label)
 
         self.action_group = QGroupBox(lang_get(self.L, "firewall_page.execution_test", "Execução do Teste"))
@@ -1066,14 +1320,17 @@ class FirewallPage(QWidget):
         self.action_group.setLayout(action_layout)
         layout.addWidget(self.action_group)
 
-        self.log_output = QLabel(lang_get(self.L, "firewall_page.waiting", "Aguardando comando..."))
-        self.log_output.setStyleSheet(FIREWALL_STYLES["log_output"])
-        self.log_output.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.log_output.setWordWrap(True)
+        self.log_output = QTextEdit()
+        self.log_output.setReadOnly(True)
+        self.log_output.setMinimumHeight(280)
+        self.log_output.setPlainText(
+            lang_get(self.L, "firewall_page.waiting", "Aguardando comando...")
+        )
         layout.addWidget(self.log_output)
 
         layout.addStretch()
         self.setLayout(layout)
+        self.apply_theme(self.parent_window.theme_manager.current_theme)
 
     def run_local_test(self):
         if self.executor and self.executor.is_running:
@@ -1082,7 +1339,13 @@ class FirewallPage(QWidget):
 
         self.btn_local.setEnabled(False)
         self.btn_local.setText(lang_get(self.L, "firewall_page.audit_in_progress", "Auditoria em Andamento..."))
-        self.log_output.setText(f"<b>{lang_get(self.L, 'firewall_page.metadata_collection', '[INFO] Iniciando coleta de metadados e análise de processos...')}</b>")
+        self.log_output.setPlainText(
+            lang_get(
+                self.L,
+                "firewall_page.metadata_collection",
+                "[INFO] Iniciando coleta de metadados e análise de processos...",
+            )
+        )
         self.parent_window.status_label.setText(lang_get(self.L, "firewall_page.running_audit", "Executando Auditoria de Segurança..."))
 
         self.executor = InteractionTestExecutor(self.parent_window.base_dir)
@@ -1108,7 +1371,9 @@ class FirewallPage(QWidget):
     def _update_ui_error(self, msg):
         self.btn_local.setEnabled(True)
         self.btn_local.setText(lang_get(self.L, "firewall_page.start_audit", "Iniciar Auditoria Local"))
-        self.log_output.setText(f"<span style='color:red;'><b>{lang_get(self.L, 'firewall_page.error_label', 'ERRO')}</b>: {msg}</span>")
+        self.log_output.setPlainText(
+            f"{lang_get(self.L, 'firewall_page.error_label', 'ERRO')}: {msg}"
+        )
 
     def _update_ui(self, results, meta, log_path):
         self.btn_local.setEnabled(True)
@@ -1129,11 +1394,25 @@ class FirewallPage(QWidget):
             if os.path.exists(path):
                 with open(path, "r", encoding="utf-8") as f:
                     content = f.read()
-                    self.log_output.setText(f"<pre style='color:#00ff00;'>{content[-1200:]}</pre>")
+                    self.log_output.setPlainText(content[-12000:])
             else:
-                self.log_output.setText(f"<b>{lang_get(self.L, 'firewall_page.report_saved', '[INFO] Relatório assinado e salvo com sucesso.')}</b>")
+                self.log_output.setPlainText(
+                    lang_get(
+                        self.L,
+                        "firewall_page.report_saved",
+                        "[INFO] Relatório assinado e salvo com sucesso.",
+                    )
+                )
         except Exception as e:
-            self.log_output.setText(f"<b>{lang_get(self.L, 'firewall_page.error_reading', '[ERRO] ao ler log:')}</b> {e}")
+            self.log_output.setPlainText(
+                f"{lang_get(self.L, 'firewall_page.error_reading', '[ERRO] ao ler log:')} {e}"
+            )
+
+    def apply_theme(self, theme_key):
+        self.description_label.setStyleSheet(
+            firewall_description_style(theme_key)
+        )
+        self.log_output.setStyleSheet(themed_console_style(theme_key))
 
     def update_ui_language(self, L):
         self.L = L
@@ -1141,7 +1420,9 @@ class FirewallPage(QWidget):
         self.description_label.setText(lang_get(L, "firewall_page.description", "Este teste realiza uma auditoria profunda no host local, verificando permissões críticas, processos suspeitos, integridade de arquivos e conformidade do firewall."))
         self.action_group.setTitle(lang_get(L, "firewall_page.execution_test", "Execução do Teste"))
         self.btn_local.setText(lang_get(L, "firewall_page.start_audit", "Iniciar Auditoria Local"))
-        self.log_output.setText(lang_get(L, "firewall_page.waiting", "Aguardando comando..."))
+        self.log_output.setPlainText(
+            lang_get(L, "firewall_page.waiting", "Aguardando comando...")
+        )
 
 # --- PAGINA DO AGENTE ---
 class PayloadPage(QWidget):
@@ -1344,7 +1625,6 @@ class JohnPage(QWidget):
         layout.addWidget(self.title_label)
 
         self.common_group = QGroupBox(lang_get(self.L, "john_page.basic_settings", "Configurações Básicas"))
-        self.common_group.setStyleSheet(JOHN_STYLES["common_group"])
         common_layout = QVBoxLayout()
 
         self.hash_label = QLabel(lang_get(self.L, "john_page.target_hash", "Hash Alvo:"))
@@ -1411,8 +1691,8 @@ class JohnPage(QWidget):
 
         self.console = QTextEdit()
         self.console.setReadOnly(True)
-        self.console.setStyleSheet(JOHN_STYLES["console"])
         layout.addWidget(self.console)
+        self.apply_theme(self.parent_window.theme_manager.current_theme)
 
     def toggle_mode(self, mode):
         wordlist_text = lang_get(self.L, "john_page.wordlist", "Wordlist")
@@ -1496,6 +1776,12 @@ class JohnPage(QWidget):
             self.console.append(f"\n{lang_get(self.L, 'john_page.failure', '❌ FALHA: {error}').format(error=result['error'])}")
         self.executor = None
 
+    def apply_theme(self, theme_key):
+        self.common_group.setStyleSheet(
+            john_common_group_style(theme_key)
+        )
+        self.console.setStyleSheet(themed_console_style(theme_key))
+
     def update_ui_language(self, L):
         """Atualiza a linguagem da página."""
         self.L = L
@@ -1520,6 +1806,7 @@ class KeyloggerPage(QWidget):
         self.parent_window = parent_window
         self.engine = None
         self.log_file_path = None
+        self._status_state = "idle"
 
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.refresh_live_view)
@@ -1537,14 +1824,11 @@ class KeyloggerPage(QWidget):
         layout.addWidget(self.title_label)
 
         self.status_box = QFrame()
-        self.status_box.setStyleSheet(KEYLOGGER_STYLES["status_box"])
         status_layout = QHBoxLayout(self.status_box)
 
         self.dot = QLabel(lang_get(self.L, "keylogger_page.dot", "●"))
-        self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_idle"])
 
         self.status_text = QLabel(lang_get(self.L, "keylogger_page.status_ready", "STATUS: PRONTO PARA CAPTURA"))
-        self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_idle"])
 
         status_layout.addWidget(self.dot)
         status_layout.addWidget(self.status_text)
@@ -1555,23 +1839,14 @@ class KeyloggerPage(QWidget):
         layout.addWidget(self.activity_label)
         self.live_console = QTextEdit()
         self.live_console.setReadOnly(True)
-        self.live_console.setStyleSheet(KEYLOGGER_STYLES["live_console"])
         layout.addWidget(self.live_console)
-
-        btns = QHBoxLayout()
 
         self.btn_toggle = QPushButton(lang_get(self.L, "keylogger_page.start_audit", "INICIAR AUDITORIA"))
         self.btn_toggle.setFixedHeight(50)
         self.btn_toggle.setStyleSheet(keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color))
         self.btn_toggle.clicked.connect(self.handle_toggle)
-
-        self.btn_open_folder = QPushButton(lang_get(self.L, "keylogger_page.open_logs", "📁 ABRIR LOGS"))
-        self.btn_open_folder.clicked.connect(self.open_log_folder)
-        self.btn_open_folder.setStyleSheet(KEYLOGGER_STYLES["open_folder_button"])
-
-        btns.addWidget(self.btn_toggle, 3)
-        btns.addWidget(self.btn_open_folder, 1)
-        layout.addLayout(btns)
+        layout.addWidget(self.btn_toggle)
+        self.apply_theme(self.parent_window.theme_manager.current_theme)
 
     def handle_toggle(self):
         if not self.engine or not self.engine.is_running:
@@ -1580,8 +1855,8 @@ class KeyloggerPage(QWidget):
             self.log_file_path = self.engine.start()
 
             self.status_text.setText(lang_get(self.L, "keylogger_page.status_monitoring", "MONITORANDO TECLADO..."))
-            self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_running"])
-            self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_running"])
+            self._status_state = "running"
+            self.apply_theme(self.parent_window.theme_manager.current_theme)
             self.btn_toggle.setText(lang_get(self.L, "keylogger_page.stop_monitoring", "PARAR MONITORAMENTO"))
             self.btn_toggle.setStyleSheet(
                 keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color, running=True))
@@ -1592,8 +1867,8 @@ class KeyloggerPage(QWidget):
             self.engine.stop()
             self.update_timer.stop()
             self.status_text.setText(lang_get(self.L, "keylogger_page.status_finished", "AUDITORIA FINALIZADA"))
-            self.status_text.setStyleSheet(KEYLOGGER_STYLES["status_finished"])
-            self.dot.setStyleSheet(KEYLOGGER_STYLES["dot_finished"])
+            self._status_state = "finished"
+            self.apply_theme(self.parent_window.theme_manager.current_theme)
             self.btn_toggle.setText(lang_get(self.L, "keylogger_page.restart_capture", "REINICIAR CAPTURA"))
             self.btn_toggle.setStyleSheet(
                 keylogger_toggle_button_style(self.parent_window.theme_manager.neon_color))
@@ -1607,10 +1882,18 @@ class KeyloggerPage(QWidget):
             self.live_console.setText(content)
             self.live_console.moveCursor(QTextCursor.MoveOperation.End)
 
-    def open_log_folder(self):
-        log_dir = os.path.join(self.parent_window.base_dir, "logs/keylogs")
-        os.makedirs(log_dir, exist_ok=True)
-        os.system(f"xdg-open {log_dir}")
+    def apply_theme(self, theme_key):
+        T = self.parent_window.get_theme_colors(theme_key)
+        self.status_box.setStyleSheet(themed_panel_style(theme_key))
+        self.status_text.setStyleSheet(
+            status_text_style(theme_key, self._status_state)
+        )
+        dot_color = {
+            "running": "#c62828" if theme_key == "light" else "#ff5555",
+            "finished": "#16823b" if theme_key == "light" else "#00ff66",
+        }.get(self._status_state, T["text_secondary"])
+        self.dot.setStyleSheet(f"color: {dot_color}; font-size: 20px;")
+        self.live_console.setStyleSheet(themed_console_style(theme_key))
 
     def update_ui_language(self, L):
         self.L = L
@@ -1618,15 +1901,18 @@ class KeyloggerPage(QWidget):
         self.status_text.setText(lang_get(L, "keylogger_page.status_ready", "STATUS: PRONTO PARA CAPTURA"))
         self.activity_label.setText(lang_get(L, "keylogger_page.recent_activity", "Atividade Recente:"))
         self.btn_toggle.setText(lang_get(L, "keylogger_page.start_audit", "INICIAR AUDITORIA"))
-        self.btn_open_folder.setText(lang_get(L, "keylogger_page.open_logs", "📁 ABRIR LOGS"))
 
 # --- DDOS ---
 class StressTestPage(QWidget):
+    DEFAULT_RPS_LIMIT = 50
+    DEFAULT_DURATION = 30
+
     def __init__(self, parent_window):
         super().__init__()
         self.parent_window = parent_window
         self.executor = None
         self._results_persisted = False
+        self._local_report_path = None
         self.L = getattr(parent_window, 'L', {})
         
         self.TEXT_START = "⚡ INICIAR AUDITORIA DE TRÁFEGO"
@@ -1641,7 +1927,9 @@ class StressTestPage(QWidget):
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
 
-        self.title = QLabel("🛡️ " + lang_get(self.L, "stress_test_page.title", "Avaliação de Resiliência de Firewall"))
+        self.title = QLabel(
+            lang_get(self.L, "stress_test_page.title", "🔥 Teste de Carga")
+        )
         self.title.setFont(QFont("Arial", 18, QFont.Weight.Bold))
         layout.addWidget(self.title)
 
@@ -1663,24 +1951,10 @@ class StressTestPage(QWidget):
         self.target_group.setLayout(t_layout)
         layout.addWidget(self.target_group)
 
-        self.ctrl_group = QGroupBox(lang_get(self.L, "stress_test_page.traffic_control", "Controle de Tráfego"))
+        self.ctrl_group = QGroupBox(
+            lang_get(self.L, "stress_test_page.traffic_control", "Opções do Teste")
+        )
         c_layout = QVBoxLayout()
-        
-        self.rps_input = QSpinBox()
-        self.rps_input.setRange(1, 2000)
-        self.rps_input.setValue(50)
-        
-        self.rps_label = QLabel(lang_get(self.L, "stress_test_page.rate_limit_label", "Taxa Limite (Req/Segunda - RPS):"))
-        c_layout.addWidget(self.rps_label)
-        c_layout.addWidget(self.rps_input)
-
-        self.duration_input = QSpinBox()
-        self.duration_input.setRange(5, 600)
-        self.duration_input.setValue(30)
-        
-        self.duration_label = QLabel(lang_get(self.L, "stress_test_page.duration_label", "Duração do Teste (Segundos):"))
-        c_layout.addWidget(self.duration_label)
-        c_layout.addWidget(self.duration_input)
 
         self.gradual_check = QCheckBox(lang_get(self.L, "stress_test_page.gradual_escalation", "Escalonamento Gradual (Ramp-up)"))
         c_layout.addWidget(self.gradual_check)
@@ -1690,7 +1964,7 @@ class StressTestPage(QWidget):
 
         self.metrics_box = QTextEdit()
         self.metrics_box.setReadOnly(True)
-        self.metrics_box.setStyleSheet(STRESS_TEST_STYLES["metrics_box"])
+        self.metrics_box.setFixedHeight(180)
         self.metrics_box.setText(lang_get(self.L, "stress_test_page.awaiting_start", "Aguardando início do teste..."))
         layout.addWidget(self.metrics_box)
 
@@ -1698,6 +1972,8 @@ class StressTestPage(QWidget):
         self.btn_action.setFixedHeight(50)
         self.btn_action.clicked.connect(self.toggle_test)
         layout.addWidget(self.btn_action)
+        layout.addStretch()
+        self.apply_theme(self.parent_window.theme_manager.current_theme)
 
     def set_inputs_enabled(self, enabled: bool):
         """Bloqueia ou libera os campos de entrada."""
@@ -1718,8 +1994,8 @@ class StressTestPage(QWidget):
         self.executor = StressTestExecutor(
             target=self.target_input.text(),
             port=self.port_input.value(),
-            rps_limit=self.rps_input.value(),
-            duration=self.duration_input.value(),
+            rps_limit=self.DEFAULT_RPS_LIMIT,
+            duration=self.DEFAULT_DURATION,
             gradual=self.gradual_check.isChecked()
         )
         
@@ -1751,6 +2027,7 @@ class StressTestPage(QWidget):
         from core.stress_test import build_stress_test_payload
         from services.stress_client import enviar_resultado_stress
 
+        self._local_report_path = self._save_local_report()
         payload = build_stress_test_payload(self.executor)
         response = enviar_resultado_stress(payload)
 
@@ -1760,20 +2037,40 @@ class StressTestPage(QWidget):
             )
         else:
             self.parent_window.statusBar().showMessage(
-                "⚠️ Resultados disponíveis apenas na visualização atual (falha ao salvar no backend)", 8000
+                f"⚠️ Relatório salvo localmente em {self._local_report_path} "
+                "(falha ao salvar no backend)",
+                8000,
             )
+
+    def _save_local_report(self):
+        log_dir = os.path.join(self.parent_window.base_dir, "logs")
+        os.makedirs(log_dir, exist_ok=True)
+        filename = (
+            "stress_test_"
+            + datetime.now().strftime("%Y%m%d_%H%M%S")
+            + ".txt"
+        )
+        path = os.path.join(log_dir, filename)
+        with open(path, "w", encoding="utf-8") as report_file:
+            report_file.write(self.executor.get_report())
+        return path
+
+    def apply_theme(self, theme_key):
+        self.metrics_box.setStyleSheet(themed_console_style(theme_key))
 
     def update_ui_language(self, L):
         """Atualiza a linguagem da página."""
         self.L = L
-        self.title.setText("🛡️ " + lang_get(L, "stress_test_page.title", "Avaliação de Resiliência de Firewall"))
+        self.title.setText(
+            lang_get(L, "stress_test_page.title", "🔥 Teste de Carga")
+        )
         self.target_group.setTitle(lang_get(L, "stress_test_page.target_parameters", "Parâmetros do Alvo"))
         self.target_label.setText(lang_get(L, "stress_test_page.target_label", "Alvo:"))
         self.target_input.setPlaceholderText(lang_get(L, "stress_test_page.target_placeholder", "IP ou Host"))
         self.port_label.setText(lang_get(L, "stress_test_page.port_label", "Porta:"))
-        self.ctrl_group.setTitle(lang_get(L, "stress_test_page.traffic_control", "Controle de Tráfego"))
-        self.rps_label.setText(lang_get(L, "stress_test_page.rate_limit_label", "Taxa Limite (Req/Segunda - RPS):"))
-        self.duration_label.setText(lang_get(L, "stress_test_page.duration_label", "Duração do Teste (Segundos):"))
+        self.ctrl_group.setTitle(
+            lang_get(L, "stress_test_page.traffic_control", "Opções do Teste")
+        )
         self.gradual_check.setText(lang_get(L, "stress_test_page.gradual_escalation", "Escalonamento Gradual (Ramp-up)"))
         self.metrics_box.setText(lang_get(L, "stress_test_page.awaiting_start", "Aguardando início do teste..."))
         self.TEXT_START = lang_get(L, "stress_test_page.start_button", "⚡ INICIAR AUDITORIA DE TRÁFEGO")
@@ -1790,7 +2087,7 @@ class MainWindow(QMainWindow):
     PAGE_TOOLS = 1
     PAGE_MANUAL_SCANNER = 2
     PAGE_SCANNER = 3
-    PAGE_SCRIPTS = 4
+    PAGE_HISTORY = 4
     PAGE_LOGS = 5
     PAGE_CONFIG = 6
     PAGE_FIREWALL = 7
@@ -1805,6 +2102,8 @@ class MainWindow(QMainWindow):
     def safe_change_page(self, index):
         if 0 <= index < self.pages.count():
             self.pages.setCurrentIndex(index)
+            if index == self.PAGE_LOGS:
+                self.logs_page.refresh_reports()
             self.status_label.setText(lang_get(self.L, "header.status_page_loaded", "Status: Página {index} carregada").format(index=index))
 
     def open_hydra_with_targets(self, targets):
@@ -1851,6 +2150,7 @@ class MainWindow(QMainWindow):
 
     def _build_ui(self):
         central_widget = QWidget()
+        central_widget.setObjectName("CentralWidget")
         self.setCentralWidget(central_widget)
         main_layout = QHBoxLayout(central_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -1872,11 +2172,11 @@ class MainWindow(QMainWindow):
         self.btn_home = self._make_sidebar_button(lang_get(self.L, "sidebar.home", "Início"), "🏠")
         self.btn_tools = self._make_sidebar_button(lang_get(self.L, "sidebar.diagnostic", "Diagnóstico"), "🧪")
         self.btn_scanner = self._make_sidebar_button(lang_get(self.L, "sidebar.scanner", "Informações"), "🛰️")
-        self.btn_scripts = self._make_sidebar_button(lang_get(self.L, "sidebar.scripts", "Scripts"), "📜")
+        self.btn_history = self._make_sidebar_button(lang_get(self.L, "sidebar.history", "Histórico"), "🕘")
         self.btn_logs = self._make_sidebar_button(lang_get(self.L, "sidebar.logs", "Logs"), "📁")
         self.btn_config = self._make_sidebar_button(lang_get(self.L, "sidebar.settings", "Configurações"), "⚙️")
 
-        self.sidebar_buttons = [self.btn_home, self.btn_tools, self.btn_scanner, self.btn_scripts, self.btn_logs, self.btn_config]
+        self.sidebar_buttons = [self.btn_home, self.btn_tools, self.btn_scanner, self.btn_history, self.btn_logs, self.btn_config]
         for btn in self.sidebar_buttons:
             sidebar_layout.addWidget(btn)
 
@@ -1891,6 +2191,7 @@ class MainWindow(QMainWindow):
         content_v_layout.setContentsMargins(0, 0, 0, 0)
 
         self.pages = QStackedWidget()
+        self.pages.setObjectName("Pages")
 
         home_page = QWidget()
         home_layout = QVBoxLayout(home_page)
@@ -1905,7 +2206,7 @@ class MainWindow(QMainWindow):
         self.card_stress = NeonCard("🔥", lang_get(self.L, "home_page.cards.stress.title", "Stress Test"), lang_get(self.L, "home_page.cards.stress.subtitle", "Simulação DoS."), self.theme_manager.neon_color, self.theme_manager)
         self.card_stress.on_card_activated = lambda: self.safe_change_page(self.PAGE_STRESS)
 
-        self.card_firewall = NeonCard("🛡️", lang_get(self.L, "home_page.cards.firewall.title", "Firewall"), lang_get(self.L, "home_page.cards.firewall.subtitle", "Verifica regras."), self.theme_manager.neon_color, self.theme_manager)
+        self.card_firewall = NeonCard("🛡️", lang_get(self.L, "home_page.cards.firewall.title", "Auditoria de Segurança"), lang_get(self.L, "home_page.cards.firewall.subtitle", "Verifica o sistema."), self.theme_manager.neon_color, self.theme_manager)
         self.card_firewall.on_card_activated = lambda: self.safe_change_page(self.PAGE_FIREWALL)
 
         self.card_osint = NeonCard("🔍", lang_get(self.L, "home_page.cards.sherlock.title", "Sherlock"), lang_get(self.L, "home_page.cards.sherlock.subtitle", "OSINT Social."), self.theme_manager.neon_color, self.theme_manager)
@@ -1936,11 +2237,11 @@ class MainWindow(QMainWindow):
         self.scanner_page = ScannerPage(self)
         self.pages.addWidget(self.scanner_page)
 
-        self.scripts_placeholder_page = self._build_placeholder_page(lang_get(self.L, "placeholder_pages.scripts", "Página de scripts em consolidação."))
-        self.pages.addWidget(self.scripts_placeholder_page)
+        self.history_page = HistoryView(self, self.L, auto_load=False)
+        self.pages.addWidget(self.history_page)
 
-        self.logs_placeholder_page = self._build_placeholder_page(lang_get(self.L, "placeholder_pages.logs", "Página de logs em consolidação."))
-        self.pages.addWidget(self.logs_placeholder_page)
+        self.logs_page = ReportsPage(self)
+        self.pages.addWidget(self.logs_page)
 
         self.config_page = ConfigPage(self)
         self.pages.addWidget(self.config_page)
@@ -1975,7 +2276,7 @@ class MainWindow(QMainWindow):
         self.btn_home.clicked.connect(lambda: self.safe_change_page(self.PAGE_HOME))
         self.btn_tools.clicked.connect(lambda: self.safe_change_page(self.PAGE_TOOLS))
         self.btn_scanner.clicked.connect(lambda: self.safe_change_page(self.PAGE_MANUAL_SCANNER))
-        self.btn_scripts.clicked.connect(lambda: self.safe_change_page(self.PAGE_SCRIPTS))
+        self.btn_history.clicked.connect(lambda: self.safe_change_page(self.PAGE_HISTORY))
         self.btn_logs.clicked.connect(lambda: self.safe_change_page(self.PAGE_LOGS))
         self.btn_config.clicked.connect(lambda: self.safe_change_page(self.PAGE_CONFIG))
 
@@ -1996,6 +2297,19 @@ class MainWindow(QMainWindow):
 
         for card in self.findChildren(NeonCard):
             card.set_neon_color(neon_color, self.theme_manager.current_theme)
+
+        for page_name in (
+            "manual_scanner_page",
+            "stress_page",
+            "osint_page",
+            "john_page",
+            "key_auditor_page",
+            "firewall_page",
+            "hydra_page",
+        ):
+            page = getattr(self, page_name, None)
+            if hasattr(page, "apply_theme"):
+                page.apply_theme(theme_key)
 
     def apply_base_theme(self, theme_name):
         self.theme_manager.set_base_theme(theme_name)
@@ -2042,22 +2356,16 @@ class MainWindow(QMainWindow):
         self.btn_home.setText("  🏠 " + lang_get(L, "sidebar.home", "Início"))
         self.btn_tools.setText("  🧪 " + lang_get(L, "sidebar.tools", "Ferramentas"))
         self.btn_scanner.setText("  📜 " + lang_get(L, "sidebar.scanner", "Informações"))
-        self.btn_scripts.setText("  📜 " + lang_get(L, "sidebar.scripts", "Scripts"))
+        self.btn_history.setText("  🕘 " + lang_get(L, "sidebar.history", "Histórico"))
         self.btn_logs.setText("  📁 " + lang_get(L, "sidebar.logs", "Logs"))
         self.btn_config.setText("  ⚙️ " + lang_get(L, "sidebar.settings", "Configurações"))
         self.status_label.setText(lang_get(L, "header.status_ready", "Status: Pronto"))
 
-        scripts_label = self.scripts_placeholder_page.findChild(QLabel)
-        if scripts_label:
-            scripts_label.setText(lang_get(L, "placeholder_pages.scripts", "Página de scripts em consolidação."))
-        
-        logs_label = self.logs_placeholder_page.findChild(QLabel)
-        if logs_label:
-            logs_label.setText(lang_get(L, "placeholder_pages.logs", "Página de logs em consolidação."))
-
         self.config_page.update_ui_language(L)
         self.scanner_page.update_ui_language(L)
         self.diagnostics_page.update_ui_language(L)
+        self.history_page.update_ui_language(L)
+        self.logs_page.update_ui_language(L)
         self.stress_page.update_ui_language(L)
         self.osint_page.update_ui_language(L)
         self.john_page.update_ui_language(L)
@@ -2077,8 +2385,8 @@ class MainWindow(QMainWindow):
         self.card_scanner.subtitle_label.setText(lang_get(L, "home_page.cards.scanner.subtitle", "Identifica hosts."))
         self.card_stress.title_label.setText(lang_get(L, "home_page.cards.stress.title", "Stress Test"))
         self.card_stress.subtitle_label.setText(lang_get(L, "home_page.cards.stress.subtitle", "Simulação DoS."))
-        self.card_firewall.title_label.setText(lang_get(L, "home_page.cards.firewall.title", "Firewall"))
-        self.card_firewall.subtitle_label.setText(lang_get(L, "home_page.cards.firewall.subtitle", "Verifica regras."))
+        self.card_firewall.title_label.setText(lang_get(L, "home_page.cards.firewall.title", "Auditoria de Segurança"))
+        self.card_firewall.subtitle_label.setText(lang_get(L, "home_page.cards.firewall.subtitle", "Verifica o sistema."))
         self.card_osint.title_label.setText(lang_get(L, "home_page.cards.sherlock.title", "Sherlock"))
         self.card_osint.subtitle_label.setText(lang_get(L, "home_page.cards.sherlock.subtitle", "OSINT Social."))
         self.card_john.title_label.setText(lang_get(L, "home_page.cards.john.title", "John Ripper"))

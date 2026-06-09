@@ -13,6 +13,7 @@
     "diagnostic": "Diagnóstico",
     "scanner": "Informações",
     "scripts": "Scripts",
+    "history": "Histórico",
     "logs": "Logs",
     "settings": "Configurações",
     "exit": "Sair"
@@ -28,7 +29,7 @@
     "cards": {
       "scanner": { "title": "Varredura", "subtitle": "Identifica hosts." },
       "stress": { "title": "Teste de Carga", "subtitle": "Simulação de DoS." },
-      "firewall": { "title": "Firewall", "subtitle": "Verifica regras." },
+      "firewall": { "title": "Auditoria de Segurança", "subtitle": "Verifica o sistema." },
       "sherlock": { "title": "Sherlock", "subtitle": "OSINT Social." },
       "john": { "title": "John Ripper", "subtitle": "Quebrador de hashes." },
       "keylogger": { "title": "Auditor de Teclado", "subtitle": "Registro de digitação." },
@@ -167,6 +168,15 @@
       "not_found": "Varredura não encontrada.",
       "server_error": "Erro interno do servidor. Tente novamente."
     }
+  },
+  "logs_page": {
+    "title": "Relatórios das Ferramentas",
+    "description": "Todos os relatórios gerados pelas ferramentas aparecem aqui.",
+    "refresh": "Atualizar relatórios",
+    "select_report": "Selecione um relatório para visualizar.",
+    "empty": "Nenhum relatório foi gerado ainda.",
+    "count": "{count} relatório(s) encontrado(s).",
+    "read_error": "Não foi possível abrir o relatório:"
   },
   "diagnostics_page": {
     "title": "Diagnóstico do Ambiente",
@@ -318,24 +328,24 @@
     "open_logs": "📁 ABRIR LOGS"
   },
   "stress_test_page": {
-    "title": "🛡️ Avaliação de Resiliência do Firewall",
+    "title": "🔥 Teste de Carga",
     "target_parameters": "Parâmetros do Alvo",
     "target_label": "Alvo:",
     "target_placeholder": "IP ou Host",
     "port_label": "Porta:",
-    "traffic_control": "Controle de Tráfego",
+    "traffic_control": "Opções do Teste",
     "rate_limit_label": "Limite de Taxa (Req/Segundo - RPS):",
     "duration_label": "Duração do Teste (Segundos):",
     "gradual_escalation": "Escalação Gradual (Ramp-up)",
     "awaiting_start": "Aguardando início do teste...",
-    "start_button": "⚡ INICIAR AUDITORIA DE TRÁFEGO",
+    "start_button": "⚡ INICIAR TESTE DE CARGA",
     "stop_button": "🛑 INTERROMPER TESTE",
     "input_description": "Bloqueia ou libera campos de entrada."
   },
   "hydra_page": {
     "title": "🧰 Hydra - Teste de Credenciais",
     "warning": "⚠️ Use apenas em ambientes autorizados.",
-    "targets_group": "Alvos",
+    "targets_group": "Alvo",
     "targets_placeholder": "Ex: 192.168.0.10\n192.168.0.20",
     "service_and_port": "Serviço e Porta",
     "service_label": "Serviço:",

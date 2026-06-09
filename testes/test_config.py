@@ -10,7 +10,10 @@ from core.config import (
     ThemeManager, load_user_settings, save_user_settings, NEON_DEFAULT,
     sherlock_investigate_button_style, sherlock_result_card_style,
     sherlock_result_button_style, john_start_button_style,
-    firewall_description_style, keylogger_toggle_button_style, main_window_stylesheet
+    firewall_description_style, keylogger_toggle_button_style,
+    sherlock_mode_selector_style, sherlock_search_box_style,
+    themed_console_style, john_common_group_style,
+    manual_tab_label_style, status_text_style, main_window_stylesheet
 )
 
 
@@ -55,6 +58,12 @@ class TestConfigFull(unittest.TestCase):
         self.assertIn("#5c5c5c", firewall_description_style("light"))
         self.assertIn("#551111", keylogger_toggle_button_style("#444", running=True))
         self.assertIn("#444", keylogger_toggle_button_style("#444", running=False))
+        self.assertIn("#ffffff", sherlock_mode_selector_style("light", "#fff"))
+        self.assertIn("#ffffff", sherlock_search_box_style("light"))
+        self.assertIn("#ffffff", themed_console_style("light"))
+        self.assertIn("#f5f5f5", john_common_group_style("light"))
+        self.assertIn("#1a1a1a", manual_tab_label_style("light"))
+        self.assertIn("#5c5c5c", status_text_style("light", "idle"))
 
         tema_falso = {'bg_main': '#000', 'bg_sidebar': '#111', 'text_main': '#fff',
                       'bg_button': '#222', 'bg_button_hover': '#333', 'border_card': '#444', 'bg_input': '#555'}

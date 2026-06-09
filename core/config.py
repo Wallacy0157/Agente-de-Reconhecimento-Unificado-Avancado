@@ -11,11 +11,14 @@ THEMES = {
         "text_main": "#e6eef7",
         "text_secondary": "#9aa7b8",
         "border_card": "#2a2a2a",
+        "border_control": "#3f3f3f",
         "bg_search": "#0b0b0c",
         "border_search": "#232428",
         "bg_button": "#1b1b1b",
         "bg_button_hover": "#232325",
         "bg_input": "#1b1b1b",
+        "bg_console": "#050505",
+        "text_console": "#00ff66",
     },
     "light": {
         "bg_main": "#f5f5f5",
@@ -23,12 +26,15 @@ THEMES = {
         "bg_card": "#ffffff",
         "text_main": "#1a1a1a",
         "text_secondary": "#5c5c5c",
-        "border_card": "#d3d3d3",
+        "border_card": "#929292",
+        "border_control": "#666666",
         "bg_search": "#ffffff",
         "border_search": "#cccccc",
         "bg_button": "#e9e9e9",
         "bg_button_hover": "#dedede",
         "bg_input": "#ffffff",
+        "bg_console": "#ffffff",
+        "text_console": "#176b32",
     },
 }
 
@@ -116,27 +122,71 @@ def sherlock_investigate_button_style(neon_color):
     """
 
 
-def sherlock_result_card_style(border_color):
+def _theme_colors(theme_key="dark"):
+    return THEMES.get(theme_key, THEMES["dark"])
+
+
+def sherlock_mode_selector_style(theme_key, neon_color):
+    T = _theme_colors(theme_key)
+    return f"""
+        QComboBox {{
+            background-color: {T['bg_input']};
+            color: {T['text_main']};
+            border: 1px solid {neon_color};
+            padding: 5px 15px;
+            border-radius: 5px;
+            min-width: 150px;
+        }}
+        QComboBox QAbstractItemView {{
+            background-color: {T['bg_card']};
+            color: {T['text_main']};
+            border: 1px solid {T['border_card']};
+            selection-background-color: {neon_color};
+            selection-color: #000000;
+        }}
+    """
+
+
+def sherlock_search_box_style(theme_key):
+    T = _theme_colors(theme_key)
+    return (
+        f"background: {T['bg_card']}; border-radius: 10px; padding: 5px; "
+        f"border: 1px solid {T['border_card']};"
+    )
+
+
+def sherlock_user_input_style(theme_key):
+    T = _theme_colors(theme_key)
+    return (
+        "border: none; background: transparent; padding: 10px; "
+        f"font-size: 16px; color: {T['text_main']};"
+    )
+
+
+def sherlock_result_card_style(border_color, theme_key="dark"):
+    T = _theme_colors(theme_key)
     return f"""
         QFrame {{
-            background: #222;
+            background: {T['bg_card']};
             border-left: 5px solid {border_color};
             border-radius: 5px;
             margin-bottom: 8px;
             padding: 10px;
         }}
         QFrame:hover {{
-            background: #2a2a2a;
+            background: {T['bg_button_hover']};
         }}
     """
 
 
-def sherlock_result_button_style(border_color):
+def sherlock_result_button_style(border_color, theme_key="dark"):
+    T = _theme_colors(theme_key)
     return f"""
         QPushButton {{
-            background: #333; color: white; border-radius: 3px; padding: 5px; font-size: 11px;
+            background: {T['bg_button']}; color: {T['text_main']};
+            border-radius: 3px; padding: 5px; font-size: 11px;
         }}
-        QPushButton:hover {{ background: #444; color: {border_color}; }}
+        QPushButton:hover {{ background: {T['bg_button_hover']}; color: {border_color}; }}
     """
 
 
@@ -149,6 +199,59 @@ def firewall_description_style(theme_key="dark"):
     return f"color: {text_color};"
 
 
+def themed_console_style(theme_key="dark"):
+    T = _theme_colors(theme_key)
+    return f"""
+        background-color: {T['bg_console']};
+        color: {T['text_console']};
+        border: 1px solid {T['border_card']};
+        border-radius: 6px;
+        padding: 10px;
+        font-family: 'Consolas', 'Courier New', monospace;
+    """
+
+
+def themed_panel_style(theme_key="dark"):
+    T = _theme_colors(theme_key)
+    return f"""
+        background-color: {T['bg_card']};
+        color: {T['text_main']};
+        border: 1px solid {T['border_card']};
+        border-radius: 8px;
+    """
+
+
+def john_common_group_style(theme_key="dark"):
+    T = _theme_colors(theme_key)
+    return f"""
+        QGroupBox {{
+            color: {T['text_secondary']};
+            border: 1px solid {T['border_card']};
+            margin-top: 10px;
+            padding: 10px;
+            background-color: {T['bg_main']};
+        }}
+    """
+
+
+def manual_tab_label_style(theme_key="dark"):
+    T = _theme_colors(theme_key)
+    return (
+        f"font-size: 15px; padding: 15px; color: {T['text_main']}; "
+        f"background-color: {T['bg_main']};"
+    )
+
+
+def status_text_style(theme_key="dark", state="idle"):
+    if state == "running":
+        color = "#c62828" if theme_key == "light" else "#ff5555"
+    elif state == "finished":
+        color = "#16823b" if theme_key == "light" else "#00ff66"
+    else:
+        color = _theme_colors(theme_key)["text_secondary"]
+    return f"color: {color}; font-weight: bold;"
+
+
 def keylogger_toggle_button_style(neon_color, running=False):
     if running:
         return "background: #551111; color: white; font-weight: bold;"
@@ -156,9 +259,14 @@ def keylogger_toggle_button_style(neon_color, running=False):
 
 
 def main_window_stylesheet(theme_colors, neon_color):
+    theme_colors = {**THEMES["dark"], **theme_colors}
     return f"""
     QMainWindow {{
         background-color: {theme_colors['bg_main']};
+    }}
+    QWidget#CentralWidget, QStackedWidget#Pages {{
+        background-color: {theme_colors['bg_main']};
+        color: {theme_colors['text_main']};
     }}
     QFrame#Sidebar {{
         background-color: {theme_colors['bg_sidebar']};
@@ -191,35 +299,63 @@ def main_window_stylesheet(theme_colors, neon_color):
         margin-top: 10px;
         background-color: {theme_colors['bg_main']};
     }}
-    QLineEdit {{
+    QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QListWidget {{
         background-color: {theme_colors['bg_input']};
         color: {theme_colors['text_main']};
-        border: 1px solid {theme_colors['border_card']};
+        border: 1px solid {theme_colors['border_control']};
         border-radius: 5px;
         padding: 5px;
+    }}
+    QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus,
+    QSpinBox:focus, QListWidget:focus, QComboBox:focus {{
+        border: 2px solid {neon_color};
+    }}
+    QTextEdit#ResultBox {{
+        background-color: {theme_colors['bg_card']};
     }}
     QScrollArea {{
         background-color: {theme_colors['bg_main']};
         border: none;
     }}
-    QScrollArea QWidget {{
+    QScrollArea > QWidget > QWidget {{
         background-color: {theme_colors['bg_main']};
     }}
     QComboBox {{
         background-color: {theme_colors['bg_input']};
         color: {theme_colors['text_main']};
-        border: 1px solid {theme_colors['border_card']};
+        border: 1px solid {theme_colors['border_control']};
         border-radius: 5px;
         padding: 3px;
     }}
-    QRadioButton {{
+    QComboBox QAbstractItemView {{
+        background-color: {theme_colors['bg_card']};
+        color: {theme_colors['text_main']};
+        border: 1px solid {theme_colors['border_card']};
+        selection-background-color: {neon_color};
+        selection-color: #000000;
+    }}
+    QRadioButton, QCheckBox {{
         color: {theme_colors['text_main']};
         background-color: {theme_colors['bg_main']};
+    }}
+    QCheckBox::indicator {{
+        width: 16px;
+        height: 16px;
+        background-color: {theme_colors['bg_input']};
+        border: 1px solid {theme_colors['border_control']};
+        border-radius: 3px;
+    }}
+    QCheckBox::indicator:hover {{
+        border: 2px solid {neon_color};
+    }}
+    QCheckBox::indicator:checked {{
+        background-color: {neon_color};
+        border: 2px solid {theme_colors['text_main']};
     }}
     QPushButton {{
         background-color: {theme_colors['bg_button']};
         color: {theme_colors['text_main']};
-        border: none;
+        border: 1px solid {theme_colors['border_control']};
         border-radius: 5px;
         padding: 8px 15px;
     }}
@@ -227,25 +363,25 @@ def main_window_stylesheet(theme_colors, neon_color):
         background-color: {theme_colors['bg_button_hover']};
     }}
     QTabWidget::pane {{
-        border: 1px solid #333333;
-        background: transparent;
+        border: 1px solid {theme_colors['border_card']};
+        background: {theme_colors['bg_main']};
     }}
     QTabBar::tab {{
-        background: #1A1A1A;
-        color: #888888;
+        background: {theme_colors['bg_button']};
+        color: {theme_colors['text_secondary']};
         padding: 10px 20px;
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         margin-right: 2px;
     }}
     QTabBar::tab:selected {{
-        background: #252525;
+        background: {theme_colors['bg_card']};
         color: {neon_color};
         border-bottom: 2px solid {neon_color};
     }}
     QTabBar::tab:hover {{
-        background: #333333;
-        color: white;
+        background: {theme_colors['bg_button_hover']};
+        color: {theme_colors['text_main']};
     }}
     """
 

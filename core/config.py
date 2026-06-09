@@ -11,6 +11,7 @@ THEMES = {
         "text_main": "#e6eef7",
         "text_secondary": "#9aa7b8",
         "border_card": "#2a2a2a",
+        "border_control": "#3f3f3f",
         "bg_search": "#0b0b0c",
         "border_search": "#232428",
         "bg_button": "#1b1b1b",
@@ -25,7 +26,8 @@ THEMES = {
         "bg_card": "#ffffff",
         "text_main": "#1a1a1a",
         "text_secondary": "#5c5c5c",
-        "border_card": "#d3d3d3",
+        "border_card": "#929292",
+        "border_control": "#666666",
         "bg_search": "#ffffff",
         "border_search": "#cccccc",
         "bg_button": "#e9e9e9",
@@ -300,9 +302,13 @@ def main_window_stylesheet(theme_colors, neon_color):
     QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QListWidget {{
         background-color: {theme_colors['bg_input']};
         color: {theme_colors['text_main']};
-        border: 1px solid {theme_colors['border_card']};
+        border: 1px solid {theme_colors['border_control']};
         border-radius: 5px;
         padding: 5px;
+    }}
+    QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus,
+    QSpinBox:focus, QListWidget:focus, QComboBox:focus {{
+        border: 2px solid {neon_color};
     }}
     QTextEdit#ResultBox {{
         background-color: {theme_colors['bg_card']};
@@ -317,7 +323,7 @@ def main_window_stylesheet(theme_colors, neon_color):
     QComboBox {{
         background-color: {theme_colors['bg_input']};
         color: {theme_colors['text_main']};
-        border: 1px solid {theme_colors['border_card']};
+        border: 1px solid {theme_colors['border_control']};
         border-radius: 5px;
         padding: 3px;
     }}
@@ -332,10 +338,24 @@ def main_window_stylesheet(theme_colors, neon_color):
         color: {theme_colors['text_main']};
         background-color: {theme_colors['bg_main']};
     }}
+    QCheckBox::indicator {{
+        width: 16px;
+        height: 16px;
+        background-color: {theme_colors['bg_input']};
+        border: 1px solid {theme_colors['border_control']};
+        border-radius: 3px;
+    }}
+    QCheckBox::indicator:hover {{
+        border: 2px solid {neon_color};
+    }}
+    QCheckBox::indicator:checked {{
+        background-color: {neon_color};
+        border: 2px solid {theme_colors['text_main']};
+    }}
     QPushButton {{
         background-color: {theme_colors['bg_button']};
         color: {theme_colors['text_main']};
-        border: none;
+        border: 1px solid {theme_colors['border_control']};
         border-radius: 5px;
         padding: 8px 15px;
     }}

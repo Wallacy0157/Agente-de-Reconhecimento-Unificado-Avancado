@@ -67,7 +67,10 @@ class TestConfigFull(unittest.TestCase):
 
         tema_falso = {'bg_main': '#000', 'bg_sidebar': '#111', 'text_main': '#fff',
                       'bg_button': '#222', 'bg_button_hover': '#333', 'border_card': '#444', 'bg_input': '#555'}
-        self.assertIn("#000", main_window_stylesheet(tema_falso, "#0f0"))
+        stylesheet = main_window_stylesheet(tema_falso, "#0f0")
+        self.assertIn("#000", stylesheet)
+        self.assertIn("QCheckBox::indicator", stylesheet)
+        self.assertIn("border: 1px solid #3f3f3f", stylesheet)
 
 
 if __name__ == '__main__':

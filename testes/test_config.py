@@ -13,7 +13,8 @@ from core.config import (
     firewall_description_style, keylogger_toggle_button_style,
     sherlock_mode_selector_style, sherlock_search_box_style,
     themed_console_style, john_common_group_style,
-    manual_tab_label_style, status_text_style, main_window_stylesheet
+    hydra_page_style, manual_tab_label_style, status_text_style,
+    main_window_stylesheet
 )
 
 
@@ -61,6 +62,9 @@ class TestConfigFull(unittest.TestCase):
         self.assertIn("#ffffff", sherlock_mode_selector_style("light", "#fff"))
         self.assertIn("#ffffff", sherlock_search_box_style("light"))
         self.assertIn("#ffffff", themed_console_style("light"))
+        self.assertIn("QWidget#HydraPage QGroupBox", hydra_page_style("light"))
+        self.assertIn("#505050", hydra_page_style("light"))
+        self.assertIn("#666666", hydra_page_style("dark"))
         self.assertIn("#f5f5f5", john_common_group_style("light"))
         self.assertIn("#1a1a1a", manual_tab_label_style("light"))
         self.assertIn("#5c5c5c", status_text_style("light", "idle"))

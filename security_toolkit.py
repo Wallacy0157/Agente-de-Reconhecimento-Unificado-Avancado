@@ -38,7 +38,7 @@ from core.components import (
 from core import network_scanner 
 from core.config import (
     THEMES, NEON_DEFAULT, load_user_settings,
-    save_user_settings, ThemeManager, SHERLOCK_STYLES, HYDRA_STYLES, JOHN_STYLES, FIREWALL_STYLES, KEYLOGGER_STYLES, STRESS_TEST_STYLES, MANUAL_STYLES, sherlock_investigate_button_style, sherlock_mode_selector_style, sherlock_search_box_style, sherlock_user_input_style, sherlock_result_card_style, sherlock_result_button_style, john_start_button_style, firewall_description_style, themed_console_style, themed_panel_style, john_common_group_style, manual_tab_label_style, status_text_style, keylogger_toggle_button_style, main_window_stylesheet,
+    save_user_settings, ThemeManager, SHERLOCK_STYLES, HYDRA_STYLES, JOHN_STYLES, FIREWALL_STYLES, KEYLOGGER_STYLES, STRESS_TEST_STYLES, MANUAL_STYLES, sherlock_investigate_button_style, sherlock_mode_selector_style, sherlock_search_box_style, sherlock_user_input_style, sherlock_result_card_style, sherlock_result_button_style, john_start_button_style, firewall_description_style, themed_console_style, themed_panel_style, hydra_page_style, john_common_group_style, manual_tab_label_style, status_text_style, keylogger_toggle_button_style, main_window_stylesheet,
 )
 from core.john_engine import JohnEngine, JohnExecutor
 from core.hydra_engine import HydraExecutor
@@ -869,6 +869,7 @@ class SherlockPage(QWidget):
 class HydraPage(QWidget):
     def __init__(self, parent_window):
         super().__init__()
+        self.setObjectName("HydraPage")
         self.parent_window = parent_window
         self.user_list_path = ""
         self.pass_list_path = ""
@@ -877,6 +878,7 @@ class HydraPage(QWidget):
         self.hydra_timer.timeout.connect(self._poll_hydra_state)
 
         self.scroll = QScrollArea(self)
+        self.scroll.setObjectName("HydraScroll")
         self.scroll.setWidgetResizable(True)
 
         container = QWidget()
@@ -1177,9 +1179,23 @@ class HydraPage(QWidget):
 
     def apply_theme(self, theme_key):
         T = self.parent_window.get_theme_colors(theme_key)
+        self.setStyleSheet(
+            hydra_page_style(
+                theme_key,
+                self.parent_window.theme_manager.neon_color,
+            )
+        )
         self.console.setStyleSheet(themed_console_style(theme_key))
         self.scroll.setStyleSheet(
-            f"border: none; background-color: {T['bg_main']};"
+            f"""
+            QScrollArea#HydraScroll {{
+                border: none;
+                background-color: {T['bg_main']};
+            }}
+            QScrollArea#HydraScroll > QWidget > QWidget {{
+                background-color: {T['bg_main']};
+            }}
+            """
         )
 
     def update_ui_language(self, L):

@@ -221,6 +221,94 @@ def themed_panel_style(theme_key="dark"):
     """
 
 
+def hydra_page_style(theme_key="dark", neon_color=NEON_DEFAULT):
+    T = _theme_colors(theme_key)
+    if theme_key == "light":
+        group_border = "#707070"
+        control_border = "#505050"
+        checked_border = "#2f214d"
+    else:
+        group_border = "#555555"
+        control_border = "#666666"
+        checked_border = "#d8ceff"
+
+    return f"""
+        QWidget#HydraPage {{
+            background-color: {T['bg_main']};
+            color: {T['text_main']};
+        }}
+        QWidget#HydraPage QGroupBox {{
+            color: {T['text_main']};
+            background-color: {T['bg_main']};
+            border: 1px solid {group_border};
+            border-radius: 8px;
+            margin-top: 12px;
+            padding: 18px 10px 10px 10px;
+        }}
+        QWidget#HydraPage QGroupBox::title {{
+            subcontrol-origin: margin;
+            subcontrol-position: top left;
+            left: 10px;
+            padding: 0 5px;
+            color: {T['text_main']};
+            background-color: {T['bg_main']};
+        }}
+        QWidget#HydraPage QLineEdit,
+        QWidget#HydraPage QTextEdit,
+        QWidget#HydraPage QSpinBox,
+        QWidget#HydraPage QComboBox {{
+            background-color: {T['bg_input']};
+            color: {T['text_main']};
+            border: 1px solid {control_border};
+            border-radius: 5px;
+            padding: 5px;
+        }}
+        QWidget#HydraPage QLineEdit:focus,
+        QWidget#HydraPage QTextEdit:focus,
+        QWidget#HydraPage QSpinBox:focus,
+        QWidget#HydraPage QComboBox:focus {{
+            border: 2px solid {neon_color};
+        }}
+        QWidget#HydraPage QComboBox QAbstractItemView {{
+            background-color: {T['bg_card']};
+            color: {T['text_main']};
+            border: 1px solid {control_border};
+            selection-background-color: {neon_color};
+            selection-color: #000000;
+        }}
+        QWidget#HydraPage QPushButton {{
+            background-color: {T['bg_button']};
+            color: {T['text_main']};
+            border: 1px solid {control_border};
+            border-radius: 5px;
+            padding: 8px 15px;
+        }}
+        QWidget#HydraPage QPushButton:hover {{
+            background-color: {T['bg_button_hover']};
+            border: 2px solid {neon_color};
+        }}
+        QWidget#HydraPage QCheckBox {{
+            color: {T['text_main']};
+            background-color: transparent;
+            spacing: 7px;
+        }}
+        QWidget#HydraPage QCheckBox::indicator {{
+            width: 16px;
+            height: 16px;
+            background-color: {T['bg_input']};
+            border: 1px solid {control_border};
+            border-radius: 3px;
+        }}
+        QWidget#HydraPage QCheckBox::indicator:hover {{
+            border: 2px solid {neon_color};
+        }}
+        QWidget#HydraPage QCheckBox::indicator:checked {{
+            background-color: {neon_color};
+            border: 2px solid {checked_border};
+        }}
+    """
+
+
 def john_common_group_style(theme_key="dark"):
     T = _theme_colors(theme_key)
     return f"""

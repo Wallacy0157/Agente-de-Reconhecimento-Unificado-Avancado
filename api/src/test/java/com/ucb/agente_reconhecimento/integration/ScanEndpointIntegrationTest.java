@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import com.jayway.jsonpath.JsonPath;
-
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +54,7 @@ class ScanEndpointIntegrationTest {
                 .apply(springSecurity())
                 .build();
 
-       
+
         Usuario u = new Usuario();
         u.setNome("Master Chief");
         u.setEmail("chief@halo.com");
@@ -78,8 +78,8 @@ class ScanEndpointIntegrationTest {
                 "Nenhum erro",
                 List.of(porta),
                 new ServiceProfileDTO(true, false, false, false),
-                List.of("Nikto"),
-                List.of(vuln)
+                List.of(vuln),
+                List.of("Nikto")
         );
         return new ScanResultadoRequest(metadata, List.of(host));
     }
@@ -133,10 +133,11 @@ class ScanEndpointIntegrationTest {
 
             mockMvc.perform(get("/scans")
                             .with(jwt().jwt(jwt -> jwt.subject(usuarioAtivo.getId().toString()))))
+                    .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$").isArray())
                     .andExpect(jsonPath("$[0].id").exists())
-                    .andExpect(jsonPath("$[0].dataScan").value("2026-06-12"));
+                    .andExpect(jsonPath("$[0].scanDate").value("2026-06-12"));
         }
 
         @Test
@@ -157,7 +158,7 @@ class ScanEndpointIntegrationTest {
                     .andExpect(jsonPath("$.id").value(scanIdGerado))
                     .andExpect(jsonPath("$.hosts").isArray())
                     .andExpect(jsonPath("$.hosts[0].ip").value("192.168.1.100"))
-                    .andExpect(jsonPath("$.hosts[0].vulnerabilidades[0].script").value("vulners"));
+                    .andExpect(jsonPath("$.hosts[0].vulnerabilities[0].script").value("vulners"));
         }
     }
 }

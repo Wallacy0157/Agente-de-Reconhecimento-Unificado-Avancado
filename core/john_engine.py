@@ -25,7 +25,7 @@ def worker(args):
     if stop_event.is_set():
         return None
 
-    word = word.replace("\ufeff", "").replace("\r", "").replace("\n", "").strip()
+    word = word.replace("\ufeff", "").replace("\r", "").replace("\n", "")
     if not word:
         return None
 

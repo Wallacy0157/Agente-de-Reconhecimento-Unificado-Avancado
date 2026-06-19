@@ -45,6 +45,7 @@ from core.hydra_engine import HydraExecutor
 from core.logger_engine import KeyloggerEngine
 from core.interaction_test import InteractionTestExecutor
 from core.history_dialog import HistoryDialog, HistoryView
+from core.app_icon import apply_app_icon, configure_windows_app_id
 
 # --- DIAGNOSTICO ---
 class EnvironmentDiagnosticsPage(QWidget):
@@ -2146,6 +2147,7 @@ class MainWindow(QMainWindow):
     def __init__(self, base_dir):
         super().__init__()
         self.base_dir = base_dir
+        apply_app_icon(self, self.base_dir)
 
         self.user_settings = load_user_settings(self.base_dir)
         self.theme_manager = ThemeManager(self.user_settings)
@@ -2456,7 +2458,10 @@ def iniciar_toolkit(username):
 
 if __name__ == "__main__":
 
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    configure_windows_app_id()
     app = QApplication(sys.argv)
+    apply_app_icon(app, base_dir)
     app.setStyle("Fusion")
 
     app.setStyleSheet("""
@@ -2481,7 +2486,7 @@ if __name__ == "__main__":
         }
     """)
 
-    auth_screen = AuthWindow()
+    auth_screen = AuthWindow(base_dir)
     main_dashboard = None
 
     auth_screen.login_successful.connect(iniciar_toolkit)

@@ -1,14 +1,18 @@
 import sys
+import os
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QCheckBox, QStackedWidget, QMessageBox)
 from PyQt6.QtCore import Qt, pyqtSignal
+from core.app_icon import apply_app_icon, configure_windows_app_id
 from services import auth_service
 
 class AuthWindow(QWidget):
     login_successful = pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self, base_dir=None):
         super().__init__()
+        self.base_dir = base_dir or os.path.dirname(os.path.abspath(__file__))
+        apply_app_icon(self, self.base_dir)
         self.setWindowTitle("AURA Security - Autenticação")
         self.setFixedSize(400, 600)
         self.setStyleSheet("background-color: #0B0813;")
@@ -194,7 +198,10 @@ class AuthWindow(QWidget):
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    configure_windows_app_id()
     app = QApplication(sys.argv)
-    win = AuthWindow()
+    apply_app_icon(app, base_dir)
+    win = AuthWindow(base_dir)
     win.show()
     sys.exit(app.exec())

@@ -6,6 +6,7 @@ import aiohttp
 import threading
 from collections import defaultdict
 from datetime import datetime, timezone
+from core.reporting import format_report_header_text
 
 class StressTestExecutor:
     def __init__(self, target, port, rps_limit=100, duration=60, workers=50, gradual=False):
@@ -135,18 +136,47 @@ class StressTestExecutor:
         if upper >= len(data): return data[lower]
         return data[lower] * (1 - weight) + data[upper] * weight
 
-    def get_report(self):
-        lines = [f"\n--- AURA STRESS REPORT: {self.target}:{self.port} ---"]
+    def _summarize_metrics(self):
+        total_sent = sum(data.get("total_sent", 0) for data in self.metrics.values())
+        failures = sum(data.get("errors", 0) for data in self.metrics.values())
+        http_200 = 0
+        all_latencies = []
+        for data in self.metrics.values():
+            status_codes = data.get("status_codes", {})
+            http_200 += status_codes.get(200, 0) + status_codes.get("200", 0)
+            all_latencies.extend(data.get("steady_latencies", []))
+
+        avg_latency = statistics.mean(all_latencies) if all_latencies else 0
+        return {
+            "total_sent": total_sent,
+            "http_200": http_200,
+            "failures": failures,
+            "avg_latency_ms": avg_latency,
+        }
+
+    def get_report(self, user_context=None):
+        summary = self._summarize_metrics()
+        lines = [
+            f"\n--- AURA STRESS REPORT: {self.target}:{self.port} ---",
+            format_report_header_text("RELATÓRIO DE TESTE DE CARGA", user_context),
+            "Resumo do Teste de Carga:",
+            f"  Total de requisições enviadas: {summary['total_sent']}",
+            f"  Requisições com sucesso (HTTP 200): {summary['http_200']}",
+            f"  Falhas: {summary['failures']}",
+            f"  Tempo de resposta médio: {summary['avg_latency_ms']:.2f}ms",
+            "",
+            "Detalhes por endpoint:",
+        ]
         for name, data in self.metrics.items():
-            lats = data['steady_latencies']
-            total_dispatched = data['total_sent']
+            lats = data.get('steady_latencies', [])
+            total_dispatched = data.get('total_sent', 0)
             p95 = self._get_percentile(lats, 0.95)
             
             lines.append(f"Endpoint: {name}")
             lines.append(f"  RPS Real: {len(lats)/self.duration:.2f}")
             lines.append(f"  P95 Latency: {p95:.2f}ms")
-            lines.append(f"  Errors: {data['errors']} ({ (data['errors']/total_dispatched*100) if total_dispatched > 0 else 0:.1f}%)")
-            lines.append(f"  Saturation (Lost): {data['total_scheduled'] - data['total_sent']}")
+            lines.append(f"  Errors: {data.get('errors', 0)} ({ (data.get('errors', 0)/total_dispatched*100) if total_dispatched > 0 else 0:.1f}%)")
+            lines.append(f"  Saturation (Lost): {data.get('total_scheduled', 0) - data.get('total_sent', 0)}")
             
         lines.append("-" * 40)
         return "\n".join(lines)
@@ -177,15 +207,20 @@ def build_stress_test_payload(executor) -> dict:
     """Converte métricas do StressTestExecutor para formato StressTestResultadoRequest."""
     metrics = executor.metrics
 
-    total_enviado = sum(data["total_sent"] for data in metrics.values())
-    quantidade_erros = sum(data["errors"] for data in metrics.values())
-    quantidade_sucesso = total_enviado - quantidade_erros
+    total_enviado = sum(data.get("total_sent", 0) for data in metrics.values())
+    quantidade_erros = sum(data.get("errors", 0) for data in metrics.values())
+    quantidade_sucesso = sum(
+        data.get("status_codes", {}).get(200, 0) + data.get("status_codes", {}).get("200", 0)
+        for data in metrics.values()
+    )
+    if quantidade_sucesso == 0 and total_enviado:
+        quantidade_sucesso = max(total_enviado - quantidade_erros, 0)
 
     cenarios = []
     for name, data in metrics.items():
-        lats = data["steady_latencies"]
+        lats = data.get("steady_latencies", [])
         p95 = _get_percentile_safe(lats, 0.95)
-        status_str = _format_status_codes(data["status_codes"])
+        status_str = _format_status_codes(data.get("status_codes", {}))
 
         cenarios.append({
             "nome": name,

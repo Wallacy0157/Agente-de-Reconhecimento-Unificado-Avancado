@@ -8,6 +8,7 @@ import time
 import warnings
 from datetime import datetime
 from multiprocessing import Manager, Pool, cpu_count
+from core.reporting import build_report_header
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -25,7 +26,7 @@ def worker(args):
     if stop_event.is_set():
         return None
 
-    word = word.replace("\ufeff", "").replace("\r", "").replace("\n", "")
+    word = word.replace("\ufeff", "").replace("\r", "").replace("\n", "").strip()
     if not word:
         return None
 
@@ -205,17 +206,24 @@ class JohnEngine:
 
         return {"success": False, "error": "Senha não encontrada"}
 
-    def save_result(self, result, base_dir):
+    def save_result(self, result, base_dir, user_context=None):
         log_dir = os.path.join(base_dir, "logs")
         os.makedirs(log_dir, exist_ok=True)
 
         now = datetime.now()
         data = {
+            "report_header": build_report_header(user_context, now),
             "status": "SUCESSO" if result.get("success") else "FALHA",
             "hash": result.get("hash"),
             "algoritmo": result.get("algorithm"),
             "senha": result.get("password"),
             "data": now.strftime("%d/%m/%Y %H:%M:%S"),
+            "summary": {
+                "algorithm": result.get("algorithm"),
+                "password_found": result.get("password"),
+                "hash": result.get("hash"),
+                "salt": result.get("salt"),
+            },
         }
 
         path = os.path.join(log_dir, f"john_result_{now.strftime('%Y%m%d_%H%M%S')}.json")

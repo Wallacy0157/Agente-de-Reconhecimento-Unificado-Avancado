@@ -7,7 +7,7 @@ from core.app_icon import apply_app_icon, configure_windows_app_id
 from services import auth_service
 
 class AuthWindow(QWidget):
-    login_successful = pyqtSignal(str)
+    login_successful = pyqtSignal(object)
 
     def __init__(self, base_dir=None):
         super().__init__()
@@ -187,8 +187,9 @@ class AuthWindow(QWidget):
         email = self.email_login.input_field.text()
         senha = self.pass_login.input_field.text()
         try:
-            auth_service.login(email, senha)
-            self.login_successful.emit(email)
+            session_data = auth_service.login(email, senha)
+            session_data.setdefault("email", email)
+            self.login_successful.emit(session_data)
             self.close()
         except auth_service.AuthError as e:
             QMessageBox.critical(self, "Falha no login", str(e))

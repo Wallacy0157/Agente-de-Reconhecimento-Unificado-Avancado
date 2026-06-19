@@ -75,7 +75,9 @@ public class UsuarioService {
                 .issuedAt(agora)
                 .expiresAt(expiraEm)
                 .subject(String.valueOf(usuario.getId()))
+                .claim("nome", usuario.getNome())
                 .claim("email", usuario.getEmail())
+                .claim("username", usuario.getUsername())
                 .claim("scope", "USUARIO")
                 .build();
 

@@ -16,6 +16,7 @@ from core.config import (
     hydra_page_style, manual_tab_label_style, status_text_style,
     main_window_stylesheet
 )
+from core.reporting import build_report_header, format_report_header_text
 
 
 class TestConfigFull(unittest.TestCase):
@@ -75,6 +76,22 @@ class TestConfigFull(unittest.TestCase):
         self.assertIn("#000", stylesheet)
         self.assertIn("QCheckBox::indicator", stylesheet)
         self.assertIn("border: 1px solid #3f3f3f", stylesheet)
+
+    def test_cabecalho_relatorio(self):
+        contexto = {
+            "nome": "Wallacy William",
+            "email": "wallacy@gmail.com",
+            "username": "Wallacy0157",
+        }
+        header = build_report_header(contexto)
+        self.assertEqual(header["software"], "AURA v1.0.0")
+        self.assertEqual(header["name"], "Wallacy William")
+        self.assertEqual(header["email"], "wallacy@gmail.com")
+        self.assertEqual(header["username"], "Wallacy0157")
+
+        texto = format_report_header_text("RELATÓRIO", contexto)
+        self.assertIn("Nome do Software e versão: AURA v1.0.0", texto)
+        self.assertIn("Usuário: Wallacy0157", texto)
 
 
 if __name__ == '__main__':

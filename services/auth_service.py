@@ -1,3 +1,6 @@
+import base64
+import json
+
 from requests.exceptions import ConnectionError, Timeout
 
 from services import api_client
@@ -24,6 +27,22 @@ def _extrair_mensagem_erro(response) -> str:
     except Exception:
         pass
     return f"Erro inesperado (HTTP {response.status_code})"
+
+
+def _decode_token_claims(token: str) -> dict:
+    try:
+        payload = token.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        decoded = base64.urlsafe_b64decode(payload.encode("utf-8"))
+        claims = json.loads(decoded.decode("utf-8"))
+    except Exception:
+        return {}
+
+    return {
+        key: claims.get(key)
+        for key in ("email", "nome", "username")
+        if claims.get(key)
+    }
 
 
 def registrar(email: str, nome: str, username: str, senha: str, confirma_senha: str) -> None:
@@ -59,6 +78,7 @@ def login(email: str, senha: str) -> dict:
     if response.status_code == 200:
         data = response.json()
         api_client.set_token(data["token"])
+        data.update(_decode_token_claims(data["token"]))
         return data
 
     raise AuthError(_extrair_mensagem_erro(response))

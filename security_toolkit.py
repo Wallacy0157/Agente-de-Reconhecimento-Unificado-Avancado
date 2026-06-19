@@ -42,10 +42,11 @@ from core.config import (
 )
 from core.john_engine import JohnEngine, JohnExecutor
 from core.hydra_engine import HydraExecutor
-from core.logger_engine import KeyloggerEngine
+from core.logger_engine import NetworkScanExecutor
 from core.interaction_test import InteractionTestExecutor
 from core.history_dialog import HistoryDialog, HistoryView
 from core.app_icon import apply_app_icon, configure_windows_app_id
+from core.reporting import normalize_user_context, report_display_user
 
 # --- DIAGNOSTICO ---
 class EnvironmentDiagnosticsPage(QWidget):
@@ -577,7 +578,11 @@ class ScannerPage(QWidget):
         filename = os.path.join(log_dir, f"scan_report_{timestamp}.json")
 
         try:
-            report, api_response = network_scanner.save_and_persist(self.last_results, filename)
+            report, api_response = network_scanner.save_and_persist(
+                self.last_results,
+                filename,
+                user_context=self.parent_window.report_context,
+            )
 
             if api_response is not None:
                 scan_id = api_response.get("id", "?")
@@ -722,7 +727,19 @@ class SherlockPage(QWidget):
         self._persist_results()
         
         if results:
-            path = self.executor.save_results(self.parent_window.base_dir) if self.executor else SherlockEngine().save_to_json(username, results, self.parent_window.base_dir)
+            path = (
+                self.executor.save_results(
+                    self.parent_window.base_dir,
+                    user_context=self.parent_window.report_context,
+                )
+                if self.executor
+                else SherlockEngine().save_to_json(
+                    username,
+                    results,
+                    self.parent_window.base_dir,
+                    user_context=self.parent_window.report_context,
+                )
+            )
             
             filename = os.path.basename(path) if path else "report.json"
             self.parent_window.status_label.setText(lang_get(self.L, "sherlock_page.report_saved", "Relatório salvo: {filename}").format(filename=filename))
@@ -1152,7 +1169,10 @@ class HydraPage(QWidget):
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(False)
         if self.executor:
-            filepath = self.executor.save_log(self.parent_window.base_dir)
+            filepath = self.executor.save_log(
+                self.parent_window.base_dir,
+                user_context=self.parent_window.report_context,
+            )
             self.console.append(f"{lang_get(self.L, 'hydra_page.log_saved', '[INFO] Log salvo em')} {filepath}")
             self._persist_results()
         self.executor = None
@@ -1373,7 +1393,10 @@ class FirewallPage(QWidget):
         )
         self.parent_window.status_label.setText(lang_get(self.L, "firewall_page.running_audit", "Executando Auditoria de Segurança..."))
 
-        self.executor = InteractionTestExecutor(self.parent_window.base_dir)
+        self.executor = InteractionTestExecutor(
+            self.parent_window.base_dir,
+            user_context=self.parent_window.report_context,
+        )
         self.executor.start()
         self.audit_timer.start(250)
 
@@ -1793,7 +1816,19 @@ class JohnPage(QWidget):
         self.btn_start.setEnabled(True)
         self.btn_start.setText(lang_get(self.L, "john_page.start_attack", "INICIAR ATAQUE"))
         if result["success"]:
-            path = self.executor.engine.save_result(result, self.parent_window.base_dir) if self.executor else JohnEngine().save_result(result, self.parent_window.base_dir)
+            path = (
+                self.executor.engine.save_result(
+                    result,
+                    self.parent_window.base_dir,
+                    user_context=self.parent_window.report_context,
+                )
+                if self.executor
+                else JohnEngine().save_result(
+                    result,
+                    self.parent_window.base_dir,
+                    user_context=self.parent_window.report_context,
+                )
+            )
             msg = f"{lang_get(self.L, 'john_page.password_found', '✅ SENHA ENCONTRADA: {password}').format(password=result['password'])}\n{lang_get(self.L, 'john_page.report_label', 'Relatório: {filename}').format(filename=os.path.basename(path))}"
             self.console.append("\n" + "="*30 + "\n" + msg + "\n" + "="*30)
             QMessageBox.information(self, lang_get(self.L, "john_page.success_title", "Sucesso"), msg)
@@ -1879,7 +1914,10 @@ class KeyloggerPage(QWidget):
     def handle_toggle(self):
         if not self.engine or not self.engine.is_running:
             log_dir = os.path.join(self.parent_window.base_dir, "logs/keylogs")
-            self.engine = KeyloggerEngine(log_dir)
+            self.engine = KeyloggerEngine(
+                log_dir,
+                user_context=self.parent_window.report_context,
+            )
             self.log_file_path = self.engine.start()
 
             self.status_text.setText(lang_get(self.L, "keylogger_page.status_monitoring", "MONITORANDO TECLADO..."))
@@ -2086,7 +2124,11 @@ class StressTestPage(QWidget):
         )
         path = os.path.join(log_dir, filename)
         with open(path, "w", encoding="utf-8") as report_file:
-            report_file.write(self.executor.get_report())
+            report_file.write(
+                self.executor.get_report(
+                    user_context=self.parent_window.report_context,
+                )
+            )
         return path
 
     def apply_theme(self, theme_key):
@@ -2144,10 +2186,11 @@ class MainWindow(QMainWindow):
         self.hydra_page.set_targets(targets)
         self.safe_change_page(self.PAGE_HYDRA)
 
-    def __init__(self, base_dir):
+    def __init__(self, base_dir, user_context=None):
         super().__init__()
         self.base_dir = base_dir
         apply_app_icon(self, self.base_dir)
+        self.report_context = normalize_user_context(user_context)
 
         self.user_settings = load_user_settings(self.base_dir)
         self.theme_manager = ThemeManager(self.user_settings)
@@ -2444,14 +2487,15 @@ class MainWindow(QMainWindow):
         super().closeEvent(event)
 
 # --- EXECUÇÃO PRINCIPAL ---
-def iniciar_toolkit(username):
+def iniciar_toolkit(user_context):
     global main_dashboard
 
+    username = report_display_user(user_context)
     print(f"Acesso garantido para: {username}")
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    main_dashboard = MainWindow(base_dir)
+    main_dashboard = MainWindow(base_dir, user_context=user_context)
 
     main_dashboard.setWindowTitle(lang_get(main_dashboard.L, "app.session_title", "AURA Security - Auditoria Ativa ({username})").format(username=username))
     main_dashboard.show()

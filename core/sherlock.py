@@ -5,6 +5,7 @@ import urllib.parse
 import threading
 from datetime import datetime
 from ddgs import DDGS
+from core.reporting import build_report_header
 
 class SherlockEngine:
     def __init__(self):
@@ -89,17 +90,26 @@ class SherlockEngine:
         except: pass
         return found
 
-    def save_to_json(self, target, results, base_dir):
+    def save_to_json(self, target, results, base_dir, user_context=None):
         log_dir = os.path.join(base_dir, "logs")
         os.makedirs(log_dir, exist_ok=True)
 
-        filename = f"sherlock_{target}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        now = datetime.now()
+        filename = f"sherlock_{target}_{now.strftime('%Y%m%d_%H%M%S')}.json"
         path = os.path.join(log_dir, filename)
+        exact_urls = [item.get("url") for item in results if item.get("url")]
 
         data = {
+            "report_header": build_report_header(user_context, now),
             "target": target,
-            "date": datetime.now().isoformat(),
+            "date": now.isoformat(),
             "total_found": len(results),
+            "exact_urls": exact_urls,
+            "summary": {
+                "target": target,
+                "total_found": len(results),
+                "exact_urls": exact_urls,
+            },
             "results": results
         }
 
@@ -155,8 +165,8 @@ class SherlockExecutor:
     def get_error(self):
         return self._error
 
-    def save_results(self, base_dir):
-        return self.engine.save_to_json(self.target, self._results, base_dir)
+    def save_results(self, base_dir, user_context=None):
+        return self.engine.save_to_json(self.target, self._results, base_dir, user_context=user_context)
 
     def _on_result(self, site, url):
         if self._stop_event.is_set():

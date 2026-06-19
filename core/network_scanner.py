@@ -7,6 +7,7 @@ import shutil
 import re
 import threading
 from datetime import datetime
+from core.reporting import build_report_header
 
 NMAP_BASE_CMD = [
     "nmap",
@@ -269,7 +270,10 @@ def extract_ports(host):
         open_ports.append({
             "port": port.get("@portid"),
             "protocol": port.get("@protocol"),
-            "service": service
+            "service": service,
+            "product": port.get("service", {}).get("@product"),
+            "version": port.get("service", {}).get("@version"),
+            "extra_info": port.get("service", {}).get("@extrainfo"),
         })
 
     return open_ports
@@ -401,16 +405,47 @@ def build_nmap_command(ip):
     cmd.append(ip)
     return cmd
 
-def save_json(results, filename):
+def _summarize_open_ports(results):
+    ports = []
+    for host in results:
+        ip = host.get("ip", "N/A")
+        for item in host.get("open_ports", []):
+            service_parts = [
+                item.get("service"),
+                item.get("product"),
+                item.get("version"),
+                item.get("extra_info"),
+            ]
+            service_detail = " ".join(str(part) for part in service_parts if part)
+            port = item.get("port", "N/A")
+            protocol = (item.get("protocol") or "").upper() or "N/A"
+            ports.append({
+                "host": ip,
+                "port": port,
+                "protocol": protocol,
+                "service": item.get("service") or "N/A",
+                "product": item.get("product"),
+                "version": item.get("version"),
+                "description": f"{port}/{protocol} - {service_detail or 'Serviço não identificado'}",
+            })
+    return ports
+
+
+def save_json(results, filename, user_context=None):
     tz = pytz.timezone("America/Sao_Paulo")
     now = datetime.now(tz)
 
     report = {
+        "report_header": build_report_header(user_context, now),
         "scan_metadata": {
             "tool": "AURA - Advanced Unified Reconnaissance Agent",
             "scan_date": now.strftime("%Y-%m-%d"),
             "scan_time": now.strftime("%H:%M:%S"),
             "timezone": "America/Sao_Paulo"
+        },
+        "nmap_summary": {
+            "total_hosts": len(results),
+            "open_ports": _summarize_open_ports(results),
         },
         "results": results
     }
@@ -421,11 +456,11 @@ def save_json(results, filename):
     return report
 
 
-def save_and_persist(results, filename):
+def save_and_persist(results, filename, user_context=None):
     import logging
     logger = logging.getLogger(__name__)
 
-    report = save_json(results, filename)
+    report = save_json(results, filename, user_context=user_context)
 
     api_response = None
     try:

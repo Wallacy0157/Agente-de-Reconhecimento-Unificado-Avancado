@@ -7,6 +7,7 @@ import tempfile
 import threading
 import uuid
 from datetime import datetime
+from core.reporting import build_report_header, format_duration
 
 
 class HydraExecutor:
@@ -210,7 +211,17 @@ class HydraExecutor:
             with self._state_lock:
                 self._running = False
 
-    def save_log(self, base_dir):
+    def _get_tested_route(self):
+        target_text = ", ".join(self.targets)
+        if self.service == "http-post-form":
+            port = self.port or 80
+            path = self.http_path or "/"
+            return f"http-post-form://{target_text}:{port}{path}"
+        if self.port:
+            return f"{self.service}://{target_text}:{self.port}"
+        return f"{self.service}://{target_text}"
+
+    def save_log(self, base_dir, user_context=None):
         log_dir = os.path.join(base_dir, "logs")
         os.makedirs(log_dir, exist_ok=True)
 
@@ -220,24 +231,37 @@ class HydraExecutor:
             duration = (now - self.start_time).total_seconds()
 
         success = self.return_code == 0
-        found_creds = None
-        if success and self.username and self.password:
-            found_creds = {"username": self.username, "password": self.password}
+        found_creds = parse_credentials(self.get_output())
+        if not found_creds and success and self.username and self.password:
+            found_creds = [{"username": self.username, "password": self.password}]
 
         log_data = {
+            "report_header": build_report_header(user_context, now),
             "attack_id": str(uuid.uuid4()),
             "tool": "Hydra",
             "timestamp": now.isoformat(),
             "duration_seconds": duration,
+            "duration": format_duration(duration),
             "targets": self.targets,
             "service": self.service,
             "port": self.port,
+            "tested_route": self._get_tested_route(),
+            "http_form": {
+                "path": self.http_path,
+                "params": self.http_params,
+                "failure_text": self.http_fail,
+            } if self.service == "http-post-form" else None,
             "attack_type": "single" if self.username and self.password else "wordlist",
             "severity": "HIGH" if success else "INFO",
             "success": success,
-            "credentials_found": found_creds if success else None,
+            "credentials_found": found_creds if success else [],
+            "working_pair": (
+                f"{found_creds[0]['username']} : {found_creds[0]['password']}"
+                if found_creds else None
+            ),
             "evidence": "Valid credentials found" if success else "No credentials found",
             "return_code": self.return_code,
+            "raw_output": self.get_output(),
         }
 
         filename = f"hydra_{now.strftime('%Y-%m-%d_%H-%M-%S')}.json"

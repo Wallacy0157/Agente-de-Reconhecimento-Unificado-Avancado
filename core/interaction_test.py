@@ -8,6 +8,7 @@ import threading
 from datetime import datetime
 
 import psutil
+from core.reporting import format_report_header_text
 
 
 def is_admin():
@@ -76,7 +77,7 @@ def check_firewall():
     return os.system("netsh advfirewall show allprofiles > nul") == 0
 
 
-def run_interaction_test(base_dir):
+def run_interaction_test(base_dir, user_context=None):
     log_path = os.path.join(base_dir, "logs", "auditoria_seguranca.log")
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
@@ -85,6 +86,7 @@ def run_interaction_test(base_dir):
 
     with open(log_path, "a", encoding="utf-8") as log:
         log.write("\n" + "=" * 60 + "\n")
+        log.write(format_report_header_text("RELATÓRIO DE AUDITORIA DE SEGURANÇA", user_context))
         log.write("AURA SECURITY TOOLKIT - RELATÓRIO DE SEGURANÇA\n")
         log.write(f"DATA/HORA: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
         log.write(f"ESTAÇÃO: {meta['hostname']} ({meta['ip_local']})\n")
@@ -139,8 +141,9 @@ def run_interaction_test(base_dir):
 
 
 class InteractionTestExecutor:
-    def __init__(self, base_dir):
+    def __init__(self, base_dir, user_context=None):
         self.base_dir = base_dir
+        self.user_context = user_context
         self.results = None
         self.meta = None
         self.log_path = None
@@ -172,7 +175,10 @@ class InteractionTestExecutor:
 
     def _run(self):
         try:
-            self.results, self.meta, self.log_path = run_interaction_test(self.base_dir)
+            self.results, self.meta, self.log_path = run_interaction_test(
+                self.base_dir,
+                self.user_context,
+            )
         except Exception as exc:
             self.error = str(exc)
         finally:

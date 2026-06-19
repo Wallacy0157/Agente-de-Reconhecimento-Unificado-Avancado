@@ -375,6 +375,10 @@ class ScannerPage(QWidget):
 
         self.L = getattr(self.parent_window, 'L', {})
 
+        self.title_label = QLabel(lang_get(self.L, "scanner_page.title", "🛰️ Varredura de Rede"))
+        self.title_label.setFont(QFont("Arial", 22, QFont.Weight.Bold))
+        layout.addWidget(self.title_label)
+
         self.ip_group = QGroupBox(lang_get(self.L, "scanner_page.targets_group", "Alvos de Varredura (IPs/Ranges)"))
         self.ip_group.setObjectName("targets_group")
 
@@ -433,6 +437,7 @@ class ScannerPage(QWidget):
 
     def update_ui_language(self, L):
         self.L = L
+        self.title_label.setText(lang_get(L, "scanner_page.title", "🛰️ Varredura de Rede"))
         self.ip_group.setTitle(lang_get(L, "scanner_page.targets_group", "Alvos de Varredura (IPs/Ranges)"))
         self.ip_input.setPlaceholderText(lang_get(L, "scanner_page.ip_placeholder", "Ex: 192.168.1.1, 10.0.0.0/24, 172.16.1.1-10"))
         self.start_button.setText(lang_get(L, "scanner_page.start_scan", "Iniciar Varredura"))
@@ -822,6 +827,9 @@ class SherlockPage(QWidget):
         self.subtitle_label.setStyleSheet(f"color: {T['text_secondary']};")
         self.mode_selector.setStyleSheet(
             sherlock_mode_selector_style(theme_key, neon)
+        )
+        self.btn_investigate.setStyleSheet(
+            sherlock_investigate_button_style(neon)
         )
         self.search_box.setStyleSheet(sherlock_search_box_style(theme_key))
         self.user_input.setStyleSheet(sherlock_user_input_style(theme_key))
@@ -1793,6 +1801,9 @@ class JohnPage(QWidget):
         self.executor = None
 
     def apply_theme(self, theme_key):
+        self.btn_start.setStyleSheet(
+            john_start_button_style(self.parent_window.theme_manager.neon_color)
+        )
         self.common_group.setStyleSheet(
             john_common_group_style(theme_key)
         )
@@ -1910,6 +1921,12 @@ class KeyloggerPage(QWidget):
         }.get(self._status_state, T["text_secondary"])
         self.dot.setStyleSheet(f"color: {dot_color}; font-size: 20px;")
         self.live_console.setStyleSheet(themed_console_style(theme_key))
+        self.btn_toggle.setStyleSheet(
+            keylogger_toggle_button_style(
+                self.parent_window.theme_manager.neon_color,
+                running=self._status_state == "running",
+            )
+        )
 
     def update_ui_language(self, L):
         self.L = L

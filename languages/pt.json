@@ -116,6 +116,7 @@
     "lang_ar": "Árabe"
   },
   "scanner_page": {
+    "title": "🛰️ Varredura de Rede",
     "targets_group": "Alvos de Varredura (IPs/Ranges)",
     "ip_placeholder": "Ex: 192.168.1.1, 10.0.0.0/24, 172.16.1.1-10",
     "start_scan": "Iniciar Varredura",

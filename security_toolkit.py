@@ -1914,7 +1914,7 @@ class KeyloggerPage(QWidget):
     def handle_toggle(self):
         if not self.engine or not self.engine.is_running:
             log_dir = os.path.join(self.parent_window.base_dir, "logs/keylogs")
-            self.engine = KeyloggerEngine(
+            self.engine = NetworkScanExecutor(
                 log_dir,
                 user_context=self.parent_window.report_context,
             )
@@ -2055,7 +2055,7 @@ class StressTestPage(QWidget):
     def toggle_test(self):
         if self.executor and self.executor.is_running:
             self.executor.stop()
-            self.metrics_box.setText(self.executor.get_report())
+            self.metrics_box.setText(self._current_report_text())
             self._finalize_ui_state()
             if not self._results_persisted:
                 self._results_persisted = True
@@ -2086,13 +2086,18 @@ class StressTestPage(QWidget):
         if not self.executor:
             return
 
-        self.metrics_box.setText(self.executor.get_report())
+        self.metrics_box.setText(self._current_report_text())
         
         if not self.executor.is_running:
             self._finalize_ui_state()
             if not self._results_persisted:
                 self._results_persisted = True
                 self._persist_results()
+
+    def _current_report_text(self):
+        return self.executor.get_report(
+            user_context=self.parent_window.report_context,
+        )
 
     def _persist_results(self):
         """Persiste resultados no backend de forma síncrona (operação rápida)."""

@@ -1,0 +1,38 @@
+==========================================================
+========================================================================
+RELATÓRIO DE AUDITORIA DE TECLADO
+========================================================================
+Nome do Software e versão: AURA v1.0.0
+Nome: Wallacy William
+E-mail: wallacy@gmail.com
+Usuário: Wallacy0157
+Data: 19/06/2026
+Hora: 20:27:15
+Sistema Operacional: Windows 11 10.0.26200
+========================================================================
+             AURA SECURITY - RELATÓRIO DE AUDITORIA       
+==========================================================
+DATA/HORA INÍCIO   : 19/06/2026 20:27:15
+USUÁRIO SISTEMA    : unico
+ESTAÇÃO TRABALHO   : Wallacy-0157 (192.168.0.101)
+SISTEMA OPERACIONAL: Windows 11
+==========================================================
+
+
+
+[EVENTO: TROCA DE JANELA | 19/06/2026 20:27:20]
+[JANELA: Generic Window]
+> bloco
+teste do keylogger
+
+[SESSÃO ENCERRADA - INATIVIDADE]
+
+
+==========================================================
+FIM DA AUDITORIA    : 20:27:51
+TOTAL DE TECLAS     : 30
+ENTERS / BACKSPACES : 2 / 2
+TECLAS MAIS USADAS  : [('e', 6), ('o', 4), ('l', 2)]
+==========================================================
+
+[SESSÃO ENCERRADA - INATIVIDADE]

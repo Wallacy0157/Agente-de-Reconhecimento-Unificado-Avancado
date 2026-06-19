@@ -42,7 +42,7 @@ from core.config import (
 )
 from core.john_engine import JohnEngine, JohnExecutor
 from core.hydra_engine import HydraExecutor
-from core.logger_engine import KeyloggerEngine
+from core.logger_engine import NetworkScanExecutor
 from core.interaction_test import InteractionTestExecutor
 from core.history_dialog import HistoryDialog, HistoryView
 from core.app_icon import apply_app_icon, configure_windows_app_id
@@ -1914,7 +1914,7 @@ class KeyloggerPage(QWidget):
     def handle_toggle(self):
         if not self.engine or not self.engine.is_running:
             log_dir = os.path.join(self.parent_window.base_dir, "logs/keylogs")
-            self.engine = KeyloggerEngine(
+            self.engine = NetworkScanExecutor(
                 log_dir,
                 user_context=self.parent_window.report_context,
             )

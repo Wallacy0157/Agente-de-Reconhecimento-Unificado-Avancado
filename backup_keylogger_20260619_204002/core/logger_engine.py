@@ -225,11 +225,6 @@ class KeyloggerEngine:
             "==========================================================\n\n"
         )
 
-        header = format_report_header_text(
-            "RELATÓRIO DE AUDITORIA DE TECLADO",
-            self.user_context,
-        )
-
         with open(self.log_file, "w", encoding="utf-8") as file_obj:
             file_obj.write(header)
 

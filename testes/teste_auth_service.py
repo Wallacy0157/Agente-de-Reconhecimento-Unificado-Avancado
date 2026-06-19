@@ -59,7 +59,7 @@ class TestAuthServiceElite(unittest.TestCase):
 
 
                 with self.assertRaises(AuthError) as ctx_login:
-                    login("admin@admin.com", "123")
+                    login("admin", "123")
                 self.assertEqual(str(ctx_login.exception), mensagem_esperada)
 
 
@@ -77,7 +77,7 @@ class TestAuthServiceElite(unittest.TestCase):
 
 
         with self.assertRaises(AuthError) as ctx_login:
-            login("user@user.com", "senha_errada")
+            login("user", "senha_errada")
         self.assertEqual(str(ctx_login.exception), "Senha Incorreta")
 
 
@@ -106,11 +106,15 @@ class TestAuthServiceElite(unittest.TestCase):
         mock_resp.json.return_value = {"token": "token-jwt-aprovado", "nome": "Admin"}
         mock_api.post.return_value = mock_resp
 
-        resultado = login("admin@admin.com", "senha123")
+        resultado = login("admin", "senha123")
 
 
         mock_api.set_token.assert_called_with("token-jwt-aprovado")
+        chamada_args = mock_api.post.call_args[0]
+        self.assertEqual(chamada_args[0], "/usuarios/login")
+        self.assertEqual(chamada_args[1]["username"], "admin")
         self.assertEqual(resultado["token"], "token-jwt-aprovado")
+        self.assertEqual(resultado["username"], "admin")
 
 
 if __name__ == '__main__':

@@ -160,7 +160,7 @@ class UsuarioEndpointIntegrationTest {
         void deveriaAutenticarComSucesso() throws Exception {
             cadastrarUsuarioPadrao();
 
-            var loginDto = new UsuarioLoginDTO("joao@email.com", "senha123");
+            var loginDto = new UsuarioLoginDTO("joao123", "senha123");
 
             mockMvc.perform(post("/usuarios/login")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -171,9 +171,9 @@ class UsuarioEndpointIntegrationTest {
         }
 
         @Test
-        @DisplayName("Deveria retornar HTTP 401 quando email não existe")
-        void deveriaRetornar401ParaEmailInexistente() throws Exception {
-            var loginDto = new UsuarioLoginDTO("inexistente@email.com", "senha123");
+        @DisplayName("Deveria retornar HTTP 401 quando username não existe")
+        void deveriaRetornar401ParaUsernameInexistente() throws Exception {
+            var loginDto = new UsuarioLoginDTO("inexistente", "senha123");
 
             mockMvc.perform(post("/usuarios/login")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -188,7 +188,7 @@ class UsuarioEndpointIntegrationTest {
         void deveriaRetornar401ParaSenhaIncorreta() throws Exception {
             cadastrarUsuarioPadrao();
 
-            var loginDto = new UsuarioLoginDTO("joao@email.com", "senha_errada");
+            var loginDto = new UsuarioLoginDTO("joao123", "senha_errada");
 
             mockMvc.perform(post("/usuarios/login")
                             .contentType(MediaType.APPLICATION_JSON)

@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QCheckBox, QStackedWidget, QMessageBox)
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -31,6 +32,7 @@ class AuthWindow(QWidget):
         layout = QVBoxLayout(self.login_page)
         layout.setContentsMargins(40, 40, 40, 40)
         layout.setSpacing(20)
+        remembered_username = self._load_remembered_username()
 
         title = QLabel("Entrar")
         title.setStyleSheet("color: white; font-size: 32px; font-weight: bold;")
@@ -48,15 +50,18 @@ class AuthWindow(QWidget):
 
         layout.addSpacing(20)
 
-        self.email_login = self._create_input("Email", "Insira seu e-mail", "✉")
-        layout.addLayout(self.email_login)
+        self.username_login = self._create_input("Usuário", "Insira seu usuário", "👤")
+        if remembered_username:
+            self.username_login.input_field.setText(remembered_username)
+        layout.addLayout(self.username_login)
 
         self.pass_login = self._create_input("Password", "Digite sua senha", "🔒", is_password=True)
         layout.addLayout(self.pass_login)
 
-        remember = QCheckBox("Lembrar-me")
-        remember.setStyleSheet("color: white;")
-        layout.addWidget(remember)
+        self.remember_login = QCheckBox("Lembrar-me")
+        self.remember_login.setChecked(bool(remembered_username))
+        self.remember_login.setStyleSheet("color: white;")
+        layout.addWidget(self.remember_login)
 
         layout.addStretch()
 
@@ -133,6 +138,29 @@ class AuthWindow(QWidget):
 
         self.stack.addWidget(self.register_page)
 
+    def _remember_file_path(self):
+        return os.path.join(self.base_dir, "config", "remember_login.json")
+
+    def _load_remembered_username(self):
+        try:
+            with open(self._remember_file_path(), "r", encoding="utf-8") as arquivo:
+                data = json.load(arquivo)
+            username = data.get("username", "")
+            return username if isinstance(username, str) else ""
+        except Exception:
+            return ""
+
+    def _update_remembered_username(self, username):
+        remember_path = self._remember_file_path()
+        if self.remember_login.isChecked():
+            os.makedirs(os.path.dirname(remember_path), exist_ok=True)
+            with open(remember_path, "w", encoding="utf-8") as arquivo:
+                json.dump({"username": username}, arquivo, ensure_ascii=False, indent=2)
+            return
+
+        if os.path.exists(remember_path):
+            os.remove(remember_path)
+
     def _create_input(self, label_text, placeholder, icon, is_password=False):
         v_layout = QVBoxLayout()
         v_layout.setSpacing(5)
@@ -184,11 +212,12 @@ class AuthWindow(QWidget):
             QMessageBox.critical(self, "Erro", str(e))
 
     def handle_login(self):
-        email = self.email_login.input_field.text()
+        username = self.username_login.input_field.text().strip()
         senha = self.pass_login.input_field.text()
         try:
-            session_data = auth_service.login(email, senha)
-            session_data.setdefault("email", email)
+            session_data = auth_service.login(username, senha)
+            session_data.setdefault("username", username)
+            self._update_remembered_username(username)
             self.login_successful.emit(session_data)
             self.close()
         except auth_service.AuthError as e:

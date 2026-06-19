@@ -67,9 +67,9 @@ def registrar(email: str, nome: str, username: str, senha: str, confirma_senha: 
     raise AuthError(_extrair_mensagem_erro(response))
 
 
-def login(email: str, senha: str) -> dict:
+def login(username: str, senha: str) -> dict:
     try:
-        response = api_client.post("/usuarios/login", {"email": email, "senha": senha})
+        response = api_client.post("/usuarios/login", {"username": username, "senha": senha})
     except (ConnectionError, Timeout):
         raise AuthError("Não foi possível conectar ao servidor.")
     except Exception:
@@ -79,6 +79,7 @@ def login(email: str, senha: str) -> dict:
         data = response.json()
         api_client.set_token(data["token"])
         data.update(_decode_token_claims(data["token"]))
+        data.setdefault("username", username)
         return data
 
     raise AuthError(_extrair_mensagem_erro(response))

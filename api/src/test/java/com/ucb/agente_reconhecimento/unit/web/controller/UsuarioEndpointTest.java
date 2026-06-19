@@ -78,7 +78,7 @@ class UsuarioEndpointTest {
         @DisplayName("Deveria delegar a autenticação para UsuarioService")
         void deveriaDelegarAutenticacaoParaService() {
             // Arrange
-            var loginDto = new UsuarioLoginDTO("joao@email.com", "senha123");
+            var loginDto = new UsuarioLoginDTO("joao123", "senha123");
             var tokenResponse = new TokenResponse("token_abc", Instant.now().plusSeconds(7200));
 
             doReturn(tokenResponse).when(usuarioService).autenticarUsuario(loginDto);
@@ -99,7 +99,7 @@ class UsuarioEndpointTest {
         @DisplayName("Deveria retornar HTTP 200 com TokenResponse no body")
         void deveriaRetornarHttp200ComToken() {
             // Arrange
-            var loginDto = new UsuarioLoginDTO("joao@email.com", "senha123");
+            var loginDto = new UsuarioLoginDTO("joao123", "senha123");
             var tokenResponse = new TokenResponse("token_xyz", Instant.now().plusSeconds(7200));
 
             doReturn(tokenResponse).when(usuarioService).autenticarUsuario(loginDto);

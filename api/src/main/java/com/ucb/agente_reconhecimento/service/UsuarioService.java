@@ -59,7 +59,7 @@ public class UsuarioService {
     }
 
     public TokenResponse autenticarUsuario(UsuarioLoginDTO usuarioLoginDTO) {
-        Usuario usuario = usuarioRepository.findByEmail(usuarioLoginDTO.email())
+        Usuario usuario = usuarioRepository.findByUsername(usuarioLoginDTO.username())
                 .orElseThrow(CredenciaisInvalidasException::new);
 
         if (!passwordEncoder.matches(usuarioLoginDTO.senha(), usuario.getSenhaHash())) {

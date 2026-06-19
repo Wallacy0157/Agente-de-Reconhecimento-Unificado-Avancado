@@ -145,14 +145,16 @@ class UsuarioServiceTest {
         @DisplayName("Deveria retornar TokenResponse quando credenciais são válidas")
         void deveriaRetornarTokenQuandoCredenciaisValidas() {
             // Arrange
-            var loginDto = new UsuarioLoginDTO("joao@email.com", "senha123");
+            var loginDto = new UsuarioLoginDTO("joao123", "senha123");
 
             var usuario = new Usuario();
             usuario.setId(1);
+            usuario.setNome("João");
             usuario.setEmail("joao@email.com");
+            usuario.setUsername("joao123");
             usuario.setSenhaHash("hash_encoded");
 
-            doReturn(Optional.of(usuario)).when(usuarioRepository).findByEmail(loginDto.email());
+            doReturn(Optional.of(usuario)).when(usuarioRepository).findByUsername(loginDto.username());
             doReturn(true).when(passwordEncoder).matches(loginDto.senha(), usuario.getSenhaHash());
 
             var jwtMock = mock(Jwt.class);
@@ -169,12 +171,12 @@ class UsuarioServiceTest {
         }
 
         @Test
-        @DisplayName("Deveria lançar CredenciaisInvalidasException quando email não existe")
-        void deveriaLancarExcecaoQuandoEmailNaoExiste() {
+        @DisplayName("Deveria lançar CredenciaisInvalidasException quando username não existe")
+        void deveriaLancarExcecaoQuandoUsernameNaoExiste() {
             // Arrange
-            var loginDto = new UsuarioLoginDTO("inexistente@email.com", "senha123");
+            var loginDto = new UsuarioLoginDTO("inexistente", "senha123");
 
-            doReturn(Optional.empty()).when(usuarioRepository).findByEmail(loginDto.email());
+            doReturn(Optional.empty()).when(usuarioRepository).findByUsername(loginDto.username());
 
             // Act & Assert
             assertThatThrownBy(() -> usuarioService.autenticarUsuario(loginDto))
@@ -187,17 +189,18 @@ class UsuarioServiceTest {
         @DisplayName("Deveria lançar CredenciaisInvalidasException quando senha está incorreta")
         void deveriaLancarExcecaoQuandoSenhaIncorreta() {
             // Arrange
-            var loginDto = new UsuarioLoginDTO("joao@email.com", "senha_errada");
+            var loginDto = new UsuarioLoginDTO("joao123", "senha_errada");
 
             var usuario = new Usuario();
             usuario.setId(1);
+            usuario.setNome("João");
             usuario.setEmail("joao@email.com");
+            usuario.setUsername("joao123");
             usuario.setSenhaHash("hash_encoded");
 
-            doReturn(Optional.of(usuario)).when(usuarioRepository).findByEmail(loginDto.email());
+            doReturn(Optional.of(usuario)).when(usuarioRepository).findByUsername(loginDto.username());
             doReturn(false).when(passwordEncoder).matches(loginDto.senha(), usuario.getSenhaHash());
 
-            // Act & Assert
             assertThatThrownBy(() -> usuarioService.autenticarUsuario(loginDto))
                     .isInstanceOf(CredenciaisInvalidasException.class);
 

@@ -1913,7 +1913,7 @@ class KeyloggerPage(QWidget):
 
     def handle_toggle(self):
         if not self.engine or not self.engine.is_running:
-            log_dir = os.path.join(self.parent_window.base_dir, "logs/keylogs")
+            log_dir = os.path.join(self.parent_window.base_dir, "logs")
             self.engine = KeyloggerEngine(
                 log_dir,
                 user_context=self.parent_window.report_context,

@@ -2255,11 +2255,10 @@ class MainWindow(QMainWindow):
         self.btn_home = self._make_sidebar_button(lang_get(self.L, "sidebar.home", "Início"), "🏠")
         self.btn_tools = self._make_sidebar_button(lang_get(self.L, "sidebar.diagnostic", "Diagnóstico"), "🧪")
         self.btn_scanner = self._make_sidebar_button(lang_get(self.L, "sidebar.scanner", "Informações"), "🛰️")
-        self.btn_history = self._make_sidebar_button(lang_get(self.L, "sidebar.history", "Histórico"), "🕘")
         self.btn_logs = self._make_sidebar_button(lang_get(self.L, "sidebar.logs", "Logs"), "📁")
         self.btn_config = self._make_sidebar_button(lang_get(self.L, "sidebar.settings", "Configurações"), "⚙️")
 
-        self.sidebar_buttons = [self.btn_home, self.btn_tools, self.btn_scanner, self.btn_history, self.btn_logs, self.btn_config]
+        self.sidebar_buttons = [self.btn_home, self.btn_tools, self.btn_scanner, self.btn_logs, self.btn_config]
         for btn in self.sidebar_buttons:
             sidebar_layout.addWidget(btn)
 
@@ -2359,7 +2358,6 @@ class MainWindow(QMainWindow):
         self.btn_home.clicked.connect(lambda: self.safe_change_page(self.PAGE_HOME))
         self.btn_tools.clicked.connect(lambda: self.safe_change_page(self.PAGE_TOOLS))
         self.btn_scanner.clicked.connect(lambda: self.safe_change_page(self.PAGE_MANUAL_SCANNER))
-        self.btn_history.clicked.connect(lambda: self.safe_change_page(self.PAGE_HISTORY))
         self.btn_logs.clicked.connect(lambda: self.safe_change_page(self.PAGE_LOGS))
         self.btn_config.clicked.connect(lambda: self.safe_change_page(self.PAGE_CONFIG))
 
@@ -2439,7 +2437,6 @@ class MainWindow(QMainWindow):
         self.btn_home.setText("  🏠 " + lang_get(L, "sidebar.home", "Início"))
         self.btn_tools.setText("  🧪 " + lang_get(L, "sidebar.tools", "Ferramentas"))
         self.btn_scanner.setText("  📜 " + lang_get(L, "sidebar.scanner", "Informações"))
-        self.btn_history.setText("  🕘 " + lang_get(L, "sidebar.history", "Histórico"))
         self.btn_logs.setText("  📁 " + lang_get(L, "sidebar.logs", "Logs"))
         self.btn_config.setText("  ⚙️ " + lang_get(L, "sidebar.settings", "Configurações"))
         self.status_label.setText(lang_get(L, "header.status_ready", "Status: Pronto"))

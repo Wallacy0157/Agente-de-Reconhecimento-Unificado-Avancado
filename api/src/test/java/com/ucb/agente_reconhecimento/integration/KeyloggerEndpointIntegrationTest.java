@@ -1,6 +1,7 @@
 package com.ucb.agente_reconhecimento.integration;
 
 import com.ucb.agente_reconhecimento.domain.entities.Usuario;
+import com.ucb.agente_reconhecimento.domain.entities.keylogger.KeyLogger;
 import com.ucb.agente_reconhecimento.repository.UsuarioRepository;
 import com.ucb.agente_reconhecimento.service.KeyloggerService;
 import com.ucb.agente_reconhecimento.web.dto.keylogger.KeyloggerResultadoRequest;
@@ -17,9 +18,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -42,6 +46,10 @@ class KeyloggerEndpointIntegrationTest {
         u.setNome("Key Tester"); u.setEmail("key@tester.com"); u.setUsername("key");
         u.setSenhaHash("$2a$10$hash_teste"); u.setAtivo(true);
         usuarioAtivo = usuarioRepository.save(u);
+
+        KeyLogger entity = new KeyLogger();
+        entity.setId(1);
+        when(keyloggerService.salvar(any(), any())).thenReturn(entity);
     }
 
     @Test
@@ -58,6 +66,7 @@ class KeyloggerEndpointIntegrationTest {
                         .with(jwt().jwt(jwt -> jwt.subject(usuarioAtivo.getId().toString())))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(payload)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
     }
 }

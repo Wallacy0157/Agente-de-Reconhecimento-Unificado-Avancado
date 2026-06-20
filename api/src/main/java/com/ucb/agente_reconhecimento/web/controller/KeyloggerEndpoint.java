@@ -1,8 +1,9 @@
 package com.ucb.agente_reconhecimento.web.controller;
 
+import com.ucb.agente_reconhecimento.domain.entities.keylogger.KeyLogger;
 import com.ucb.agente_reconhecimento.service.KeyloggerService;
+import com.ucb.agente_reconhecimento.web.dto.keylogger.KeyloggerCriadoResponse;
 import com.ucb.agente_reconhecimento.web.dto.keylogger.KeyloggerResultadoRequest;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -19,13 +20,14 @@ public class KeyloggerEndpoint {
     }
 
     @PostMapping
-    public ResponseEntity<Void> salvarCaptura(
-            @RequestBody @Valid KeyloggerResultadoRequest request,
+    public ResponseEntity<KeyloggerCriadoResponse> salvarCaptura(
+            @RequestBody KeyloggerResultadoRequest request,
             JwtAuthenticationToken authentication) {
 
         Integer usuarioId = Integer.parseInt(authentication.getToken().getSubject());
-        keyloggerService.salvar(request, usuarioId);
+        KeyLogger entity = keyloggerService.salvar(request, usuarioId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new KeyloggerCriadoResponse(entity.getId()));
     }
 }

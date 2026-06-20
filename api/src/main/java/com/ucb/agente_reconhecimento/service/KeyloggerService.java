@@ -14,12 +14,12 @@ public class KeyloggerService {
         this.repository = repository;
     }
 
-    public void salvar(KeyloggerResultadoRequest request, Integer usuarioId) {
+    public KeyLogger salvar(KeyloggerResultadoRequest request, Integer usuarioId) {
         KeyLogger entity = new KeyLogger();
         entity.setInicio(request.inicio());
         entity.setTermino(request.termino());
         entity.setUrlArquivo(request.urlArquivo());
 
-        repository.save(entity);
+        return repository.save(entity);
     }
 }

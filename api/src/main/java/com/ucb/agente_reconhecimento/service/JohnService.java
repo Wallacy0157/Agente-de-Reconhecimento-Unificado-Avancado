@@ -14,7 +14,7 @@ public class JohnService {
         this.repository = repository;
     }
 
-    public void salvar(JohnResultadoRequest request, Integer usuarioId) {
+    public JohnTheRipper salvar(JohnResultadoRequest request, Integer usuarioId) {
         JohnTheRipper entity = new JohnTheRipper();
         entity.setHashAlvo(request.hashAlvo());
         entity.setAlgoritmo(request.algoritmo());
@@ -24,6 +24,6 @@ public class JohnService {
         entity.setHashesTestados(request.hashesTestados());
         entity.setStatus(request.status());
 
-        repository.save(entity);
+        return repository.save(entity);
     }
 }

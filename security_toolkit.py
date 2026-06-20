@@ -1834,7 +1834,32 @@ class JohnPage(QWidget):
             QMessageBox.information(self, lang_get(self.L, "john_page.success_title", "Sucesso"), msg)
         else:
             self.console.append(f"\n{lang_get(self.L, 'john_page.failure', '❌ FALHA: {error}').format(error=result['error'])}")
+        self._persist_results()
         self.executor = None
+
+    def _persist_results(self):
+        """Persiste resultados do John The Ripper no backend."""
+        if not self.executor:
+            return
+        try:
+            from core.john_engine import build_john_payload
+            from services.john_client import enviar_resultado_john
+
+            payload = build_john_payload(self.executor)
+            response = enviar_resultado_john(payload)
+
+            if response is not None:
+                self.parent_window.statusBar().showMessage(
+                    f"✅ Resultado John The Ripper salvo com sucesso (ID: {response.get('id')})", 8000
+                )
+            else:
+                self.parent_window.statusBar().showMessage(
+                    "⚠️ Falha ao salvar resultado John The Ripper no backend", 8000
+                )
+        except Exception as exc:
+            self.parent_window.statusBar().showMessage(
+                f"⚠️ Erro ao persistir John The Ripper: {exc}", 8000
+            )
 
     def apply_theme(self, theme_key):
         self.btn_start.setStyleSheet(

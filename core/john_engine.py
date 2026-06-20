@@ -244,6 +244,7 @@ class JohnExecutor:
         self.engine = JohnEngine()
         self.result = None
         self.error = None
+        self.total_tested = 0
 
         self._stop_event = threading.Event()
         self._state_lock = threading.Lock()
@@ -264,6 +265,7 @@ class JohnExecutor:
 
         self.result = None
         self.error = None
+        self.total_tested = 0
         self._progress = []
         self._stop_event.clear()
 
@@ -276,6 +278,7 @@ class JohnExecutor:
 
     def _on_progress(self, tested, speed):
         self._progress.append((tested, speed))
+        self.total_tested = tested
 
     def pop_progress(self):
         items = list(self._progress)
@@ -309,3 +312,25 @@ class JohnExecutor:
         finally:
             with self._state_lock:
                 self._running = False
+
+
+def build_john_payload(executor) -> dict:
+    """Converte resultado do JohnExecutor para formato JohnResultadoRequest."""
+    result = executor.result or {}
+
+    algoritmo = (
+        result.get("algorithm")
+        or executor.algorithm
+        or executor.engine.detect_algorithm(executor.target_hash)
+        or "DESCONHECIDO"
+    )
+
+    return {
+        "hashAlvo": executor.target_hash,
+        "algoritmo": algoritmo,
+        "salt": executor.salt,
+        "senhaEncontrada": result.get("password"),
+        "modoAtaque": executor.mode,
+        "hashesTestados": executor.total_tested,
+        "status": "SUCESSO" if result.get("success") else "FALHA",
+    }

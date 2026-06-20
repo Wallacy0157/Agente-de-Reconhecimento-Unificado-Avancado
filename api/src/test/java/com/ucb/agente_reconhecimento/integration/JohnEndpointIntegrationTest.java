@@ -1,6 +1,7 @@
 package com.ucb.agente_reconhecimento.integration;
 
 import com.ucb.agente_reconhecimento.domain.entities.Usuario;
+import com.ucb.agente_reconhecimento.domain.entities.john.JohnTheRipper;
 import com.ucb.agente_reconhecimento.repository.UsuarioRepository;
 import com.ucb.agente_reconhecimento.service.JohnService;
 import com.ucb.agente_reconhecimento.web.dto.john.JohnResultadoRequest;
@@ -14,12 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import com.ucb.agente_reconhecimento.service.KeyloggerService;
-import com.ucb.agente_reconhecimento.web.dto.keylogger.KeyloggerResultadoRequest;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -42,6 +44,10 @@ class JohnEndpointIntegrationTest {
         u.setNome("John Tester"); u.setEmail("john@tester.com"); u.setUsername("john");
         u.setSenhaHash("$2a$10$hash_teste"); u.setAtivo(true);
         usuarioAtivo = usuarioRepository.save(u);
+
+        JohnTheRipper entity = new JohnTheRipper();
+        entity.setId(1);
+        when(johnService.salvar(any(), any())).thenReturn(entity);
     }
 
     @Test
@@ -56,6 +62,7 @@ class JohnEndpointIntegrationTest {
                         .with(jwt().jwt(jwt -> jwt.subject(usuarioAtivo.getId().toString())))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(payload)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
     }
 }
